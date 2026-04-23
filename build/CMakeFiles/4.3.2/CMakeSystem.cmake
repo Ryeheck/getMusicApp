@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Linux")
 set(CMAKE_HOST_SYSTEM_VERSION "6.19.12-arch1-1")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
-
+include("/home/ryabi/Qt/6.11.0/gcc_64/lib/cmake/Qt6/qt.toolchain.cmake")
 
 set(CMAKE_SYSTEM "Linux-6.19.12-arch1-1")
 set(CMAKE_SYSTEM_NAME "Linux")

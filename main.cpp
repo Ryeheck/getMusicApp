@@ -1,16 +1,21 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <QWidget>
+#include <QVBoxLayout>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QWidget *widget = new QWidget();
-    widget->show();
+    MainWindow wn_main;
 
+    QVBoxLayout *layout = new QVBoxLayout(&wn_main);
+    
+    QWidget *central = new QWidget(&wn_main);
+    central->setLayout(layout);
+    wn_main.setCentralWidget(central);
 
+    wn_main.show();
 
-    return QCoreApplication::exec();
+    return a.exec();
 }
