@@ -1,0 +1,9 @@
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/edit_cache.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/rebuild_cache.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/list_install_components.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/install.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/install/local.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/install/strip.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp_autogen_timestamp_deps.dir
+/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp_autogen.dir

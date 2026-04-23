@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ryabi/my_apps/qt/getMusicApp/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
