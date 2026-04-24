@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->inputFolder->setPlaceholderText("Enter folder... (default: Music/songs): ");
     ui->inputURL->setPlaceholderText("Enter URL (youtube)");
+    
+    connect(ui->startButton, &QPushButton::clicked, [this] () {
+        this->startDowload();
+    });
 }
 
 void MainWindow::startDowload(QString url, QString folder)
@@ -20,16 +24,20 @@ void MainWindow::startDowload(QString url, QString folder)
     
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QString output = process->readAllStandardOutput();
-        this->log("INFO: " + output);
+        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
+        this->log(message);
     });
 
     connect(process, &QProcess::readyReadStandardError, [this, process]() {
         QString output = process->readAllStandardError();
-        this->log("ERROR: " + output);
+        QString message = QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output;
+        this->log(message);
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this] (int exitCode) {
-        this->log(exitCode == 0 ? "Done!" : "Error");
+        QString output = (exitCode == 0 ? "Done!" : "Error");
+        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
+        this->log(message);
     });
 
     
@@ -39,19 +47,21 @@ void MainWindow::startDowload(QString url, QString folder)
     QStringList args;
     args << "--no-playlist";
     args << "-x" << "--audio-format" << "mp3" << "-o";
-    args << folder + "'/%(title)s.mp3' ";
-    args << url; 
+    args << folder + "/%(title)s.mp3 ";
+    args << url;
 
-    process->start("yt-dlp", args); 
+    process->start("yt-dlp", args);
     
 }
 
 
 void MainWindow::log(const QString &message)
 {
+    ui->logView->setReadOnly(true);
+
     if (ui && ui->logView) {
         QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
-        ui->logView->appendPlainText("[" + time + "] " + message);
+        ui->logView->appendHtml("[" + time + "] " + message);
     }
 }
 

@@ -12,15 +12,6 @@ int main(int argc, char *argv[])
 
     MainWindow wn_main;
 
-    QPushButton *btn = new QPushButton(&wn_main);
-
-    btn->connect(btn, &QPushButton::clicked, [=, &wn_main] () {
-        wn_main.startDowload();
-    });
-
-    btn->show();
-    wn_main.log("ok");
-
     qApp->setStyleSheet(
     "QWidget { background-color: black; color: gray; }"      // All windows
     "QPushButton { "
@@ -33,9 +24,10 @@ int main(int argc, char *argv[])
     "   padding: 5px; "
     "}"                                                     // All buttons
     "QPushButton:hover { background-color: darkgray; }"    // При наведении
+    "QProcess { color: green; }"
     );
 
-
+    wn_main.log("ok");
     wn_main.show();
 
     return a.exec();
