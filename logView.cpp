@@ -29,8 +29,6 @@ logView::logView(QWidget *parent)
 
     HLayout->addWidget(logText);
     HLayout->addWidget(listWidget);
-
-    log("log: ok");
 }
 
 void logView::getTitle(QString url)
@@ -151,8 +149,6 @@ void logView::clearAll()
 {
     listWidget->clear();
     Items.clear();
-    
-    log("ok");
 }
 
 /*

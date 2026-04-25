@@ -53,7 +53,8 @@ void MainWindow::setupConnections()
     connect(titleButton, &QPushButton::clicked, [this, &message] () {
         message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", titleButton->text());
         logs->log(message);
-
+        logs->log("Wait...");
+        
         logs->getTitle(inputURL->text());
         clearListButton->show();
         selectAllButton->show();
