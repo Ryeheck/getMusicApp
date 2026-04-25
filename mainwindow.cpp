@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     logs = new logView(this);
     layoutMain->addWidget(logs);
 
-    startButton = new QPushButton("Song", this);
+    startButton = new QPushButton("Start dowload(s)", this);
     titleButton = new QPushButton("Playlist", this);
 
     layoutMain->addWidget(startButton);
