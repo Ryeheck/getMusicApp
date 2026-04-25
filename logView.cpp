@@ -115,13 +115,15 @@ void logView::nextDowload(QString folder)
         nextDowload(folder);
     });
 
+    QString songName = item->text();
+
     QStringList args;
     args << "--no-playlist";
     args << "-x" << "--audio-format" << "mp3" << "-o";
-    args << folder + "/%(title)s.mp3 ";
+    args << folder + "/" + songName;
     args << item->data(Qt::UserRole).toString();
 
-    QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": " + item->text());
+    QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": " + songName);
     log(message);
 
     process->start("yt-dlp", args);
