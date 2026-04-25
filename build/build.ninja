@@ -79,6 +79,16 @@ build CMakeFiles/getMusicApp.dir/mainwindow.cpp.o: CXX_COMPILER__getMusicApp_uns
   OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir
   TARGET_SUPPORT_DIR = CMakeFiles/getMusicApp.dir
 
+build CMakeFiles/getMusicApp.dir/logView.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Debug /home/ryabi/my_apps/qt/getMusicApp/logView.cpp || cmake_object_order_depends_target_getMusicApp
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/getMusicApp.dir/logView.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC
+  INCLUDES = -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui
+  OBJECT_DIR = CMakeFiles/getMusicApp.dir
+  OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir
+  TARGET_SUPPORT_DIR = CMakeFiles/getMusicApp.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target getMusicApp
@@ -87,7 +97,7 @@ build CMakeFiles/getMusicApp.dir/mainwindow.cpp.o: CXX_COMPILER__getMusicApp_uns
 #############################################
 # Link the executable getMusicApp
 
-build getMusicApp: CXX_EXECUTABLE_LINKER__getMusicApp_Debug CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o CMakeFiles/getMusicApp.dir/main.cpp.o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o | /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Widgets.so.6.11.0 /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Gui.so.6.11.0 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Core.so.6.11.0 || getMusicApp_autogen getMusicApp_autogen_timestamp_deps
+build getMusicApp: CXX_EXECUTABLE_LINKER__getMusicApp_Debug CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o CMakeFiles/getMusicApp.dir/main.cpp.o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o CMakeFiles/getMusicApp.dir/logView.cpp.o | /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Widgets.so.6.11.0 /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Gui.so.6.11.0 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Core.so.6.11.0 || getMusicApp_autogen getMusicApp_autogen_timestamp_deps
   CONFIG = Debug
   DEP_FILE = CMakeFiles/getMusicApp.dir/link.d
   FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g

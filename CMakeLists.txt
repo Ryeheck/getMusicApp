@@ -12,6 +12,8 @@ qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
     main.cpp
     mainwindow.cpp
+    logView.cpp
+    logView.h
     Music/songs
     mainwindow.h
     mainwindow.ui

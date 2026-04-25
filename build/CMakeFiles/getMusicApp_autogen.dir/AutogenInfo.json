@@ -482,6 +482,12 @@
 	"HEADERS" : 
 	[
 		[
+			"/home/ryabi/my_apps/qt/getMusicApp/logView.h",
+			"MU",
+			"EWIEGA46WW/moc_logView.cpp",
+			null
+		],
+		[
 			"/home/ryabi/my_apps/qt/getMusicApp/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -546,6 +552,7 @@
 	"SETTINGS_FILE" : "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "/home/ryabi/my_apps/qt/getMusicApp/logView.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/main.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp", "MU", null ]
 	],

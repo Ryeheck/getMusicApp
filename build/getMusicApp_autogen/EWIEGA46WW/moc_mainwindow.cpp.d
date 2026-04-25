@@ -1,5 +1,10 @@
 /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/EWIEGA46WW/moc_mainwindow.cpp: /home/ryabi/my_apps/qt/getMusicApp/mainwindow.h \
   /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/moc_predefs.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QList \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QObject \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QRect \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QSize \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QSizeF \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q17memory.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q20bit.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q20functional.h \
@@ -9,6 +14,8 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q20utility.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q23type_traits.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/q23utility.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qabstracteventdispatcher.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qabstractitemmodel.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qalgorithms.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qalloc.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qanystringview.h \
@@ -19,6 +26,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qatomic.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qatomic_cxx11.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qbasicatomic.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qbasictimer.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qbindingstorage.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qbytearray.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qbytearrayalgorithms.h \
@@ -36,10 +44,15 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcontainerinfo.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcontainertools_impl.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcontiguouscache.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcoreapplication.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcoreapplication_platform.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qcoreevent.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qdarwinhelpers.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qdatastream.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qdeadlinetimer.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qdebug.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qendian.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qeventloop.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qexceptionhandling.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qflags.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qfloat16.h \
@@ -51,12 +64,15 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qglobalstatic.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qhash.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qhashfunctions.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qiodevice.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qiodevicebase.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qitemselectionmodel.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qiterable.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qiterator.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qlatin1stringview.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qline.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qlist.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qlocale.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qlogging.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qmalloc.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qmap.h \
@@ -66,6 +82,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qmetatype.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qminmax.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qnamespace.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qnativeinterface.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qnumeric.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qobject.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qobject_impl.h \
@@ -77,6 +94,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qprocessordetection.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qrect.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qrefcount.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qregularexpression.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qscopedpointer.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qscopeguard.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qset.h \
@@ -122,45 +140,99 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qtversionchecks.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qtypeinfo.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qtypes.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qurl.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qutf8stringview.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qvariant.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qvarlengtharray.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qversiontagging.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qxptype_traits.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qyieldcpu.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/QTransform \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qabstracttextdocumentlayout.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qaction.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qbitmap.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qbrush.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qcolor.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qcursor.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qevent.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qeventpoint.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qfont.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qfontdatabase.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qfontinfo.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qfontmetrics.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qfontvariableaxis.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qglyphrun.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qguiapplication.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qguiapplication_platform.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qicon.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qimage.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qinputdevice.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qinputmethod.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qkeysequence.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpaintdevice.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpalette.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpen.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpixelformat.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpixmap.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpointingdevice.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qpolygon.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qrawfont.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qregion.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qrgb.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qrgba64.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qscreen.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qscreen_platform.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtextcursor.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtextdocument.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtextformat.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtextlayout.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtextoption.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtgui-config.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtguiexports.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtguiglobal.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qtransform.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qvalidator.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qvector2d.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qvectornd.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qwindowdefs.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QBoxLayout \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QHBoxLayout \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QLineEdit \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QListWidget \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QListWidgetItem \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QMainWindow \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPlainTextEdit \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPushButton \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractbutton.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemview.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractslider.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractspinbox.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qboxlayout.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qframe.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qgridlayout.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlayout.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlayoutitem.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlineedit.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlistview.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlistwidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qmainwindow.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qplaintextedit.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qpushbutton.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qrubberband.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qsizepolicy.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qslider.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qstyle.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qstyleoption.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtabbar.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtabwidget.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtextedit.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgets-config.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsexports.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qwidget.h \
+  /home/ryabi/my_apps/qt/getMusicApp/logView.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/errno-base.h \

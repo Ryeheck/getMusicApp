@@ -1,13 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include "logView.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
+#include <QMainWindow>
+#include <QListWidgetItem>
+#include <QPlainTextEdit>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QBoxLayout>
 
 class MainWindow : public QMainWindow
 {
@@ -17,10 +18,19 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-    void startDowload(QString url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1", QString folder = "Music/songs");
-    void log(const QString &message);
-
+    void allTitle();
+    
 private:
-    Ui::MainWindow *ui;
+    void setupConnections();
+    QWidget *centralWidget;
+    QBoxLayout *layoutMain;
+    logView *logs;
+    QLineEdit *inputURL;
+    QLineEdit *inputFolder;
+    QPushButton *titleButton;
+    QPushButton *startButton;
+    QPushButton *clearListButton;
+    QPushButton *selectAllButton;
+    QPushButton *deselectAllButton;
 };
 #endif // MAINWINDOW_H

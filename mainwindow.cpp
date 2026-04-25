@@ -1,71 +1,102 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "logView.h"
 
 #include <QProcess>
 #include <QString>
 #include <QDateTime>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    ui->setupUi(this);
-    ui->inputFolder->setPlaceholderText("Enter folder... (default: Music/songs): ");
-    ui->inputURL->setPlaceholderText("Enter URL (youtube)");
-    
-    connect(ui->startButton, &QPushButton::clicked, [this] () {
-        this->startDowload();
-    });
+    centralWidget = new QWidget(this);
+    setCentralWidget(centralWidget);
+
+    layoutMain = new QVBoxLayout(centralWidget);
+
+    inputFolder = new QLineEdit(this);
+    inputURL = new QLineEdit(this);
+    inputFolder->setPlaceholderText("Enter folder... (default: Music/songs): ");
+    inputURL->setPlaceholderText("Enter URL (youtube)");
+
+    layoutMain->addWidget(inputFolder);
+    layoutMain->addWidget(inputURL);
+
+    logs = new logView(this);
+    layoutMain->addWidget(logs);
+
+    startButton = new QPushButton("Song", this);
+    titleButton = new QPushButton("Playlist", this);
+
+    layoutMain->addWidget(startButton);
+    layoutMain->addWidget(titleButton);
+
+    clearListButton = new QPushButton("Clear all", this);
+    selectAllButton = new QPushButton("Select All", this);
+    deselectAllButton = new QPushButton("Deselect All", this);
+
+    clearListButton->hide();
+    selectAllButton->hide();
+    deselectAllButton->hide();
+
+    layoutMain->addWidget(selectAllButton, 0, Qt::AlignRight);
+    layoutMain->addWidget(deselectAllButton, 0, Qt::AlignRight);
+    layoutMain->addWidget(clearListButton, 0, Qt::AlignRight);
+
+    setupConnections();
 }
 
-void MainWindow::startDowload(QString url, QString folder)
+void MainWindow::setupConnections()
 {
-    QProcess *process = new QProcess(this);
+    QString message;
+    connect(titleButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", titleButton->text());
+        logs->log(message);
+
+        logs->getTitle(inputURL->text());
+        clearListButton->show();
+        selectAllButton->show();
+        deselectAllButton->show();
+
+    }); 
     
-    connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
-        QString output = process->readAllStandardOutput();
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
-        this->log(message);
+    connect(startButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", startButton->text());
+        logs->log(message);
+
+        selectAllButton->hide();
+        deselectAllButton->hide();
+
+        QString folder = inputFolder->text();
+        if (folder.isEmpty())  logs->startDowload();
+        else                   logs->startDowload(folder);
     });
 
-    connect(process, &QProcess::readyReadStandardError, [this, process]() {
-        QString output = process->readAllStandardError();
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output;
-        this->log(message);
+    connect(selectAllButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", selectAllButton->text());
+        logs->log(message);
+
+        logs->setSelectAllItem();
+    });    
+
+    connect(deselectAllButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", deselectAllButton->text());
+        logs->log(message);
+
+        logs->setDeselectAllItem();
     });
 
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this] (int exitCode) {
-        QString output = (exitCode == 0 ? "Done!" : "Error");
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
-        this->log(message);
-    });
+    connect(clearListButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", clearListButton->text());
+        logs->log(message);
 
-    
-    if (!ui->inputFolder->text().isEmpty())  folder = ui->inputFolder->text();
-    if (!ui->inputURL->text().isEmpty())     url = ui->inputURL->text();
-
-    QStringList args;
-    args << "--no-playlist";
-    args << "-x" << "--audio-format" << "mp3" << "-o";
-    args << folder + "/%(title)s.mp3 ";
-    args << url;
-
-    process->start("yt-dlp", args);
-    
-}
-
-
-void MainWindow::log(const QString &message)
-{
-    ui->logView->setReadOnly(true);
-
-    if (ui && ui->logView) {
-        QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
-        ui->logView->appendHtml("[" + time + "] " + message);
-    }
+        logs->clearAll();
+    });  
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    qDebug() << "ok";
 }
+
