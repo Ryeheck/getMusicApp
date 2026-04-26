@@ -31,7 +31,7 @@ logView::logView(QWidget *parent)
     HLayout->addWidget(listWidget);
 }
 
-void logView::getTitle(QString url)
+void logView::getTitle(QString url, bool startAfter, QString folder)
 {
     QProcess *process = new QProcess(this);
 
@@ -40,7 +40,7 @@ void logView::getTitle(QString url)
 
         QStringList Names = output.split('\n', Qt::SkipEmptyParts);
         
-        for(int i = 0; i < Names.size() - 1 && i < MAX_SONGS; i += 2) {
+        for(int i = 0; i < Names.size() - 1 && (i < MAX_SONGS * 2); i += 2) {
             QListWidgetItem *item = new QListWidgetItem(Names[i], listWidget);
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
             item->setCheckState(Qt::Unchecked);
@@ -51,12 +51,16 @@ void logView::getTitle(QString url)
         }
     });
 
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this] (int exitCode) {
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, startAfter, folder] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
         this->log(message);
-    });
 
+        if (startAfter) {
+            Items[0]->setCheckState(Qt::Checked);
+            startDowload(folder);
+        }
+    });
 
     QStringList args;
     args << "--flat-playlist";
@@ -64,19 +68,19 @@ void logView::getTitle(QString url)
     args << url;
 
     process->start("yt-dlp", args);
-    
+
 }
 
-// void MainWindow::allTitle();
-
-void logView::startDowload(QString folder)
+void logView::startDowload(QString folder, QString url)
 {
     currentDowloadIndex = 0;
-    nextDowload(folder);
+    nextDowload(folder, url);
 }
 
-void logView::nextDowload(QString folder)
+void logView::nextDowload(QString folder, QString url)
 {
+    if (isStoppedForNext)  return;
+
     if (currentDowloadIndex >= Items.size()) {
         QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "All Done!");
         this->log(message);
@@ -87,33 +91,35 @@ void logView::nextDowload(QString folder)
     QListWidgetItem *item = Items[currentDowloadIndex];
     if (item->checkState() != Qt::Checked) {
         currentDowloadIndex++;
-        nextDowload(folder);
+        nextDowload(folder, url);
         return;
     }
 
-    QProcess *process = new QProcess(this);
+    process = new QProcess(this);
     
-    connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
+    connect(process, &QProcess::readyReadStandardOutput, [this] () {
         QString output = process->readAllStandardOutput();
         QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
         this->log(message);
     });
 
-    connect(process, &QProcess::readyReadStandardError, [this, process]() {
+    connect(process, &QProcess::readyReadStandardError, [this]() {
         QString output = process->readAllStandardError();
         QString message = QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output;
         this->log(message);
     });
 
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder, process] (int exitCode) {
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder, url] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
         this->log(message);
 
         process->deleteLater();
         currentDowloadIndex++;
-        nextDowload(folder);
+        nextDowload(folder, url);
     });
+
+    
 
     QString songName = item->text();
 
@@ -138,6 +144,21 @@ void logView::setSelectAllItem()
     update();
 }
 
+void logView::stopDowload()
+{
+    isStoppedForNext = true;
+    if(process && process->state() == QProcess::Running)
+        process->kill();
+
+    QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": User killed process");
+    log(message);
+}
+
+void logView::setIsStoppedForNext(bool set)
+{
+    this->isStoppedForNext = set;
+}
+
 void logView::setDeselectAllItem()
 {
     for(QListWidgetItem *item : Items)
@@ -145,6 +166,11 @@ void logView::setDeselectAllItem()
         item->setCheckState(Qt::Unchecked);
     }
     update();
+}
+
+int logView::getItemsCount()
+{
+    return Items.size();
 }
 
 void logView::clearAll()

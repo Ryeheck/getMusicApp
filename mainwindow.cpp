@@ -44,34 +44,59 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     layoutMain->addWidget(deselectAllButton, 0, Qt::AlignRight);
     layoutMain->addWidget(clearListButton, 0, Qt::AlignRight);
 
+    stopButton = new QPushButton("Stop", this);
+    stopForNextButton = new QPushButton("Stop for next", this);
+
+    stopForNextButton->hide();
+    stopButton->hide();
+
+    layoutMain->addWidget(stopForNextButton, 0, Qt::AlignRight);
+    layoutMain->addWidget(stopButton, 0, Qt::AlignRight);
+
     setupConnections();
 }
 
 void MainWindow::setupConnections()
 {
     QString message;
+
     connect(titleButton, &QPushButton::clicked, [this, &message] () {
         message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", titleButton->text());
         logs->log(message);
         logs->log("Wait...");
         
         logs->getTitle(inputURL->text());
+
+        stopButton->hide();
+        stopForNextButton->hide();
+
         clearListButton->show();
         selectAllButton->show();
         deselectAllButton->show();
-
     }); 
     
     connect(startButton, &QPushButton::clicked, [this, &message] () {
         message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", startButton->text());
         logs->log(message);
+        logs->log("Wait...");
 
+        stopButton->show();
+        stopForNextButton->show();
+
+        clearListButton->hide();
         selectAllButton->hide();
         deselectAllButton->hide();
 
+        QString url = inputURL->text();
         QString folder = inputFolder->text();
-        if (folder.isEmpty())  logs->startDowload();
-        else                   logs->startDowload(folder);
+
+        if (folder.isEmpty())  folder = "Music/songs";
+        if (url.isEmpty())     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
+        logs->setIsStoppedForNext(false);
+
+        if (!logs->getItemsCount())  logs->getTitle(url, true, folder);
+        else                         logs->startDowload(folder);
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this, &message] () {
@@ -94,6 +119,26 @@ void MainWindow::setupConnections()
 
         logs->clearAll();
     });  
+
+    connect(stopButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", stopButton->text());
+        logs->log(message);
+
+        stopButton->hide();
+        stopForNextButton->hide();
+
+        logs->stopDowload();
+    });
+
+    connect(stopForNextButton, &QPushButton::clicked, [this, &message] () {
+        message = QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", stopForNextButton->text());
+        logs->log(message);
+
+        stopButton->hide();
+        stopForNextButton->hide();
+
+        logs->setIsStoppedForNext(true);
+    });
 }
 
 MainWindow::~MainWindow()

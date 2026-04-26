@@ -7,6 +7,7 @@
 #include <QList>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QProcess>
 
 class logView : public QPlainTextEdit
 {
@@ -16,26 +17,30 @@ public:
     explicit logView(QWidget *parent = nullptr);
     // ~logView() override;
 
-    void getTitle(QString url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    void getTitle(QString url, bool startAfter=false, QString folder="Music/songs");
 
     void log(const QString &message);
-    void startDowload(QString folder="Music/songs");
-    void nextDowload(QString folder);
+    void startDowload(QString folder="Music/songs", QString url="");
+    void nextDowload(QString folder, QString url);
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
     void clearSelect();
     void clearDeselect();
-
     void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
     QList<QListWidgetItem *> getItems();
+    int getItemsCount();
+    void stopDowload();
+    void setIsStoppedForNext(bool set);
 
 private:
     QHBoxLayout *HLayout;
     QList<QListWidgetItem *> Items;
     QListWidget *listWidget;
     QPlainTextEdit *logText;
+    QProcess *process = nullptr;
 
+    bool isStoppedForNext = false;
     int currentDowloadIndex = -1;
 };
 

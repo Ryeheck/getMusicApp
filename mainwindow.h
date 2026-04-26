@@ -32,5 +32,7 @@ private:
     QPushButton *clearListButton;
     QPushButton *selectAllButton;
     QPushButton *deselectAllButton;
+    QPushButton *stopButton;
+    QPushButton *stopForNextButton;
 };
 #endif // MAINWINDOW_H

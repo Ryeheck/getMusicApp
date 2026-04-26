@@ -2,6 +2,7 @@
   /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/moc_predefs.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QList \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QObject \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QProcess \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QRect \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QSize \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QSizeF \
@@ -91,6 +92,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qoverload.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qpair.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qpoint.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qprocess.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qprocessordetection.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qrect.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qrefcount.h \
