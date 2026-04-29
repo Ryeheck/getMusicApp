@@ -7,30 +7,27 @@
 #include <QDateTime>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    layoutMain = new QVBoxLayout(centralWidget);
+    layoutMain = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
+    layoutButtons = new QVBoxLayout();
+    layoutButtonsHOne = new QHBoxLayout();
+    layoutButtonsHTwo = new QHBoxLayout();
 
     inputFolder = new QLineEdit(this);
     inputURL = new QLineEdit(this);
     inputFolder->setPlaceholderText("Enter folder... (default: Music/songs): ");
     inputURL->setPlaceholderText("Enter URL (youtube)");
 
-    layoutMain->addWidget(inputFolder);
-    layoutMain->addWidget(inputURL);
-
     logs = new logView(this);
-    layoutMain->addWidget(logs);
 
     startButton = new QPushButton("Start dowload(s)", this);
     titleButton = new QPushButton("Playlist", this);
-
-    layoutMain->addWidget(startButton);
-    layoutMain->addWidget(titleButton);
 
     clearListButton = new QPushButton("Clear all", this);
     selectAllButton = new QPushButton("Select All", this);
@@ -40,18 +37,37 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     selectAllButton->hide();
     deselectAllButton->hide();
 
-    layoutMain->addWidget(selectAllButton, 0, Qt::AlignRight);
-    layoutMain->addWidget(deselectAllButton, 0, Qt::AlignRight);
-    layoutMain->addWidget(clearListButton, 0, Qt::AlignRight);
-
     stopButton = new QPushButton("Stop", this);
     stopForNextButton = new QPushButton("Stop for next", this);
 
     stopForNextButton->hide();
     stopButton->hide();
+    
+    layoutButtons->setSpacing(3);
 
-    layoutMain->addWidget(stopForNextButton, 0, Qt::AlignRight);
-    layoutMain->addWidget(stopButton, 0, Qt::AlignRight);
+    layoutMain->addWidget(inputFolder);
+    layoutMain->addWidget(inputURL);
+
+    layoutMain->addWidget(logs);
+    layoutMain->addStretch(1);
+
+    layoutButtonsHOne->addWidget(startButton, 4);
+    layoutButtonsHTwo->addWidget(titleButton, 4);
+
+    layoutButtonsHOne->addStretch();
+    layoutButtonsHOne->addWidget(selectAllButton);
+    layoutButtonsHOne->addWidget(deselectAllButton);
+
+    layoutButtonsHTwo->addStretch();
+    layoutButtonsHTwo->addWidget(clearListButton);
+
+    layoutButtonsHOne->addWidget(stopForNextButton, 0, Qt::AlignRight);
+    layoutButtonsHTwo->addWidget(stopButton, 0, Qt::AlignRight);
+
+    layoutButtons->addLayout(layoutButtonsHOne);
+    layoutButtons->addLayout(layoutButtonsHTwo);
+
+    layoutMain->addLayout(layoutButtons);
 
     setupConnections();
 }

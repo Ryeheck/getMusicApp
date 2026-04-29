@@ -24,6 +24,9 @@ private:
     void setupConnections();
     QWidget *centralWidget;
     QBoxLayout *layoutMain;
+    QBoxLayout *layoutButtons;
+    QHBoxLayout *layoutButtonsHOne;
+    QHBoxLayout *layoutButtonsHTwo;
     logView *logs;
     QLineEdit *inputURL;
     QLineEdit *inputFolder;
