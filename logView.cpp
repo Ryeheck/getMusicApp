@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QProcessEnvironment>
 
 #define MAX_SONGS   50
 
@@ -74,10 +75,10 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
 void logView::startDowload(QString folder, QString url)
 {
     currentDowloadIndex = 0;
-    nextDowload(folder, url);
+    nextDowload(folder);
 }
 
-void logView::nextDowload(QString folder, QString url)
+void logView::nextDowload(QString folder)
 {
     if (isStoppedForNext)  return;
 
@@ -91,7 +92,7 @@ void logView::nextDowload(QString folder, QString url)
     QListWidgetItem *item = Items[currentDowloadIndex];
     if (item->checkState() != Qt::Checked) {
         currentDowloadIndex++;
-        nextDowload(folder, url);
+        nextDowload(folder);
         return;
     }
 
@@ -109,17 +110,19 @@ void logView::nextDowload(QString folder, QString url)
         this->log(message);
     });
 
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder, url] (int exitCode) {
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
         this->log(message);
 
         process->deleteLater();
         currentDowloadIndex++;
-        nextDowload(folder, url);
+        nextDowload(folder);
     });
 
-    
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("PATH", qApp->applicationDirPath() + ":" + env.value("PATH"));
+    process->setProcessEnvironment(env);
 
     QString songName = item->text();
 

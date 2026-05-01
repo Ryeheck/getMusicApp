@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     inputFolder = new QLineEdit(this);
     inputURL = new QLineEdit(this);
-    inputFolder->setPlaceholderText("Enter folder... (default: Music/songs): ");
+    inputFolder->setPlaceholderText("Enter folder... (default: Music): ");
     inputURL->setPlaceholderText("Enter URL (youtube)");
 
     logs = new logView(this);
