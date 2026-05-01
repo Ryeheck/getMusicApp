@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     inputFolder = new QLineEdit(this);
     inputURL = new QLineEdit(this);
     inputFolder->setPlaceholderText("Enter folder... (default: Music): ");
-    inputURL->setPlaceholderText("Enter URL (youtube)");
+    inputURL->setPlaceholderText("test 1");
 
     logs = new logView(this);
 
@@ -49,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     layoutMain->addWidget(inputURL);
 
     layoutMain->addWidget(logs);
-    layoutMain->addStretch(1);
 
     layoutButtonsHOne->addWidget(startButton, 4);
     layoutButtonsHTwo->addWidget(titleButton, 4);

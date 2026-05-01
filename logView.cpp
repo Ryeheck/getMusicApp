@@ -121,12 +121,17 @@ void logView::nextDowload(QString folder)
     });
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("PATH", qApp->applicationDirPath() + ":" + env.value("PATH"));
+    QString appDir = qApp->applicationDirPath();
+    env.insert("PATH", appDir + ":" + env.value("PATH"));
+    env.insert("FFMPEG_BINARY", appDir + "/ffmpeg");
+    env.insert("FFPROBE_BINARY", appDir + "/ffprobe");
+
     process->setProcessEnvironment(env);
 
     QString songName = item->text();
 
     QStringList args;
+    args << "--ffmpeg-location" << appDir + "/ffmpeg";
     args << "--no-playlist";
     args << "-x" << "--audio-format" << "mp3" << "-o";
     args << folder + "/" + songName;
@@ -135,7 +140,7 @@ void logView::nextDowload(QString folder)
     QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": " + songName);
     log(message);
 
-    process->start("yt-dlp", args);
+    process->start(appDir + "/yt-dlp", args);
 }
 
 void logView::setSelectAllItem()
