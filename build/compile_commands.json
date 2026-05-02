@@ -1,25 +1,25 @@
 [
 {
   "directory": "/home/ryabi/my_apps/qt/getMusicApp/build",
-  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -O3 -DNDEBUG -fPIC -o CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/mocs_compilation.cpp",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/mocs_compilation.cpp",
   "file": "/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/mocs_compilation.cpp",
   "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o"
 },
 {
   "directory": "/home/ryabi/my_apps/qt/getMusicApp/build",
-  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -O3 -DNDEBUG -fPIC -o CMakeFiles/getMusicApp.dir/main.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/main.cpp",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/main.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/main.cpp",
   "file": "/home/ryabi/my_apps/qt/getMusicApp/main.cpp",
   "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/main.cpp.o"
 },
 {
   "directory": "/home/ryabi/my_apps/qt/getMusicApp/build",
-  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -O3 -DNDEBUG -fPIC -o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp",
   "file": "/home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp",
   "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/mainwindow.cpp.o"
 },
 {
   "directory": "/home/ryabi/my_apps/qt/getMusicApp/build",
-  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -O3 -DNDEBUG -fPIC -o CMakeFiles/getMusicApp.dir/logView.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/logView.cpp",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/logView.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/logView.cpp",
   "file": "/home/ryabi/my_apps/qt/getMusicApp/logView.cpp",
   "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/logView.cpp.o"
 }

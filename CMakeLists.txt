@@ -3,9 +3,6 @@ project(getMusicApp LANGUAGES CXX)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
-# add_executable(my_app main.cpp)
-
-
 qt_standard_project_setup()
 
 qt_add_executable(getMusicApp
@@ -14,9 +11,7 @@ qt_add_executable(getMusicApp
     mainwindow.cpp
     logView.cpp
     logView.h
-    Music/songs
     mainwindow.h
-    mainwindow.ui
 )
 
 target_link_libraries(getMusicApp

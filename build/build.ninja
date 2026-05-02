@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: getMusicApp
-# Configurations: Release
+# Configurations: Debug
 # =============================================================================
 
 #############################################
@@ -24,7 +24,7 @@ ninja_required_version = 1.5
 #############################################
 # Set configuration variable for custom commands.
 
-CONFIGURATION = Release
+CONFIGURATION = Debug
 # =============================================================================
 # Include auxiliary files.
 
@@ -49,41 +49,41 @@ cmake_ninja_workdir = /home/ryabi/my_apps/qt/getMusicApp/build/
 
 build cmake_object_order_depends_target_getMusicApp: phony || getMusicApp_autogen getMusicApp_autogen/mocs_compilation.cpp getMusicApp_autogen/timestamp getMusicApp_autogen_timestamp_deps
 
-build CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Release /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_getMusicApp
-  CONFIG = Release
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+build CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Debug /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_getMusicApp
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o.d
-  FLAGS = -O3 -DNDEBUG -fPIC
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC
   INCLUDES = -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui
   OBJECT_DIR = CMakeFiles/getMusicApp.dir
   OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir/getMusicApp_autogen
   TARGET_SUPPORT_DIR = CMakeFiles/getMusicApp.dir
 
-build CMakeFiles/getMusicApp.dir/main.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Release /home/ryabi/my_apps/qt/getMusicApp/main.cpp || cmake_object_order_depends_target_getMusicApp
-  CONFIG = Release
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+build CMakeFiles/getMusicApp.dir/main.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Debug /home/ryabi/my_apps/qt/getMusicApp/main.cpp || cmake_object_order_depends_target_getMusicApp
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/getMusicApp.dir/main.cpp.o.d
-  FLAGS = -O3 -DNDEBUG -fPIC
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC
   INCLUDES = -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui
   OBJECT_DIR = CMakeFiles/getMusicApp.dir
   OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir
   TARGET_SUPPORT_DIR = CMakeFiles/getMusicApp.dir
 
-build CMakeFiles/getMusicApp.dir/mainwindow.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Release /home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp || cmake_object_order_depends_target_getMusicApp
-  CONFIG = Release
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+build CMakeFiles/getMusicApp.dir/mainwindow.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Debug /home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp || cmake_object_order_depends_target_getMusicApp
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/getMusicApp.dir/mainwindow.cpp.o.d
-  FLAGS = -O3 -DNDEBUG -fPIC
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC
   INCLUDES = -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui
   OBJECT_DIR = CMakeFiles/getMusicApp.dir
   OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir
   TARGET_SUPPORT_DIR = CMakeFiles/getMusicApp.dir
 
-build CMakeFiles/getMusicApp.dir/logView.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Release /home/ryabi/my_apps/qt/getMusicApp/logView.cpp || cmake_object_order_depends_target_getMusicApp
-  CONFIG = Release
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+build CMakeFiles/getMusicApp.dir/logView.cpp.o: CXX_COMPILER__getMusicApp_unscanned_Debug /home/ryabi/my_apps/qt/getMusicApp/logView.cpp || cmake_object_order_depends_target_getMusicApp
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
   DEP_FILE = CMakeFiles/getMusicApp.dir/logView.cpp.o.d
-  FLAGS = -O3 -DNDEBUG -fPIC
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC
   INCLUDES = -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui
   OBJECT_DIR = CMakeFiles/getMusicApp.dir
   OBJECT_FILE_DIR = CMakeFiles/getMusicApp.dir
@@ -97,10 +97,10 @@ build CMakeFiles/getMusicApp.dir/logView.cpp.o: CXX_COMPILER__getMusicApp_unscan
 #############################################
 # Link the executable getMusicApp
 
-build getMusicApp: CXX_EXECUTABLE_LINKER__getMusicApp_Release CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o CMakeFiles/getMusicApp.dir/main.cpp.o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o CMakeFiles/getMusicApp.dir/logView.cpp.o | /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Widgets.so.6.11.0 /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Gui.so.6.11.0 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Core.so.6.11.0 || getMusicApp_autogen getMusicApp_autogen_timestamp_deps
-  CONFIG = Release
+build getMusicApp: CXX_EXECUTABLE_LINKER__getMusicApp_Debug CMakeFiles/getMusicApp.dir/getMusicApp_autogen/mocs_compilation.cpp.o CMakeFiles/getMusicApp.dir/main.cpp.o CMakeFiles/getMusicApp.dir/mainwindow.cpp.o CMakeFiles/getMusicApp.dir/logView.cpp.o | /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Widgets.so.6.11.0 /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Gui.so.6.11.0 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Core.so.6.11.0 || getMusicApp_autogen getMusicApp_autogen_timestamp_deps
+  CONFIG = Debug
   DEP_FILE = CMakeFiles/getMusicApp.dir/link.d
-  FLAGS = -O3 -DNDEBUG
+  FLAGS = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g
   LINK_FLAGS = -Wl,--dependency-file=CMakeFiles/getMusicApp.dir/link.d
   LINK_LIBRARIES = -Wl,-rpath,/home/ryabi/Qt/6.11.0/gcc_64/lib:  /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Widgets.so.6.11.0  /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Gui.so.6.11.0  /usr/lib/libGLX.so  /usr/lib/libOpenGL.so  /home/ryabi/Qt/6.11.0/gcc_64/lib/libQt6Core.so.6.11.0  -Wl,-rpath-link,/home/ryabi/Qt/6.11.0/gcc_64/lib
   OBJECT_DIR = CMakeFiles/getMusicApp.dir
@@ -186,14 +186,14 @@ build getMusicApp_autogen_timestamp_deps: phony
 #############################################
 # Utility command for getMusicApp_autogen
 
-build getMusicApp_autogen: phony CMakeFiles/getMusicApp_autogen getMusicApp_autogen/include/ui_mainwindow.h getMusicApp_autogen/timestamp getMusicApp_autogen/mocs_compilation.cpp getMusicApp_autogen_timestamp_deps
+build getMusicApp_autogen: phony CMakeFiles/getMusicApp_autogen getMusicApp_autogen/timestamp getMusicApp_autogen/mocs_compilation.cpp getMusicApp_autogen_timestamp_deps
 
 
 #############################################
 # Custom command for getMusicApp_autogen/timestamp
 
 build getMusicApp_autogen/timestamp getMusicApp_autogen/mocs_compilation.cpp | ${cmake_ninja_workdir}getMusicApp_autogen/timestamp ${cmake_ninja_workdir}getMusicApp_autogen/mocs_compilation.cpp: CUSTOM_COMMAND /home/ryabi/Qt/6.11.0/gcc_64/libexec/moc /home/ryabi/Qt/6.11.0/gcc_64/libexec/uic || getMusicApp_autogen_timestamp_deps
-  COMMAND = cd /home/ryabi/my_apps/qt/getMusicApp/build && /usr/bin/cmake -E cmake_autogen /home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp_autogen.dir/AutogenInfo.json Release && /usr/bin/cmake -E touch /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/timestamp && /usr/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /home/ryabi/my_apps/qt/getMusicApp /home/ryabi/my_apps/qt/getMusicApp /home/ryabi/my_apps/qt/getMusicApp/build /home/ryabi/my_apps/qt/getMusicApp/build /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/deps /home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/d/4da40366286b71d89fd881f5803fc76d08e77a63c8686087e460f2f11acd4d1b.d
+  COMMAND = cd /home/ryabi/my_apps/qt/getMusicApp/build && /usr/bin/cmake -E cmake_autogen /home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp_autogen.dir/AutogenInfo.json Debug && /usr/bin/cmake -E touch /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/timestamp && /usr/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /home/ryabi/my_apps/qt/getMusicApp /home/ryabi/my_apps/qt/getMusicApp /home/ryabi/my_apps/qt/getMusicApp/build /home/ryabi/my_apps/qt/getMusicApp/build /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/deps /home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/d/4da40366286b71d89fd881f5803fc76d08e77a63c8686087e460f2f11acd4d1b.d
   DESC = Automatic MOC and UIC for target getMusicApp
   depfile = CMakeFiles/d/4da40366286b71d89fd881f5803fc76d08e77a63c8686087e460f2f11acd4d1b.d
   deps = gcc
@@ -203,7 +203,7 @@ build getMusicApp_autogen/timestamp getMusicApp_autogen/mocs_compilation.cpp | $
 #############################################
 # Phony custom command for CMakeFiles/getMusicApp_autogen
 
-build CMakeFiles/getMusicApp_autogen getMusicApp_autogen/include/ui_mainwindow.h | ${cmake_ninja_workdir}CMakeFiles/getMusicApp_autogen ${cmake_ninja_workdir}getMusicApp_autogen/include/ui_mainwindow.h: phony getMusicApp_autogen/timestamp || getMusicApp_autogen_timestamp_deps
+build CMakeFiles/getMusicApp_autogen | ${cmake_ninja_workdir}CMakeFiles/getMusicApp_autogen: phony getMusicApp_autogen/timestamp || getMusicApp_autogen_timestamp_deps
 
 # =============================================================================
 # Target aliases.
@@ -239,7 +239,7 @@ build /home/ryabi/Qt/6.11.0/gcc_64/lib/cmake/Qt6/FindWrapAtomic.cmake /home/ryab
 # Clean additional files.
 
 build CMakeFiles/clean.additional: CLEAN_ADDITIONAL
-  CONFIG = Release
+  CONFIG = Debug
 
 
 #############################################

@@ -17,10 +17,10 @@ public:
     explicit logView(QWidget *parent = nullptr);
     // ~logView() override;
 
-    void getTitle(QString url, bool startAfter=false, QString folder="Music");
+    void getTitle(QString url, bool startAfter=false, QString folder = "");
 
     void log(const QString &message);
-    void startDowload(QString folder="Music", QString url="");
+    void startDowload(QString folder = "");
     void nextDowload(QString folder);
     void setSelectAllItem();
     void setDeselectAllItem();

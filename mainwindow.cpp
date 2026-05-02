@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include "logView.h"
 
 #include <QProcess>
@@ -21,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     inputFolder = new QLineEdit(this);
     inputURL = new QLineEdit(this);
-    inputFolder->setPlaceholderText("Enter folder... (default: Music): ");
-    inputURL->setPlaceholderText("test 1");
+    inputFolder->setPlaceholderText("Enter folder... (default: system): ");
+    inputURL->setPlaceholderText("Enter url... (only youtube)");
 
     logs = new logView(this);
 
@@ -105,7 +104,6 @@ void MainWindow::setupConnections()
         QString url = inputURL->text();
         QString folder = inputFolder->text();
 
-        if (folder.isEmpty())  folder = "Music/songs";
         if (url.isEmpty())     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
         logs->setIsStoppedForNext(false);

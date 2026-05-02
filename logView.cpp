@@ -3,9 +3,10 @@
 #include <QProcess>
 #include <QString>
 #include <QDateTime>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
+#include <QDir>
 
 #define MAX_SONGS   50
 
@@ -63,19 +64,23 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
         }
     });
 
+    QString appDir = qApp->applicationDirPath();
     QStringList args;
     args << "--flat-playlist";
-    args << "--get-title" << "--get-url"; 
+    args << "--get-title" << "--get-id"; 
     args << url;
 
-    process->start("yt-dlp", args);
-
+    process->start(appDir + "/yt-dlp", args);
 }
 
-void logView::startDowload(QString folder, QString url)
+void logView::startDowload(QString folder)
 {
     currentDowloadIndex = 0;
+
+    if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+
     nextDowload(folder);
+
 }
 
 void logView::nextDowload(QString folder)
@@ -99,13 +104,19 @@ void logView::nextDowload(QString folder)
     process = new QProcess(this);
     
     connect(process, &QProcess::readyReadStandardOutput, [this] () {
-        QString output = process->readAllStandardOutput();
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
-        this->log(message);
+        QByteArray data = process->readAllStandardOutput();
+        QString output = QString::fromUtf8(data).trimmed();
+
+        if (!output.isEmpty()) {
+            QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
+            this->log(message);
+        }
     });
 
     connect(process, &QProcess::readyReadStandardError, [this]() {
-        QString output = process->readAllStandardError();
+        QByteArray data = process->readAllStandardError();
+        QString output = QString::fromUtf8(data);
+
         QString message = QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output;
         this->log(message);
     });
@@ -123,23 +134,29 @@ void logView::nextDowload(QString folder)
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString appDir = qApp->applicationDirPath();
     env.insert("PATH", appDir + ":" + env.value("PATH"));
-    env.insert("FFMPEG_BINARY", appDir + "/ffmpeg");
-    env.insert("FFPROBE_BINARY", appDir + "/ffprobe");
-
+    env.remove("LD_LIBRARY_PATH");
+    env.insert("LD_LIBRARY_PATH", ""); 
     process->setProcessEnvironment(env);
 
     QString songName = item->text();
 
     QStringList args;
-    args << "--ffmpeg-location" << appDir + "/ffmpeg";
-    args << "--no-playlist";
-    args << "-x" << "--audio-format" << "mp3" << "-o";
-    args << folder + "/" + songName;
-    args << item->data(Qt::UserRole).toString();
+    args << "--ffmpeg-location" << appDir
+         << "--buffer-size" << "64K"
+         << "--concurrent-fragments" << "5"
+         << "--no-mtime"
+         << "--no-playlist" 
+         << "--newline"
+         << "-x" 
+         << "--audio-format" << "mp3" 
+         << "--audio-quality" << "0"
+         << "-o" << folder + "/" + songName + ".%(ext)s"
+         << item->data(Qt::UserRole).toString();
 
     QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": " + songName);
     log(message);
-
+    
+    process->setWorkingDirectory(QDir::tempPath());
     process->start(appDir + "/yt-dlp", args);
 }
 
