@@ -10,6 +10,7 @@ qt_add_executable(getMusicApp
     main.cpp
     mainwindow.cpp
     logView.cpp
+    logViewLyrics.cpp
     logView.h
     mainwindow.h
 )

@@ -43,11 +43,11 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
         QStringList Names = output.split('\n', Qt::SkipEmptyParts);
         
         for(int i = 0; i < Names.size() - 1 && (i < MAX_SONGS * 2); i += 2) {
-            QListWidgetItem *item = new QListWidgetItem(Names[i], listWidget);
+            QListWidgetItem *item = new QListWidgetItem(Names[i + 1], listWidget);
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
             item->setCheckState(Qt::Unchecked);
             item->setForeground(Qt::white);
-            item->setData(Qt::UserRole, Names[i + 1]);
+            item->setData(Qt::UserRole, Names[i]);
 
             Items.append(item);
         }
@@ -66,20 +66,27 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
 
     QString appDir = qApp->applicationDirPath();
     QStringList args;
-    args << "--flat-playlist";
-    args << "--get-title" << "--get-id"; 
-    args << url;
+    args << "--flat-playlist"
+         << "--get-id" << "--get-filename" 
+         << "-o" << "%(artist)s - %(track)s"
+         << url;
+
+    // yt-dlp --get-title --get-filename -o "%(artist)s - %(track)s" https://youtube.com
 
     process->start(appDir + "/yt-dlp", args);
 }
 
-void logView::startDowload(QString folder)
+void logView::startDowload(QString folder, bool lyrics)
 {
     currentDowloadIndex = 0;
 
     if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    
+    QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "FOLDER: " + folder);
+    log(message);
 
-    nextDowload(folder);
+    if (lyrics)  lyricsDowloadForName(folder);
+    else         nextDowload(folder);
 
 }
 
@@ -88,8 +95,7 @@ void logView::nextDowload(QString folder)
     if (isStoppedForNext)  return;
 
     if (currentDowloadIndex >= Items.size()) {
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "All Done!");
-        this->log(message);
+        this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "All Done!"));
         currentDowloadIndex = -1;
         return;
     }
@@ -108,8 +114,7 @@ void logView::nextDowload(QString folder)
         QString output = QString::fromUtf8(data).trimmed();
 
         if (!output.isEmpty()) {
-            QString message = QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output;
-            this->log(message);
+            this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output);
         }
     });
 
@@ -117,26 +122,20 @@ void logView::nextDowload(QString folder)
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
 
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output;
-        this->log(message);
+        this->log(QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output);
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
-        this->log(message);
+        this->log(QString("<span style='color:%1;'>%2</span>").arg("white", output));
 
         process->deleteLater();
         currentDowloadIndex++;
         nextDowload(folder);
     });
 
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString appDir = qApp->applicationDirPath();
-    env.insert("PATH", appDir + ":" + env.value("PATH"));
-    env.remove("LD_LIBRARY_PATH");
-    env.insert("LD_LIBRARY_PATH", ""); 
-    process->setProcessEnvironment(env);
+    setWorking();
 
     QString songName = item->text();
 
@@ -151,13 +150,24 @@ void logView::nextDowload(QString folder)
          << "--audio-format" << "mp3" 
          << "--audio-quality" << "0"
          << "-o" << folder + "/" + songName + ".%(ext)s"
+         << "--"
          << item->data(Qt::UserRole).toString();
 
-    QString message = QString("<span style='color:%1;'>%2</span>").arg("white", ": " + songName);
-    log(message);
+    log(QString("<span style='color:%1;'>%2</span>").arg("white", ": " + songName));
     
-    process->setWorkingDirectory(QDir::tempPath());
     process->start(appDir + "/yt-dlp", args);
+}
+
+void logView::setWorking()
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString appDir = qApp->applicationDirPath();
+
+    env.insert("PATH", appDir + ":" + env.value("PATH"));
+    env.remove("LD_LIBRARY_PATH");
+    env.insert("LD_LIBRARY_PATH", ""); 
+    process->setProcessEnvironment(env);
+    process->setWorkingDirectory(QDir::tempPath());
 }
 
 void logView::setSelectAllItem()

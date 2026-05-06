@@ -553,6 +553,7 @@
 	"SOURCES" : 
 	[
 		[ "/home/ryabi/my_apps/qt/getMusicApp/logView.cpp", "MU", null ],
+		[ "/home/ryabi/my_apps/qt/getMusicApp/logViewLyrics.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/main.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp", "MU", null ]
 	],

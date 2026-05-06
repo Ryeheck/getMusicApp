@@ -37,5 +37,6 @@ private:
     QPushButton *deselectAllButton;
     QPushButton *stopButton;
     QPushButton *stopForNextButton;
+    QPushButton *lyricsButton;
 };
 #endif // MAINWINDOW_H

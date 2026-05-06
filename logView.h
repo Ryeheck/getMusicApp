@@ -20,8 +20,11 @@ public:
     void getTitle(QString url, bool startAfter=false, QString folder = "");
 
     void log(const QString &message);
-    void startDowload(QString folder = "");
+    void startDowload(QString folder = "", bool lyrics = false);
     void nextDowload(QString folder);
+    void lyricsDowloadForName(QString folder);
+    void setWorking();
+    
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
