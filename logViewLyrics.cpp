@@ -58,7 +58,7 @@ void logView::lyricsDowloadForName(QString folder)
     QString songName = item->text();
 
     QStringList args;
-    args << item->text()
+    args << songName
          << "-p" << "Lrclib" << "NetEase" << "Megalobiz" << "Musixmatch"
          << "-o" << folder + "/" + songName + ".lrc"
          << "--verbose";

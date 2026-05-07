@@ -42,12 +42,17 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
 
         QStringList Names = output.split('\n', Qt::SkipEmptyParts);
         
-        for(int i = 0; i < Names.size() - 1 && (i < MAX_SONGS * 2); i += 2) {
-            QListWidgetItem *item = new QListWidgetItem(Names[i + 1], listWidget);
+        for(int i = 0; i < Names.size() - 1 && (i < MAX_SONGS * 3); i += 3) {
+            QListWidgetItem *item = new QListWidgetItem("", listWidget);
+            if (Names[i + 2] == QString("NA - NA"))
+                item->setText(Names[i]);
+            else
+                item->setText(Names[i + 2]);
+            
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
             item->setCheckState(Qt::Unchecked);
             item->setForeground(Qt::white);
-            item->setData(Qt::UserRole, Names[i]);
+            item->setData(Qt::UserRole, Names[i + 1]);
 
             Items.append(item);
         }
@@ -60,14 +65,15 @@ void logView::getTitle(QString url, bool startAfter, QString folder)
 
         if (startAfter) {
             Items[0]->setCheckState(Qt::Checked);
-            startDowload(folder);
+            startDowload(folder, lyrics);
         }
+        
     });
 
     QString appDir = qApp->applicationDirPath();
     QStringList args;
     args << "--flat-playlist"
-         << "--get-id" << "--get-filename" 
+         << "--get-id" << "--get-filename" << "--get-title"
          << "-o" << "%(artist)s - %(track)s"
          << url;
 
@@ -214,6 +220,10 @@ void logView::clearAll()
     Items.clear();
 }
 
+void logView::setLyrics(bool set)
+{
+    lyrics = set;
+}
 /*
 void logView::clearSelect()
 {

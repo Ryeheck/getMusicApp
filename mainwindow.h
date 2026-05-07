@@ -31,7 +31,7 @@ private:
     QLineEdit *inputURL;
     QLineEdit *inputFolder;
     QPushButton *titleButton;
-    QPushButton *startButton;
+    QPushButton *musicButton;
     QPushButton *clearListButton;
     QPushButton *selectAllButton;
     QPushButton *deselectAllButton;

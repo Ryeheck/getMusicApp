@@ -25,8 +25,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     logs = new logView(this);
 
-    startButton = new QPushButton("Start dowload(s)", this);
+    musicButton = new QPushButton("Music dowload(s)", this);
     titleButton = new QPushButton("Playlist", this);
+    lyricsButton = new QPushButton("Lyrics dowload(s)", this);
 
     clearListButton = new QPushButton("Clear all", this);
     selectAllButton = new QPushButton("Select All", this);
@@ -41,9 +42,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     stopForNextButton->hide();
     stopButton->hide();
-    
-    lyricsButton = new QPushButton("Lyrics", this);
-    lyricsButton->hide();
 
     layoutButtons->setSpacing(3);
 
@@ -52,16 +50,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     layoutMain->addWidget(logs);
 
-    layoutButtonsHOne->addWidget(startButton, 4);
+    layoutButtonsHOne->addWidget(musicButton, 4);
+    layoutButtonsHOne->addWidget(lyricsButton, 4);
     layoutButtonsHTwo->addWidget(titleButton, 4);
-
+    
     layoutButtonsHOne->addStretch();
     layoutButtonsHOne->addWidget(selectAllButton);
     layoutButtonsHOne->addWidget(deselectAllButton);
 
     layoutButtonsHTwo->addStretch();
     layoutButtonsHTwo->addWidget(clearListButton);
-    layoutButtonsHTwo->addWidget(lyricsButton);
 
     layoutButtonsHOne->addWidget(stopForNextButton, 0, Qt::AlignRight);
     layoutButtonsHTwo->addWidget(stopButton, 0, Qt::AlignRight);
@@ -93,14 +91,13 @@ void MainWindow::setupConnections()
         deselectAllButton->show();
     }); 
     
-    connect(startButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", startButton->text()));
+    connect(musicButton, &QPushButton::clicked, [this] () {
+        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", musicButton->text()));
         logs->log("Wait...");
 
         stopButton->show();
         stopForNextButton->show();
 
-        lyricsButton->hide();
         clearListButton->hide();
         selectAllButton->hide();
         deselectAllButton->hide();
@@ -108,12 +105,14 @@ void MainWindow::setupConnections()
         QString url = inputURL->text();
         QString folder = inputFolder->text();
 
-        if (url.isEmpty())     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
         logs->setIsStoppedForNext(false);
 
-        if (!logs->getItemsCount())  logs->getTitle(url, true, folder);
-        else                         logs->startDowload(folder);
+        if (!logs->getItemsCount())  
+            logs->getTitle(url, true, folder);
+        else                         
+            logs->startDowload(folder);
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this] () {
@@ -155,10 +154,27 @@ void MainWindow::setupConnections()
 
     connect(lyricsButton, &QPushButton::clicked, [this] () {
         logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", lyricsButton->text()));
+        logs->log("Wait...");
 
+        stopButton->show();
+        stopForNextButton->show();
+
+        clearListButton->hide();
+        selectAllButton->hide();
+        deselectAllButton->hide();
+
+        QString url = inputURL->text();
         QString folder = inputFolder->text();
 
-        logs->startDowload(folder, true);
+        if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
+        logs->setIsStoppedForNext(false);
+        logs->setLyrics(true);
+
+        if (!logs->getItemsCount())  
+            logs->getTitle(url, true, folder);
+        else                         
+            logs->startDowload(folder, true);
     });
 }
 

@@ -18,24 +18,24 @@ public:
     // ~logView() override;
 
     void getTitle(QString url, bool startAfter=false, QString folder = "");
-
     void log(const QString &message);
     void startDowload(QString folder = "", bool lyrics = false);
     void nextDowload(QString folder);
     void lyricsDowloadForName(QString folder);
-    void setWorking();
-    
+
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
     void clearSelect();
     void clearDeselect();
-    void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
-    QList<QListWidgetItem *> getItems();
-    int getItemsCount();
+
+    void setWorking();
     void stopDowload();
     void setIsStoppedForNext(bool set);
-
+    void setLyrics(bool set);
+    QList<QListWidgetItem *> getItems();
+    int getItemsCount();
+    void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
 private:
     QHBoxLayout *HLayout;
     QList<QListWidgetItem *> Items;
@@ -43,6 +43,7 @@ private:
     QPlainTextEdit *logText;
     QProcess *process = nullptr;
 
+    bool lyrics = false;
     bool isStoppedForNext = false;
     int currentDowloadIndex = -1;
 };
