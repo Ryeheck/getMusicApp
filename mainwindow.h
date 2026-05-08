@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    void setupBeforeDownload(bool set);
     ~MainWindow() override;
 
     void allTitle();

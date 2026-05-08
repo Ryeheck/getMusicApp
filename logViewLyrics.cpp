@@ -8,20 +8,21 @@
 #include <QStandardPaths>
 #include <QDir>
 
-void logView::lyricsDowloadForName(QString folder)
+void logView::lyricsDownloadForName(QString folder)
 {
     if (isStoppedForNext)  return;
 
-    if (currentDowloadIndex >= Items.size()) {
-        this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "All Done!"));
-        currentDowloadIndex = -1;
+    if (currentDownloadIndex >= Items.size()) {
+        this->log(QString("<span style='color:silver;'>All Done!</span>"));
+        currentDownloadIndex = -1;
+        emit setupDownloadRequested(false);
         return;
     }
 
-    QListWidgetItem *item = Items[currentDowloadIndex];
+    QListWidgetItem *item = Items[currentDownloadIndex];
     if (item->checkState() != Qt::Checked) {
-        currentDowloadIndex++;
-        lyricsDowloadForName(folder);
+        currentDownloadIndex++;
+        lyricsDownloadForName(folder);
         return;
     }
     
@@ -32,24 +33,29 @@ void logView::lyricsDowloadForName(QString folder)
         QString output = QString::fromUtf8(data).trimmed();
 
         if (!output.isEmpty()) {
-            this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output);
+            this->log(QString("<span style='color:DarkSeaGreen;'>INFO: %1</span>").arg(output));
         }
     });
 
-    connect(process, &QProcess::readyReadStandardError, [this]() {
+   connect(process, &QProcess::readyReadStandardError, [this] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
+        
+        output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
+        output.replace("INFO:", QString("<span style='color:silver;'>INFO: </span>"));
+        output.replace("WARNING:", QString("<span style='color:DarkOrange;'>WARNING: </span>"));
+        output.replace("ERROR:", QString("<span style='color:IndianRed;'>ERROR: </span>"));
 
-        this->log(output);
+        log(output);
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
-        this->log(QString("<span style='color:%1;'>%2</span>").arg("white", output));
+        this->log(QString("<span style='color:silver;'>%1</span>").arg(output));
 
         process->deleteLater();
-        currentDowloadIndex++;
-        lyricsDowloadForName(folder);
+        currentDownloadIndex++;
+        lyricsDownloadForName(folder);
     });
 
     QString appDir = qApp->applicationDirPath();
@@ -63,7 +69,7 @@ void logView::lyricsDowloadForName(QString folder)
          << "-o" << folder + "/" + songName + ".lrc"
          << "--verbose";
 
-    log(QString("<span style='color:%1;'>%2</span>").arg("white", ": Lyrics: " + songName));
+    log(QString("<span style='color:silver;'>Lyrics: %1</span>").arg(songName));
     
     process->start(appDir + "/syncedlyrics_bin", args);
 

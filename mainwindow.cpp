@@ -76,31 +76,19 @@ void MainWindow::setupConnections()
 {
 
     connect(titleButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", titleButton->text()));
-
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(titleButton->text()));
         logs->log("Wait...");
         
         logs->getTitle(inputURL->text());
 
-        stopButton->hide();
-        stopForNextButton->hide();
-
-        lyricsButton->show();
-        clearListButton->show();
-        selectAllButton->show();
-        deselectAllButton->show();
+        setupBeforeDownload(false);
     }); 
     
     connect(musicButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", musicButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(musicButton->text()));
         logs->log("Wait...");
 
-        stopButton->show();
-        stopForNextButton->show();
-
-        clearListButton->hide();
-        selectAllButton->hide();
-        deselectAllButton->hide();
+        setupBeforeDownload(true);
 
         QString url = inputURL->text();
         QString folder = inputFolder->text();
@@ -112,39 +100,38 @@ void MainWindow::setupConnections()
         if (!logs->getItemsCount())  
             logs->getTitle(url, true, folder);
         else                         
-            logs->startDowload(folder);
+            logs->startDownload(folder);
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", selectAllButton->text()));
-
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(selectAllButton->text()));
 
         logs->setSelectAllItem();
     });    
 
     connect(deselectAllButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", deselectAllButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(deselectAllButton->text()));
 
         logs->setDeselectAllItem();
     });
 
     connect(clearListButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", clearListButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(clearListButton->text()));
 
         logs->clearAll();
     });  
 
     connect(stopButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", stopButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopButton->text()));
 
         stopButton->hide();
         stopForNextButton->hide();
 
-        logs->stopDowload();
+        logs->stopDownload();
     });
 
     connect(stopForNextButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", stopForNextButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopForNextButton->text()));
 
         stopButton->hide();
         stopForNextButton->hide();
@@ -153,15 +140,10 @@ void MainWindow::setupConnections()
     });
 
     connect(lyricsButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:%1;'>: You clicked to %2</span>").arg("white", lyricsButton->text()));
+        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(lyricsButton->text()));
         logs->log("Wait...");
 
-        stopButton->show();
-        stopForNextButton->show();
-
-        clearListButton->hide();
-        selectAllButton->hide();
-        deselectAllButton->hide();
+        setupBeforeDownload(false);
 
         QString url = inputURL->text();
         QString folder = inputFolder->text();
@@ -174,8 +156,38 @@ void MainWindow::setupConnections()
         if (!logs->getItemsCount())  
             logs->getTitle(url, true, folder);
         else                         
-            logs->startDowload(folder, true);
+            logs->startDownload(folder, true);
     });
+
+    connect(logs, &logView::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
+}
+
+void MainWindow::setupBeforeDownload(bool set)
+{
+    if (set) {
+        lyricsButton->hide();
+        musicButton->hide();
+        titleButton->hide();
+
+        clearListButton->hide();
+        selectAllButton->hide();
+        deselectAllButton->hide();
+
+        stopButton->show();
+        stopForNextButton->show();
+    }
+    else {
+        stopButton->hide();
+        stopForNextButton->hide();
+
+        lyricsButton->show();
+        musicButton->show();
+        titleButton->show();
+
+        clearListButton->show();
+        selectAllButton->show();
+        deselectAllButton->show();
+    }
 }
 
 MainWindow::~MainWindow()
