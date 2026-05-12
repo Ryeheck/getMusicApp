@@ -25,10 +25,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     logs = new logView(this);
 
+    lyricsButton = new QPushButton("Lyrics dowload(s)", this);
     musicButton = new QPushButton("Music dowload(s)", this);
     titleButton = new QPushButton("Playlist", this);
-    lyricsButton = new QPushButton("Lyrics dowload(s)", this);
-
+    
     clearListButton = new QPushButton("Clear all", this);
     selectAllButton = new QPushButton("Select All", this);
     deselectAllButton = new QPushButton("Deselect All", this);
@@ -85,22 +85,7 @@ void MainWindow::setupConnections()
     }); 
     
     connect(musicButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(musicButton->text()));
-        logs->log("Wait...");
-
-        setupBeforeDownload(true);
-
-        QString url = inputURL->text();
-        QString folder = inputFolder->text();
-
-        if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
-        logs->setIsStoppedForNext(false);
-
-        if (!logs->getItemsCount())  
-            logs->getTitle(url, true, folder);
-        else                         
-            logs->startDownload(folder);
+        handleDownload(musicButton, false);
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this] () {
@@ -124,42 +109,42 @@ void MainWindow::setupConnections()
     connect(stopButton, &QPushButton::clicked, [this] () {
         logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopButton->text()));
 
-        stopButton->hide();
-        stopForNextButton->hide();
-
         logs->stopDownload();
+        setupBeforeDownload(false);
     });
 
     connect(stopForNextButton, &QPushButton::clicked, [this] () {
         logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopForNextButton->text()));
 
-        stopButton->hide();
-        stopForNextButton->hide();
-
         logs->setIsStoppedForNext(true);
+        setupBeforeDownload(false);
     });
 
     connect(lyricsButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(lyricsButton->text()));
-        logs->log("Wait...");
-
-        setupBeforeDownload(false);
-
-        QString url = inputURL->text();
-        QString folder = inputFolder->text();
-
-        if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
-        logs->setIsStoppedForNext(false);
-        logs->setLyrics(true);
-
-        if (!logs->getItemsCount())  
-            logs->getTitle(url, true, folder);
-        else                         
-            logs->startDownload(folder, true);
+        handleDownload(lyricsButton, true);
     });
 
     connect(logs, &logView::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
+}
+
+void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
+{
+    logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(button->text()));
+    logs->log("Wait...");
+
+    setupBeforeDownload(true);
+
+    QString url = inputURL->text();
+    QString folder = inputFolder->text();
+
+    if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
+    logs->setIsStoppedForNext(false);
+
+    if (!logs->getItemsCount())  
+        logs->getTitle(url, folder, true, isLyrics);
+    else                         
+        logs->startDownload(folder, isLyrics);
 }
 
 void MainWindow::setupBeforeDownload(bool set)

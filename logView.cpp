@@ -34,34 +34,41 @@ logView::logView(QWidget *parent)
     HLayout->addWidget(listWidget);
 }
 
-void logView::getTitle(QString url, bool startAfter, QString folder)
+void logView::getTitle(QString url, QString folder, bool startAfter, bool lyrics)
 {
-    QProcess *process = new QProcess(this);
+    process = new QProcess(this);
 
-    connect(process, &QProcess::readyReadStandardOutput, [this, process, url] () {
+    connect(process, &QProcess::readyReadStandardOutput, [this, url] () {
         QString output = process->readAllStandardOutput();
 
         QStringList Names = output.split('\n', Qt::SkipEmptyParts);
         
         for(int i = 0; i < Names.size() - 1 && (i < MAX_SONGS * 3); i += 3) {
-            QListWidgetItem *item = new QListWidgetItem("", listWidget);
+            QListWidgetItem *item = new QListWidgetItem;
             if (Names[i + 2] == QString("NA - NA"))
                 item->setText(Names[i]);
             else
                 item->setText(Names[i + 2]);
             
+            if (!listWidget->findItems(item->text(), Qt::MatchExactly).isEmpty()) {
+                delete item;
+                continue;
+            }
+
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
             item->setCheckState(Qt::Unchecked);
             item->setForeground(Qt::white);
             item->setData(Qt::UserRole, Names[i + 1]);
 
+            listWidget->addItem(item);
             Items.append(item);
         }
     });
 
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, startAfter, folder] (int exitCode) {
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, startAfter, folder, lyrics] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         this->log(QString("<span style='color:silver;'>%1</span>").arg(output));
+        process->deleteLater();
 
         if (startAfter) {
             Items[0]->setCheckState(Qt::Checked);
@@ -274,8 +281,12 @@ void logView::setSelectAllItem()
 void logView::stopDownload()
 {
     isStoppedForNext = true;
-    if(process && process->state() == QProcess::Running)
+    if(process && process->state() == QProcess::Running) {
         process->kill();
+        process->waitForFinished(2000);
+    }
+    process->deleteLater();
+    process = nullptr;
 
     log(QString("<span style='color:silver;'>User killed process</span>"));
 }
@@ -305,10 +316,6 @@ void logView::clearAll()
     Items.clear();
 }
 
-void logView::setLyrics(bool set)
-{
-    lyrics = set;
-}
 /*
 void logView::clearSelect()
 {

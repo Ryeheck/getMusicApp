@@ -1,4 +1,4 @@
-Note: If using source code, ensure yt-dlp, ffprobe, and ffmpeg are in your PATH.
+Note: If using source code, ensure yt-dlp, ffprobe, ffmpeg and syncedlyrics_bin (for lyrics) are in your PATH.
 
  Music & Lyrics Downloader
 

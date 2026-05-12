@@ -17,6 +17,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     void setupBeforeDownload(bool set);
+    void handleDownload(QPushButton *button, bool isLyrics);
     ~MainWindow() override;
 
     void allTitle();

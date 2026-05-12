@@ -20,7 +20,7 @@ public:
     explicit logView(QWidget *parent = nullptr);
     // ~logView() override;
 
-    void getTitle(QString url, bool startAfter=false, QString folder = "");
+    void getTitle(QString url, QString folder = "", bool startAfter = false, bool lyrics = false);
     void log(const QString message = "");
     void startDownload(QString folder = "", bool lyrics = false);
     void nextDownload(QString folder);
@@ -35,7 +35,6 @@ public:
     void setWorking();
     void stopDownload();
     void setIsStoppedForNext(bool set);
-    void setLyrics(bool set);
     QList<QListWidgetItem *> getItems();
     int getItemsCount();
     void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
@@ -47,7 +46,6 @@ private:
     QPlainTextEdit *logText;
     QProcess *process = nullptr;
 
-    bool lyrics = false;
     bool isStoppedForNext = false;
     int currentDownloadIndex = -1;
 };
