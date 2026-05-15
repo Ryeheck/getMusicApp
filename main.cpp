@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    MainWindow wn_main;
-    wn_main.resize(1280, 900);
+    MainWindow windowMain;
+    windowMain.resize(1280, 900);
     
     qApp->setStyleSheet(
     "QWidget { background-color: black; color: gray; }"      // All windows
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     "QProcess { color: green; }"
     );
     
-    wn_main.show();
+    windowMain.show();
 
     return a.exec();
 }

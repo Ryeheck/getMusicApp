@@ -234,6 +234,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsexports.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qwidget.h \
+  /home/ryabi/my_apps/qt/getMusicApp/downloadManager.h \
   /home/ryabi/my_apps/qt/getMusicApp/logView.h \
   /usr/include/alloca.h \
   /usr/include/assert.h \

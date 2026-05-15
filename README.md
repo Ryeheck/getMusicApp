@@ -22,5 +22,6 @@ How to use
 Set the download folder: Enter the path in the "Enter folder..." field.
 If left empty, files will be saved to your default "Music" folder.
 Paste the link: Copy a YouTube video or playlist link into the "Enter url..." field.
-Start downloading: Click Music download(s) to download audio files.Click Lyrics download(s) if you only need the lyrics.
+Start downloading: Click Music download(s) to download audio files.
+Click Lyrics download(s) if you only need the lyrics.
 Use the Playlist button for processing entire playlists.

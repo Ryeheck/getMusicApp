@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "logView.h"
+#include "downloadManager.h"
 
 #include <QMainWindow>
 #include <QListWidgetItem>
@@ -29,7 +30,10 @@ private:
     QBoxLayout *layoutButtons;
     QHBoxLayout *layoutButtonsHOne;
     QHBoxLayout *layoutButtonsHTwo;
-    logView *logs;
+    
+    logView *logs = nullptr;
+    downloadManager *manager = nullptr;
+
     QLineEdit *inputURL;
     QLineEdit *inputFolder;
     QPushButton *titleButton;
