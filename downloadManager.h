@@ -25,14 +25,18 @@ public:
 
     void getTitle(QString url, QString folder = "", bool startAfter = false, bool lyrics = false);
     void startDownload(QString folder = "", bool lyrics = false);
-    void nextDownload(QString folder);
-    void lyricsDownloadForName(QString folder);
+    void nextDownload(QString folder, bool isLyrics = false);
+    void songDownload(songInfo &song, QString folder);
+    void lyricsDownload(songInfo &song, QString folder);
+
+    void setupProcessLogging(QProcess *process, bool isLyrics = false);
+    void cleanupProcess(int exitCode);
 
     void updateSongCheckState(QString &id, bool isChecked);
     void clearSongs();
     void setWorking(QProcess *process);
     void stopDownload();
-    void setIsStoppedForNext(bool set);
+    void setIsStopped(bool set);
 
     QList<songInfo> getSongs();
     int getSongsCount();
@@ -40,8 +44,8 @@ public:
 private:
     QList<songInfo> Songs;
 
-    bool isStoppedForNext = false;
-    int currentDownloadIndex = -1;
+    bool isStopped;
+    int currentDownloadIndex;
     QProcess *currentProcess;
 };
 

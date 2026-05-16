@@ -61,10 +61,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     layoutButtonsHOne->addWidget(deselectAllButton);
 
     layoutButtonsHTwo->addStretch();
+    layoutButtonsHTwo->addWidget(stopButton);
     layoutButtonsHTwo->addWidget(clearListButton);
-
-    layoutButtonsHOne->addWidget(stopForNextButton, 0, Qt::AlignRight);
-    layoutButtonsHTwo->addWidget(stopButton, 0, Qt::AlignRight);
+    layoutButtonsHTwo->addWidget(stopForNextButton);
 
     layoutButtons->addLayout(layoutButtonsHOne);
     layoutButtons->addLayout(layoutButtonsHTwo);
@@ -84,6 +83,7 @@ void MainWindow::setupConnections()
         manager->getTitle(inputURL->text());
 
         setupBeforeDownload(false);
+        stopButton->show();
     }); 
     
     connect(musicButton, &QPushButton::clicked, [this] () {
@@ -119,7 +119,7 @@ void MainWindow::setupConnections()
     connect(stopForNextButton, &QPushButton::clicked, [this] () {
         logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopForNextButton->text()));
 
-        manager->setIsStoppedForNext(true);
+        manager->setIsStopped(true);
         setupBeforeDownload(false);
     });
 
@@ -147,14 +147,12 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
     logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(button->text()));
     logs->log("Wait...");
 
-    setupBeforeDownload(true);
-
     QString url = inputURL->text();
     QString folder = inputFolder->text();
 
     if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-    manager->setIsStoppedForNext(false);
+    manager->setIsStopped(false);
 
     for(QListWidgetItem *item : logs->getItems()) 
     {
@@ -173,10 +171,6 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
 void MainWindow::setupBeforeDownload(bool set)
 {
     if (set) {
-        lyricsButton->hide();
-        musicButton->hide();
-        titleButton->hide();
-
         clearListButton->hide();
         selectAllButton->hide();
         deselectAllButton->hide();
@@ -186,10 +180,6 @@ void MainWindow::setupBeforeDownload(bool set)
     } else {
         stopButton->hide();
         stopForNextButton->hide();
-
-        lyricsButton->show();
-        musicButton->show();
-        titleButton->show();
 
         clearListButton->show();
         selectAllButton->show();

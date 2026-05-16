@@ -13,7 +13,7 @@ Note: If using source code, ensure yt-dlp, ffprobe, ffmpeg and syncedlyrics_bin 
  Нажмите Lyrics download(s), если вам нужны только тексты песен.
  Используйте кнопку Playlist для обработки целых списков воспроизведения.
 
-########################################################################################################################
+##############################################################################################
 
 A simple app for searching and downloading music and synchronized lyrics (.lrc).
 
