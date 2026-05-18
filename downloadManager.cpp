@@ -14,7 +14,6 @@ downloadManager::downloadManager(QObject *parent)
     : QObject(parent)
 {
     isStopped = false;
-    currentDownloadIndex = -1;
 }
 
 void downloadManager::getTitle(QString url, QString folder, bool startAfter, bool lyrics)
@@ -34,7 +33,7 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
             song.name  = Names[i + 2];
             
             bool exist = false;
-            for(songInfo songItem : Songs) 
+            for(songInfo &songItem : Songs) 
                 if (songItem.id == song.id) {
                     exist = true;
                     break;
@@ -52,7 +51,7 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, startAfter, folder, lyrics, process] (int exitCode) {
+            [this, startAfter, folder, lyrics, process] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
 
@@ -79,45 +78,34 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
     process->start(appDir + "/yt-dlp", args);
 }
 
-
-void downloadManager::startDownload(QString folder, bool lyrics)
+void downloadManager::startDownload(QString folder, bool isLyrics)
 {
-    currentDownloadIndex = 0;
-    emit setupDownloadRequested(true);
-
     if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     
     emit logMessageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
+    emit setupDownloadRequested(true);
 
-    if (lyrics) 
-        nextDownload(folder, true);
-    else 
-        nextDownload(folder, false);
-}
+    for(int i = 0; i < Songs.size() && !isStopped; ++i)
+    {
+        songInfo &song = Songs[i];
+        if (song.isChecked == false)  continue;
+        
+        if (isLyrics)
+            lyricsDownload(song, folder);
+        else
+            songDownload(song, folder);
 
-void downloadManager::nextDownload(QString folder, bool isLyrics)
-{
-    if (isStopped)  return;
+        QEventLoop loop;
 
-    if (currentDownloadIndex >= Songs.size()) {
-        emit logMessageRequested(QString("<span style='color:silver;'>All Done!</span>"));
-        currentDownloadIndex = -1;
-        emit setupDownloadRequested(false);
-        return;
+        if (currentProcess)
+            connect(currentProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
+                    &loop, &QEventLoop::quit);
+
+        loop.exec();
     }
 
-    songInfo &song = Songs[currentDownloadIndex];
-    if (song.isChecked == false) {
-        currentDownloadIndex++;
-        nextDownload(folder);
-        return;
-    }
-
-    if (isLyrics)
-        lyricsDownload(song, folder);
-    else
-        songDownload(song, folder);
-    
+    emit logMessageRequested(QString("<span style='color:silver;'>All Done!</span>"));
+    emit setupDownloadRequested(false);
 }
 
 void downloadManager::lyricsDownload(songInfo &song, QString folder)
@@ -131,8 +119,6 @@ void downloadManager::lyricsDownload(songInfo &song, QString folder)
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, process] (int exitCode) {
         cleanupProcess(exitCode);
-        currentDownloadIndex++;
-        nextDownload(folder, true);
     });
 
     QString appDir = qApp->applicationDirPath();
@@ -149,7 +135,7 @@ void downloadManager::lyricsDownload(songInfo &song, QString folder)
          << "-o" << folder + "/" + songName + ".lrc"
          << "--verbose";
 
-    emit logMessageRequested(QString("<span style='color:silver;'>Lyrics: %2</span>").arg(songName));
+    emit logMessageRequested(QString("<span style='color:silver;'>Lyrics: %1</span>").arg(songName));
 
     process->start(appDir + "/syncedlyrics_bin", args);
 
@@ -167,8 +153,6 @@ void downloadManager::songDownload(songInfo &song, QString folder)
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, process] (int exitCode) {
         cleanupProcess(exitCode);
-        currentDownloadIndex++;
-        nextDownload(folder);
     });
 
     QString appDir = qApp->applicationDirPath();
@@ -193,7 +177,7 @@ void downloadManager::songDownload(songInfo &song, QString folder)
          << "--"
          << song.id;
 
-    emit logMessageRequested(QString("<span style='color:silver;'>Song: %2</span>").arg(songName));
+    emit logMessageRequested(QString("<span style='color:silver;'>Song: %1</span>").arg(songName));
 
     process->start(appDir + "/yt-dlp", args);
 
@@ -229,12 +213,14 @@ void downloadManager::setupProcessLogging(QProcess *process, bool isLyrics)
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
 
-        output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
-        output.replace("INFO:", QString("<span style='color:silver;'>INFO: </span>"));
-        output.replace("WARNING:", QString("<span style='color:DarkOrange;'>WARNING:</span>"));
-        output.replace("ERROR:", QString("<span style='color:IndianRed;'>ERROR:</span>"));
+        if (!output.isEmpty()) {
+            output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
+            output.replace("INFO:", QString("<span style='color:silver;'>INFO: </span>"));
+            output.replace("WARNING:", QString("<span style='color:DarkOrange;'>WARNING:</span>"));
+            output.replace("ERROR:", QString("<span style='color:IndianRed;'>ERROR:</span>"));
 
-        emit logMessageRequested(output);
+            emit logMessageRequested(output);
+        }
     });
 }
 
@@ -264,18 +250,21 @@ void downloadManager::stopDownload()
     } else
         emit logMessageRequested(QString("<span style='color:silver;'>No active processes</span>"));
 
-    if (currentProcess)  currentProcess->deleteLater();
-
-    currentProcess = nullptr;
+    if (currentProcess) {
+        currentProcess->deleteLater();
+        currentProcess = nullptr;
+    }
 }
 
 void downloadManager::updateSongCheckState(QString &id, bool isChecked)
 {
     for(int i = 0; i < Songs.size(); ++i)
+    {
         if (Songs[i].id == id) {
             Songs[i].isChecked = isChecked;
             break;
         }
+    }
 }
 
 void downloadManager::setIsStopped(bool set)
@@ -285,87 +274,5 @@ void downloadManager::setIsStopped(bool set)
 
 void downloadManager::clearSongs()
 {
-    currentDownloadIndex = -1;
     Songs.clear();
 }
-
-
-/*
-void logView::nextDowload(QString folder, QString processName)
-{
-    if (isStoppedForNext)  return;
-
-    if (currentDowloadIndex >= Items.size()) {
-        this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "All Done!"));
-        currentDowloadIndex = -1;
-        return;
-    }
-
-    QListWidgetItem *item = Items[currentDowloadIndex];
-    if (item->checkState() != Qt::Checked) {
-        currentDowloadIndex++;
-        nextDowload(folder, processName);
-        return;
-    }
-
-    process = new QProcess(this);
-    
-    connect(process, &QProcess::readyReadStandardOutput, [this] () {
-        QByteArray data = process->readAllStandardOutput();
-        QString output = QString::fromUtf8(data).trimmed();
-
-        if (!output.isEmpty()) {
-            this->log(QString("<span style='color:%1;'>%2</span>").arg("white", "INFO: ") + output);
-        }
-    });
-
-    connect(process, &QProcess::readyReadStandardError, [this] () {
-        QByteArray data = process->readAllStandardError();
-        QString output = QString::fromUtf8(data);
-
-        this->log(QString("<span style='color:%1;'>%2</span>").arg("red", "ERROR: ") + output);
-    });
-
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, folder, processName] (int exitCode) {
-        QString output = (exitCode == 0 ? "Done!" : "Error");
-        QString message = QString("<span style='color:%1;'>%2</span>").arg("white", output);
-        this->log(message + output);
-
-        process->deleteLater();
-        currentDowloadIndex++;
-        nextDowload(folder, processName);
-    });
-
-    QString appDir = qApp->applicationDirPath();
-    setWorking();
-
-    QString songName = item->text();
-
-    QStringList args;
-
-    if (processName == "yt-dlp") {
-        args << "--ffmpeg-location" << appDir
-            << "--buffer-size" << "64K"
-            << "--concurrent-fragments" << "5"
-            << "--no-mtime"
-            << "--no-playlist" 
-            << "--newline"
-            << "-x" 
-            << "--audio-format" << "mp3" 
-            << "--audio-quality" << "0"
-            << "-o" << folder + "/" + songName + ".%(ext)s"
-            << "--"
-            << item->data(Qt::UserRole).toString();
-    } 
-    if (processName == "syncedlyrics_bin") {
-        args << songName
-             << "-p" << "Lrclib" << "NetEase" << "Megalobiz" << "Musixmatch"
-             << "-o" << folder + "/" + songName + ".lrc"
-             << "--verbose";
-    }
-
-    log(QString("<span style='color:%1;'>%2</span>").arg("white", processName == "yt-dlp" ? "Song: " : "Lyrics: " + songName));
-    
-    process->start(appDir + "/" + processName, args);
-}
-*/
