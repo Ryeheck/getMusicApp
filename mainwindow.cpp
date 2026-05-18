@@ -2,9 +2,7 @@
 #include "logView.h"
 #include "downloadManager.h"
 
-#include <QProcess>
 #include <QString>
-#include <QDateTime>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>

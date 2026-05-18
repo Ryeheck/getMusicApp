@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QList>
 
 struct songInfo {
     QString id;
@@ -40,7 +41,7 @@ private:
     void setWorking(QProcess *process);
     void setupProcessLogging(QProcess *process, bool isLyrics = false);
     void cleanupProcess(int exitCode);
-    
+
     bool isStopped;
     QList<songInfo> Songs;
     QProcess *currentProcess;

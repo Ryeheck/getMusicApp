@@ -7,7 +7,6 @@
 #include <QList>
 #include <QPushButton>
 #include <QHBoxLayout>
-#include <QProcess>
 
 class logView : public QWidget
 {

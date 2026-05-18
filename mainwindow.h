@@ -5,8 +5,6 @@
 #include "downloadManager.h"
 
 #include <QMainWindow>
-#include <QListWidgetItem>
-#include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QBoxLayout>

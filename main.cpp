@@ -1,12 +1,6 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <QVBoxLayout>
-#include <QLineEdit>
-#include <QPlainTextEdit>
-#include <QPushButton>
-#include <QListWidgetItem>
-#include <QListWidget>
 
 int main(int argc, char *argv[])
 {
