@@ -114,7 +114,7 @@ void downloadManager::lyricsDownload(songInfo &song, QString folder)
     currentProcess = process;
     setWorking(process);
 
-    setupProcessLogging(process, true);
+    // setupProcessLogging(process, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, process] (int exitCode) {
@@ -148,7 +148,9 @@ void downloadManager::songDownload(songInfo &song, QString folder)
     currentProcess = process;
     setWorking(process);
 
-    setupProcessLogging(process);
+    // setupProcessLogging(process);
+    
+    setupProcessBar(process, false);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, process] (int exitCode) {
@@ -193,6 +195,22 @@ void downloadManager::cleanupProcess(int exitCode)
         currentProcess->deleteLater();
         currentProcess = nullptr;
     }
+}
+
+void downloadManager::setupProcessBar(QProcess *process, bool isLyrics)
+{
+    connect(process, &QProcess::readyReadStandardOutput, [this, process, isLyrics] () {
+        QByteArray data = process->readAllStandardOutput();
+        QString output = QString::fromUtf8(data).trimmed();
+
+        QRegularExpression percentReg(R"(\[download\]\s+(\d+(?:\.\d+)?)\s*%)");
+        QRegularExpressionMatch match = percentReg.match(output);
+
+        if (match.hasMatch()) {
+            int percent = static_cast<int>(match.captured(1).toFloat());
+            emit progressBarRequested(percent);
+        }
+    });
 }
 
 void downloadManager::setupProcessLogging(QProcess *process, bool isLyrics)

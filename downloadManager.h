@@ -20,7 +20,8 @@ signals:
     void logMessageRequested(const QString &message);
     void setupDownloadRequested(bool set);
     void songAdded(QString name, QString id);
-
+    void progressBarRequested(const int percent);
+    
 public:
     explicit downloadManager(QObject *parent = nullptr);
 
@@ -38,6 +39,7 @@ public:
     int getSongsCount();
 
 private:
+    void setupProcessBar(QProcess *process, bool isLyrics = false);
     void setWorking(QProcess *process);
     void setupProcessLogging(QProcess *process, bool isLyrics = false);
     void cleanupProcess(int exitCode);

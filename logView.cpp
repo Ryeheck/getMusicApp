@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QDir>
 #include <QObject>
+#include <QProgressBar>
 
 void logView::getLog(QPlainTextEdit *plainText, QListWidget *listWidget)
 { 
@@ -27,10 +28,16 @@ logView::logView(QWidget *parent)
     logText->setReadOnly(true);
 
     listWidget = new QListWidget(this);
-    HLayout = new QHBoxLayout(this);
+    progressBar = new QProgressBar(this);
+    
+    VLayout = new QVBoxLayout(this);
+    HLayout = new QHBoxLayout();
 
     HLayout->addWidget(logText);
     HLayout->addWidget(listWidget);
+    
+    VLayout->addLayout(HLayout);
+    VLayout->addWidget(progressBar);
 }
 
 void logView::addPlaylistItem(QListWidgetItem *item)
@@ -88,10 +95,11 @@ void logView::clearDeselect()
 
 void logView::log(const QString &message)
 {
-    logText->setReadOnly(true);
+    QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
+    logText->appendHtml("[" + time + "] " + message);
+}
 
-    if (logText) {
-        QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
-        logText->appendHtml("[" + time + "] " + message);
-    }
+void logView::updateProgressBar(const int percent)
+{
+    progressBar->setValue(percent);
 }

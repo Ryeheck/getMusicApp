@@ -73,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::setupConnections()
 {
-
     connect(titleButton, &QPushButton::clicked, [this] () {
         logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(titleButton->text()));
         logs->log("Wait...");
@@ -125,6 +124,7 @@ void MainWindow::setupConnections()
         handleDownload(lyricsButton, true);
     });
 
+    connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
     connect(manager, &downloadManager::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
 

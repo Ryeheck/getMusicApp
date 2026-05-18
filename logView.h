@@ -7,6 +7,7 @@
 #include <QList>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QProgressBar>
 
 class logView : public QWidget
 {
@@ -20,6 +21,7 @@ public:
     // ~logView() override;
 
     void log(const QString &message = "");
+    void updateProgressBar(const int percent);
     void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
     void addPlaylistItem(QListWidgetItem *item);
     void setSelectAllItem();
@@ -33,9 +35,11 @@ public:
 
 private:
     QHBoxLayout *HLayout;
+    QVBoxLayout *VLayout;
     QList<QListWidgetItem *> Items;
     QListWidget *listWidget;
     QPlainTextEdit *logText;
+    QProgressBar *progressBar;
 };
 
 #endif // LOGVIEW_H

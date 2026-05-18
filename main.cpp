@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     
     qApp->setStyleSheet(
     "QWidget { background-color: black; color: gray; }"      // All windows
-    "QPushButton { "
+    "QPushButton {"
     "   background-color: gray; "
     "   color: white; "
     "   border: none; "
@@ -20,8 +20,18 @@ int main(int argc, char *argv[])
     "   min-height: 25px; "
     "   padding: 5px; "
     "}"                                                     // All buttons
-    "QPushButton:hover { background-color: darkgray; }"    // При наведении
-    "QProcess { color: green; }"
+    "QPushButton:hover { background-color: darkgray; }"    // При наведении на buttonssss
+    "QProgressBar {"                                       
+    "   border: 1px solid #0e0e0e; " 
+    "   border-radius: 4px; "         
+    "   background-color: #000000; "  
+    "   text-align: center; "         
+    "   color: white; "               
+    "}"
+    "QProgressBar::chunk {"
+    "   background-color: #0e0e0e; "  
+    "   border-radius: 3px; "         
+    "}"
     );
     
     windowMain.show();

@@ -204,6 +204,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QListWidgetItem \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QMainWindow \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPlainTextEdit \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QProgressBar \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPushButton \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractbutton.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
@@ -221,6 +222,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlistwidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qmainwindow.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qplaintextedit.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qprogressbar.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qpushbutton.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qrubberband.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qsizepolicy.h \
