@@ -1,6 +1,8 @@
 #ifndef LOGVIEW_H
 #define LOGVIEW_H
 
+#include "downloadManager.h"
+
 #include <QPlainTextEdit>
 #include <QListWidgetItem>
 #include <QListWidget>
@@ -8,6 +10,7 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QProgressBar>
+#include <QTableWidget>
 
 class logView : public QWidget
 {
@@ -22,24 +25,27 @@ public:
 
     void log(const QString &message = "");
     void updateProgressBar(const int percent);
-    void getLog(QPlainTextEdit *plainText, QListWidget *listWidget);
-    void addPlaylistItem(QListWidgetItem *item);
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
     void clearSelect();
     void clearDeselect();
 
-    QList<QListWidgetItem *> getItems();
-    int getItemsCount();
+    QList<QTableWidgetItem *> getItemsFromColumn(int column);
+    int getTableWidgetCount();
+
+    int findRowById(const QString &id);
+    void removeAlso(int row);
+    void addItem(const songInfo *song);
+    void updateStatus(int row, const QString &newStatus);
+    void setWidget(int row, QWidget *widget);
 
 private:
     QHBoxLayout *HLayout;
     QVBoxLayout *VLayout;
-    QList<QListWidgetItem *> Items;
-    QListWidget *listWidget;
     QPlainTextEdit *logText;
     QProgressBar *progressBar;
+    QTableWidget *tableWidget;
 };
 
 #endif // LOGVIEW_H

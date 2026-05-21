@@ -7,8 +7,10 @@
 
 struct songInfo {
     QString id;
-    QString title;
     QString name;
+    QString status;
+    long long size;
+    QWidget *widget;
     bool isChecked = false;
 };
 
@@ -18,24 +20,26 @@ class downloadManager : public QObject
 
 signals:
     void logMessageRequested(const QString &message);
-    void setupDownloadRequested(bool set);
-    void songAdded(QString name, QString id);
+    void setupDownloadRequested(const bool set);
+    void songAdded(const songInfo *song);
     void progressBarRequested(const int percent);
-    
+    void updateStatusRequested(const songInfo &song);
+
 public:
     explicit downloadManager(QObject *parent = nullptr);
+    ~downloadManager() override;
 
-    void getTitle(QString url, QString folder = "", bool startAfter = false, bool lyrics = false);
+    void getSongs(QString url, QString folder = "", bool startAfter = false, bool lyrics = false);
     void startDownload(QString folder = "", bool isLyrics = false);
     void songDownload(songInfo &song, QString folder);
     void lyricsDownload(songInfo &song, QString folder);
 
+    static QString formatBytes(long long bytes);
     void updateSongCheckState(QString &id, bool isChecked);
     void clearSongs();
     void stopDownload();
     void setIsStopped(bool set);
 
-    QList<songInfo> getSongs();
     int getSongsCount();
 
 private:
@@ -45,7 +49,7 @@ private:
     void cleanupProcess(int exitCode);
 
     bool isStopped;
-    QList<songInfo> Songs;
+    QList<songInfo *> Songs;
     QProcess *currentProcess;
 };
 

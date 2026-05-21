@@ -206,6 +206,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPlainTextEdit \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QProgressBar \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPushButton \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QTableWidget \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractbutton.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemview.h \
@@ -230,6 +231,8 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qstyle.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qstyleoption.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtabbar.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtableview.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtablewidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtabwidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtextedit.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgets-config.h \

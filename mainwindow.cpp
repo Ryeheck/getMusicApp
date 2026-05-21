@@ -69,6 +69,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     layoutMain->addLayout(layoutButtons);
 
     setupConnections();
+
+    /*
+    ПРИМЕР:
+    
+    QPushButton *newbtn = new QPushButton("delete");
+    logs->addItem("nirvana", "40vm", "deleted", newbtn);
+
+    connect(newbtn, &QPushButton::clicked, [this] () {
+        logs->removeAlso(0);
+    });
+    */
 }
 
 void MainWindow::setupConnections()
@@ -77,7 +88,7 @@ void MainWindow::setupConnections()
         logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(titleButton->text()));
         logs->log("Wait...");
         
-        manager->getTitle(inputURL->text());
+        manager->getSongs(inputURL->text());
 
         setupBeforeDownload(false);
         stopButton->show();
@@ -128,15 +139,15 @@ void MainWindow::setupConnections()
     connect(manager, &downloadManager::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
 
-    connect(manager, &downloadManager::songAdded, this, [this] (QString name, QString id) {
-        QListWidgetItem *item = new QListWidgetItem(name);
+    connect(manager, &downloadManager::updateStatusRequested, this, 
+            [this] (const songInfo &song) {
+        int row = logs->findRowById(song.id);
+        logs->updateStatus(row, song.status);
+    });
 
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        item->setCheckState(Qt::Unchecked);
-        item->setForeground(Qt::white);
-        item->setData(Qt::UserRole, id);
-
-        logs->addPlaylistItem(item);
+    connect(manager, &downloadManager::songAdded, this, 
+            [this] (const songInfo *song) {
+        logs->addItem(song);
     });
 }
 
@@ -152,7 +163,7 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
 
     manager->setIsStopped(false);
 
-    for(QListWidgetItem *item : logs->getItems()) 
+    for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 
     {
         QString id = item->data(Qt::UserRole).toString();
         bool isChecked = item->checkState() == Qt::Checked;
@@ -160,8 +171,8 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
         manager->updateSongCheckState(id, isChecked);
     }
 
-    if (!logs->getItemsCount())  
-        manager->getTitle(url, folder, true, isLyrics);
+    if (!logs->getTableWidgetCount())
+        manager->getSongs(url, folder, true, isLyrics);
     else                         
         manager->startDownload(folder, isLyrics);
 }

@@ -7,6 +7,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QDir>
+#include <QString>
 
 #define MAX_SONGS   50
 
@@ -16,7 +17,21 @@ downloadManager::downloadManager(QObject *parent)
     isStopped = false;
 }
 
-void downloadManager::getTitle(QString url, QString folder, bool startAfter, bool lyrics)
+downloadManager::~downloadManager()
+{
+    if (currentProcess != nullptr) {
+        currentProcess->kill();
+        currentProcess->waitForFinished(1000);
+    }
+    for(songInfo *song : Songs)
+    {
+        if (song != nullptr)  delete song;
+    }
+
+    Songs.clear();
+}
+
+void downloadManager::getSongs(QString url, QString folder, bool startAfter, bool lyrics)
 {
     QProcess *process = new QProcess(this);
     currentProcess = process;
@@ -24,29 +39,34 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
     connect(process, &QProcess::readyReadStandardOutput, [this, url, process] () {
         QString output = process->readAllStandardOutput();
 
-        QStringList Names = output.split('\n', Qt::SkipEmptyParts);
+        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
         
-        for(int i = 0; i + 2 < Names.size() && (i < MAX_SONGS * 3); i += 3) {
-            songInfo song;
-            song.title = Names[i];
-            song.id    = Names[i + 1];
-            song.name  = Names[i + 2];
-            
+        for(int i = 0; i + 3 < lines.size() && (i < MAX_SONGS * 4); i += 4) 
+        {
+            songInfo *song = new songInfo();
+
+            if (lines[i + 3] == "NA - NA")
+                song->name = lines[i + 1];
+            else
+                song->name = lines[i + 3];
+
+            song->id     = lines[i + 2];
+            song->size   = lines[i].toLongLong();
+            song->status = "";
+
             bool exist = false;
-            for(songInfo &songItem : Songs) 
-                if (songItem.id == song.id) {
+            for(songInfo *songItem : Songs) 
+                if (songItem->id == song->id) {
                     exist = true;
                     break;
                 }
 
             if (!exist) {
                 Songs.append(song);
-
-                if (song.name == "NA - NA")
-                    emit songAdded(song.title, song.id);
-                else
-                    emit songAdded(song.name, song.id);
-            }
+                
+                emit songAdded(song);
+            } else
+                delete song;
         }
     });
 
@@ -60,7 +80,7 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
         process->deleteLater();
 
         if (startAfter && !Songs.isEmpty()) {
-            Songs[0].isChecked = true;
+            Songs[0]->isChecked = true;
             startDownload(folder, lyrics);
         }
         
@@ -69,8 +89,7 @@ void downloadManager::getTitle(QString url, QString folder, bool startAfter, boo
     QString appDir = qApp->applicationDirPath();
     QStringList args;
     args // << "--flat-playlist"
-         << "--get-id" << "--get-filename" << "--get-title"
-         << "-o" << "%(artist)s - %(track)s"
+         << "-O" << "%(filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
          << url;
 
     // yt-dlp --flat-playlist --get-id --get-title --get-filename -o "%(artist)s - %(track)s" https://youtube.com
@@ -87,7 +106,7 @@ void downloadManager::startDownload(QString folder, bool isLyrics)
 
     for(int i = 0; i < Songs.size() && !isStopped; ++i)
     {
-        songInfo &song = Songs[i];
+        songInfo &song = *Songs[i];
         if (song.isChecked == false)  continue;
         
         if (isLyrics)
@@ -102,6 +121,8 @@ void downloadManager::startDownload(QString folder, bool isLyrics)
                     &loop, &QEventLoop::quit);
 
         loop.exec();
+
+        emit updateStatusRequested(song);
     }
 
     emit logMessageRequested(QString("<span style='color:silver;'>All Done!</span>"));
@@ -114,20 +135,20 @@ void downloadManager::lyricsDownload(songInfo &song, QString folder)
     currentProcess = process;
     setWorking(process);
 
-    // setupProcessLogging(process, true);
+    setupProcessLogging(process, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process] (int exitCode) {
+                [this, folder, process, &song] (int exitCode) {
         cleanupProcess(exitCode);
+
+        if (exitCode)
+            song.status = "Done";
+        else
+            song.status = "Error";
     });
 
     QString appDir = qApp->applicationDirPath();
-    QString songName;
-
-    if (song.name == "NA - NA")
-        songName = song.title;
-    else
-        songName = song.name;
+    QString songName = song.name;
 
     QStringList args;
     args << songName
@@ -153,17 +174,17 @@ void downloadManager::songDownload(songInfo &song, QString folder)
     setupProcessBar(process, false);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process] (int exitCode) {
+                [this, folder, process, &song] (int exitCode) {
         cleanupProcess(exitCode);
+
+        if (!exitCode)
+            song.status = "Done";
+        else
+            song.status = "Error";
     });
 
     QString appDir = qApp->applicationDirPath();
-    QString songName;
-
-    if (song.name == "NA - NA")
-        songName = song.title;
-    else
-        songName = song.name;
+    QString songName = song.name;
 
     QStringList args;
     args << "--ffmpeg-location" << appDir
@@ -207,7 +228,7 @@ void downloadManager::setupProcessBar(QProcess *process, bool isLyrics)
         QRegularExpressionMatch match = percentReg.match(output);
 
         if (match.hasMatch()) {
-            int percent = static_cast<int>(match.captured(1).toFloat());
+            int percent = static_cast<int >(match.captured(1).toFloat());
             emit progressBarRequested(percent);
         }
     });
@@ -242,7 +263,6 @@ void downloadManager::setupProcessLogging(QProcess *process, bool isLyrics)
     });
 }
 
-
 void downloadManager::setWorking(QProcess *process)
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -254,7 +274,6 @@ void downloadManager::setWorking(QProcess *process)
     process->setProcessEnvironment(env);
     process->setWorkingDirectory(QDir::tempPath());
 }
-
 
 void downloadManager::stopDownload()
 {
@@ -278,8 +297,8 @@ void downloadManager::updateSongCheckState(QString &id, bool isChecked)
 {
     for(int i = 0; i < Songs.size(); ++i)
     {
-        if (Songs[i].id == id) {
-            Songs[i].isChecked = isChecked;
+        if (Songs[i]->id == id) {
+            Songs[i]->isChecked = isChecked;
             break;
         }
     }
@@ -292,5 +311,27 @@ void downloadManager::setIsStopped(bool set)
 
 void downloadManager::clearSongs()
 {
+    for(songInfo *song : Songs)
+    {
+        if (song != nullptr)  delete song;
+    }
+
     Songs.clear();
+}
+
+QString downloadManager::formatBytes(long long bytes)
+{
+    double num = bytes;
+    QStringList format = {"B", "KB", "MB", "GB"};
+    int i = 0;
+
+    while(num >= 1024 && i < format.size())
+    {
+        num /= 1024;
+        i++;
+    }
+
+    return QString::number(num, 'f', 1) + " " + format[i];
+    
+    
 }
