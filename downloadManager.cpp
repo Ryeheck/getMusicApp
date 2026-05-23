@@ -140,7 +140,7 @@ void downloadManager::lyricsDownload(songInfo *song, QString folder)
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(process, pBar);
+        setupProgressBar(process, pBar, &song->status);
     else 
         setupProcessLogging(process, true);
 
@@ -148,9 +148,9 @@ void downloadManager::lyricsDownload(songInfo *song, QString folder)
                 [this, folder, process, song] (int exitCode) {
         cleanupProcess(exitCode);
 
-        if (!exitCode)
+        if (!exitCode && song->status == "Updating")
             song->status = "Done";
-        else
+        else if (exitCode)
             song->status = "Error";
     });
 
@@ -177,7 +177,7 @@ void downloadManager::songDownload(songInfo *song, QString folder)
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(process, pBar, &song->status);
+        setupProgressBar(process, pBar);
     else
         setupProcessLogging(process);
 
@@ -259,7 +259,7 @@ void downloadManager::setupProgressBar(QProcess *process, QProgressBar *pBar, QS
             
             if (search == "No suitable lyrics found for" && status) {
                 percent = 100;
-                *status = "Not Lyric";
+                *status = "Not lyric";
             } else if(search == "Lyrics found" || percent > 100)  
                 percent = 100;  
             
