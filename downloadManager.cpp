@@ -230,9 +230,7 @@ void downloadManager::setupProgressBar(QProcess *process, QProgressBar *pBar, QS
 {
     if (!pBar)  return;
     int *stepCount = new int(0);
-
-    // status not working
-
+    
     connect(process, &QProcess::readyReadStandardOutput, [this, process, pBar] () {
         QByteArray data = process->readAllStandardOutput();
         QString output = QString::fromUtf8(data).trimmed();

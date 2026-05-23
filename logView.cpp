@@ -82,26 +82,9 @@ int logView::getTableWidgetCount()
 
 void logView::clearAll()
 {
-    tableWidget->clear();
+    tableWidget->clearContents();
+    tableWidget->setRowCount(0);
 }
-
-/*
-void logView::clearSelect()
-{
-    for(QListWidgetItem *item : Items)
-    {
-        if (item->checkState() == Qt::Checked)  
-    }
-}
-
-void logView::clearDeselect()
-{
-    for(QListWidgetItem *item : Items)
-    {
-        if (item->checkState() == Qt::Unchecked)  
-    }
-}
-*/
 
 void logView::log(const QString &message)
 {
