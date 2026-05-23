@@ -8,6 +8,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QString>
+#include <QProgressBar>
 
 #define MAX_SONGS   50
 
@@ -53,6 +54,7 @@ void downloadManager::getSongs(QString url, QString folder, bool startAfter, boo
             song->id     = lines[i + 2];
             song->size   = lines[i].toLongLong();
             song->status = "";
+            song->widget = new QProgressBar();
 
             bool exist = false;
             for(songInfo *songItem : Songs) 
@@ -63,7 +65,6 @@ void downloadManager::getSongs(QString url, QString folder, bool startAfter, boo
 
             if (!exist) {
                 Songs.append(song);
-                
                 emit songAdded(song);
             } else
                 delete song;
@@ -106,16 +107,19 @@ void downloadManager::startDownload(QString folder, bool isLyrics)
 
     for(int i = 0; i < Songs.size() && !isStopped; ++i)
     {
-        songInfo &song = *Songs[i];
-        if (song.isChecked == false)  continue;
-        
+        songInfo *song = Songs[i];
+
+        if (song->isChecked == false)  continue;
+
+        song->status = "Updating";
+        emit updateStatusRequested(song);
+
         if (isLyrics)
             lyricsDownload(song, folder);
         else
             songDownload(song, folder);
 
         QEventLoop loop;
-
         if (currentProcess)
             connect(currentProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                     &loop, &QEventLoop::quit);
@@ -129,26 +133,29 @@ void downloadManager::startDownload(QString folder, bool isLyrics)
     emit setupDownloadRequested(false);
 }
 
-void downloadManager::lyricsDownload(songInfo &song, QString folder)
+void downloadManager::lyricsDownload(songInfo *song, QString folder)
 {
     QProcess *process = new QProcess(this);
     currentProcess = process;
     setWorking(process);
-
-    setupProcessLogging(process, true);
+    
+    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
+        setupProgressBar(process, pBar);
+    else 
+        setupProcessLogging(process, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process, &song] (int exitCode) {
+                [this, folder, process, song] (int exitCode) {
         cleanupProcess(exitCode);
 
-        if (exitCode)
-            song.status = "Done";
+        if (!exitCode)
+            song->status = "Done";
         else
-            song.status = "Error";
+            song->status = "Error";
     });
 
     QString appDir = qApp->applicationDirPath();
-    QString songName = song.name;
+    QString songName = song->name;
 
     QStringList args;
     args << songName
@@ -163,28 +170,29 @@ void downloadManager::lyricsDownload(songInfo &song, QString folder)
     // syncedlyrics [args] songName
 }
 
-void downloadManager::songDownload(songInfo &song, QString folder)
+void downloadManager::songDownload(songInfo *song, QString folder)
 {
     QProcess *process = new QProcess(this);
     currentProcess = process;
     setWorking(process);
-
-    // setupProcessLogging(process);
     
-    setupProcessBar(process, false);
+    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
+        setupProgressBar(process, pBar, &song->status);
+    else
+        setupProcessLogging(process);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process, &song] (int exitCode) {
+                [this, folder, process, song] (int exitCode) {
         cleanupProcess(exitCode);
 
-        if (!exitCode)
-            song.status = "Done";
-        else
-            song.status = "Error";
+        if (!exitCode && song->status == "Updating")
+            song->status = "Done";
+        else if (exitCode)
+            song->status = "Error";
     });
 
     QString appDir = qApp->applicationDirPath();
-    QString songName = song.name;
+    QString songName = song->name;
 
     QStringList args;
     args << "--ffmpeg-location" << appDir
@@ -198,7 +206,7 @@ void downloadManager::songDownload(songInfo &song, QString folder)
          << "--audio-quality" << "0"
          << "-o" << folder + "/" + songName + ".%(ext)s"
          << "--"
-         << song.id;
+         << song->id;
 
     emit logMessageRequested(QString("<span style='color:silver;'>Song: %1</span>").arg(songName));
 
@@ -218,9 +226,14 @@ void downloadManager::cleanupProcess(int exitCode)
     }
 }
 
-void downloadManager::setupProcessBar(QProcess *process, bool isLyrics)
+void downloadManager::setupProgressBar(QProcess *process, QProgressBar *pBar, QString *status) 
 {
-    connect(process, &QProcess::readyReadStandardOutput, [this, process, isLyrics] () {
+    if (!pBar)  return;
+    int *stepCount = new int(0);
+
+    // status not working
+
+    connect(process, &QProcess::readyReadStandardOutput, [this, process, pBar] () {
         QByteArray data = process->readAllStandardOutput();
         QString output = QString::fromUtf8(data).trimmed();
 
@@ -229,8 +242,34 @@ void downloadManager::setupProcessBar(QProcess *process, bool isLyrics)
 
         if (match.hasMatch()) {
             int percent = static_cast<int >(match.captured(1).toFloat());
-            emit progressBarRequested(percent);
+            emit progressBarRequested(pBar, percent);
         }
+    });
+
+    connect(process, &QProcess::readyReadStandardError, [this, process, pBar, stepCount, status] () {
+        QByteArray data = process->readAllStandardError();
+        QString output = QString::fromUtf8(data);
+
+        QRegularExpression percentReg(R"((continuing search|Lyrics found|No suitable lyrics found for))");
+        QRegularExpressionMatch match = percentReg.match(output);
+
+        if (match.hasMatch()) {
+            QString search = match.captured(1);
+            int percent = ++(*stepCount) * 25;
+            
+            if (search == "No suitable lyrics found for" && status) {
+                percent = 100;
+                *status = "Not Lyric";
+            } else if(search == "Lyrics found" || percent > 100)  
+                percent = 100;  
+            
+            emit progressBarRequested(pBar, percent);
+        }
+    });
+
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
+                [stepCount] (int) {
+        delete stepCount;
     });
 }
 
@@ -332,6 +371,4 @@ QString downloadManager::formatBytes(long long bytes)
     }
 
     return QString::number(num, 'f', 1) + " " + format[i];
-    
-    
 }

@@ -85,7 +85,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 void MainWindow::setupConnections()
 {
     connect(titleButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(titleButton->text()));
         logs->log("Wait...");
         
         manager->getSongs(inputURL->text());
@@ -99,34 +98,24 @@ void MainWindow::setupConnections()
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(selectAllButton->text()));
-
         logs->setSelectAllItem();
     });    
 
     connect(deselectAllButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(deselectAllButton->text()));
-
         logs->setDeselectAllItem();
     });
 
     connect(clearListButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(clearListButton->text()));
-
         logs->clearAll();
         manager->clearSongs();
     });  
 
     connect(stopButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopButton->text()));
-
         manager->stopDownload();
         setupBeforeDownload(false);
     });
 
     connect(stopForNextButton, &QPushButton::clicked, [this] () {
-        logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(stopForNextButton->text()));
-
         manager->setIsStopped(true);
         setupBeforeDownload(false);
     });
@@ -138,11 +127,10 @@ void MainWindow::setupConnections()
     connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
     connect(manager, &downloadManager::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
-
     connect(manager, &downloadManager::updateStatusRequested, this, 
-            [this] (const songInfo &song) {
-        int row = logs->findRowById(song.id);
-        logs->updateStatus(row, song.status);
+            [this] (const songInfo *song) {
+        int row = logs->findRowById(song->id);
+        logs->updateStatus(row, song->status); // Сделай упдейт под все!!!
     });
 
     connect(manager, &downloadManager::songAdded, this, 
@@ -153,7 +141,6 @@ void MainWindow::setupConnections()
 
 void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
 {
-    logs->log(QString("<span style='color:silver;'>: You clicked to %1</span>").arg(button->text()));
     logs->log("Wait...");
 
     QString url = inputURL->text();

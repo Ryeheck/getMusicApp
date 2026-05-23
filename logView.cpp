@@ -21,7 +21,6 @@ logView::logView(QWidget *parent)
     logText->setReadOnly(true);
 
     tableWidget = new QTableWidget(this);
-    progressBar = new QProgressBar(this);
     
     VLayout = new QVBoxLayout(this);
     HLayout = new QHBoxLayout();
@@ -31,7 +30,7 @@ logView::logView(QWidget *parent)
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableWidget->verticalHeader()->setVisible(false);
 
-    QStringList headers = {"Name", "Size", "Status", "Действие"};
+    QStringList headers = {"Name", "Size", "Status", "Action"};
     tableWidget->setHorizontalHeaderLabels(headers);
     
     QHeaderView *header = tableWidget->horizontalHeader();
@@ -43,7 +42,6 @@ logView::logView(QWidget *parent)
     HLayout->addWidget(tableWidget);
     
     VLayout->addLayout(HLayout);
-    VLayout->addWidget(progressBar);
 }
 
 void logView::setSelectAllItem()
@@ -111,11 +109,15 @@ void logView::log(const QString &message)
     logText->appendHtml("[" + time + "] " + message);
 }
 
-void logView::updateProgressBar(const int percent)
+void logView::updateProgressBar(QProgressBar *progressBar, const int percent)
 {
     progressBar->setValue(percent);
 }
 
+int logView::getProgressBar(QProgressBar *progressBar)
+{
+    return progressBar->value();
+}
 
 void logView::addItem(const songInfo *song)
 {

@@ -24,7 +24,8 @@ public:
     // ~logView() override;
 
     void log(const QString &message = "");
-    void updateProgressBar(const int percent);
+    void updateProgressBar(QProgressBar *progressBar, const int percent);
+    int getProgressBar(QProgressBar *progressBar);
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
@@ -44,7 +45,6 @@ private:
     QHBoxLayout *HLayout;
     QVBoxLayout *VLayout;
     QPlainTextEdit *logText;
-    QProgressBar *progressBar;
     QTableWidget *tableWidget;
 };
 
