@@ -5,10 +5,11 @@
 #include <QListWidgetItem>
 #include <QApplication>
 #include <QProcessEnvironment>
-#include <QStandardPaths>
 #include <QDir>
 #include <QString>
 #include <QProgressBar>
+#include <QMap>
+#include <QUuid>
 
 #define MAX_SONGS   50
 
@@ -20,22 +21,24 @@ downloadManager::downloadManager(QObject *parent)
 
 downloadManager::~downloadManager()
 {
-    if (currentProcess != nullptr) {
-        currentProcess->kill();
-        currentProcess->waitForFinished(1000);
+    for(QProcess *process : _activeProcesses.values())
+    {
+        if(process)  process->deleteLater();
     }
+    _activeProcesses.clear();
+
     for(songInfo *song : Songs)
     {
         if (song != nullptr)  delete song;
     }
-
     Songs.clear();
 }
 
-void downloadManager::getSongs(QString url, QString folder, bool startAfter, bool lyrics)
+void downloadManager::getSongs(const QString &url, const QString &folder, bool startAfter, bool lyrics)
 {
+    QString taskId = QUuid::createUuid().toString();
     QProcess *process = new QProcess(this);
-    currentProcess = process;
+    _activeProcesses.insert(taskId, process);
 
     connect(process, &QProcess::readyReadStandardOutput, [this, url, process] () {
         QString output = process->readAllStandardOutput();
@@ -72,14 +75,14 @@ void downloadManager::getSongs(QString url, QString folder, bool startAfter, boo
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-            [this, startAfter, folder, lyrics, process] (int exitCode) {
+            [this, startAfter, folder, lyrics, taskId] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
-
-        if (currentProcess == process)  currentProcess = nullptr;
         
-        process->deleteLater();
-
+        if (QProcess *process = _activeProcesses.value(taskId)) {
+            process->deleteLater();
+            _activeProcesses.remove(taskId);
+        }
         if (startAfter && !Songs.isEmpty()) {
             Songs[0]->isChecked = true;
             startDownload(folder, lyrics);
@@ -98,12 +101,10 @@ void downloadManager::getSongs(QString url, QString folder, bool startAfter, boo
     process->start(appDir + "/yt-dlp", args);
 }
 
-void downloadManager::startDownload(QString folder, bool isLyrics)
+void downloadManager::startDownload(const QString &folder, bool isLyrics)
 {
-    if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    
     emit logMessageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
-    emit setupDownloadRequested(true);
+    emit activeTasksCountChanged(1);
 
     for(int i = 0; i < Songs.size() && !isStopped; ++i)
     {
@@ -118,40 +119,33 @@ void downloadManager::startDownload(QString folder, bool isLyrics)
             lyricsDownload(song, folder);
         else
             songDownload(song, folder);
-
-        QEventLoop loop;
-        if (currentProcess)
-            connect(currentProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                    &loop, &QEventLoop::quit);
-
-        loop.exec();
-
-        emit updateStatusRequested(song);
     }
-
-    emit logMessageRequested(QString("<span style='color:silver;'>All Done!</span>"));
-    emit setupDownloadRequested(false);
 }
 
-void downloadManager::lyricsDownload(songInfo *song, QString folder)
+void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
 {
+    QString taskId = QUuid::createUuid().toString();
     QProcess *process = new QProcess(this);
-    currentProcess = process;
+
+    _activeProcesses.insert(taskId, process);
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(process, pBar, &song->status);
+        setupProgressBar(taskId, pBar, &song->status);
     else 
-        setupProcessLogging(process, true);
+        setupProcessLogging(taskId, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process, song] (int exitCode) {
-        cleanupProcess(exitCode);
+                [this, folder, taskId, song] (int exitCode) {
+        cleanupProcess(taskId, exitCode);
 
         if (!exitCode && song->status == "Updating")
             song->status = "Done";
         else if (exitCode)
             song->status = "Error";
+        
+        emit updateStatusRequested(song);
+        emit activeTasksCountChanged(_activeProcesses.size());
     });
 
     QString appDir = qApp->applicationDirPath();
@@ -170,25 +164,30 @@ void downloadManager::lyricsDownload(songInfo *song, QString folder)
     // syncedlyrics [args] songName
 }
 
-void downloadManager::songDownload(songInfo *song, QString folder)
+void downloadManager::songDownload(songInfo *song, const QString &folder)
 {
+    QString taskId = QUuid::createUuid().toString();
     QProcess *process = new QProcess(this);
-    currentProcess = process;
+
+    _activeProcesses.insert(taskId, process);
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(process, pBar);
+        setupProgressBar(taskId, pBar);
     else
-        setupProcessLogging(process);
+        setupProcessLogging(taskId);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, process, song] (int exitCode) {
-        cleanupProcess(exitCode);
+                [this, folder, taskId, song] (int exitCode) {
+        cleanupProcess(taskId, exitCode);
 
         if (!exitCode && song->status == "Updating")
             song->status = "Done";
         else if (exitCode)
             song->status = "Error";
+
+        emit updateStatusRequested(song);
+        emit activeTasksCountChanged(_activeProcesses.size());
     });
 
     QString appDir = qApp->applicationDirPath();
@@ -215,21 +214,24 @@ void downloadManager::songDownload(songInfo *song, QString folder)
     // yt-dlp [args] (url/id)
 }
 
-void downloadManager::cleanupProcess(int exitCode)
+void downloadManager::cleanupProcess(const QString &id, int exitCode)
 {
     QString output = (exitCode == 0 ? "Done!" : "Error");
     emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
 
-    if (currentProcess) {
-        currentProcess->deleteLater();
-        currentProcess = nullptr;
+    if (_activeProcesses.contains(id)) {
+        if (QProcess *process = _activeProcesses.value(id))  process->deleteLater();
+
+        _activeProcesses.remove(id);
     }
 }
 
-void downloadManager::setupProgressBar(QProcess *process, QProgressBar *pBar, QString *status) 
+void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar, QString *status) 
 {
-    if (!pBar)  return;
+    if (!(pBar || _activeProcesses.contains(id)))  return;
     int *stepCount = new int(0);
+    
+    QProcess *process = _activeProcesses.value(id);
     
     connect(process, &QProcess::readyReadStandardOutput, [this, process, pBar] () {
         QByteArray data = process->readAllStandardOutput();
@@ -271,8 +273,12 @@ void downloadManager::setupProgressBar(QProcess *process, QProgressBar *pBar, QS
     });
 }
 
-void downloadManager::setupProcessLogging(QProcess *process, bool isLyrics)
+void downloadManager::setupProcessLogging(const QString &id, bool isLyrics)
 {
+    if (!_activeProcesses.contains(id))  return;
+
+    QProcess *process = _activeProcesses.value(id);
+
     connect(process, &QProcess::readyReadStandardOutput, [this, process, isLyrics] () {
         QByteArray data = process->readAllStandardOutput();
         QString output = QString::fromUtf8(data).trimmed();
@@ -316,21 +322,20 @@ void downloadManager::stopDownload()
 {
     isStopped = true;
 
-    if(currentProcess && currentProcess->state() == QProcess::Running) {
-        currentProcess->kill();
-        currentProcess->waitForFinished(2000);
+    for(QProcess *process : _activeProcesses.values())
+        if(process) {
+            process->disconnect();
+            if(process->state() == QProcess::Running)  process->kill();
 
-        emit logMessageRequested(QString("<span style='color:silver;'>User killed process</span>"));
-    } else
-        emit logMessageRequested(QString("<span style='color:silver;'>No active processes</span>"));
+            process->deleteLater();
 
-    if (currentProcess) {
-        currentProcess->deleteLater();
-        currentProcess = nullptr;
-    }
+            emit logMessageRequested(QString("<span style='color:silver;'>User killed process</span>"));
+        } else
+            emit logMessageRequested(QString("<span style='color:silver;'>No active processes</span>"));
+    _activeProcesses.clear();
 }
 
-void downloadManager::updateSongCheckState(QString &id, bool isChecked)
+void downloadManager::updateSongCheckState(const QString &id, bool isChecked)
 {
     for(int i = 0; i < Songs.size(); ++i)
     {

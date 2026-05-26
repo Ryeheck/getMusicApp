@@ -1,6 +1,7 @@
 /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/EWIEGA46WW/moc_mainwindow.cpp: /home/ryabi/my_apps/qt/getMusicApp/mainwindow.h \
   /home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/moc_predefs.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QList \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QMap \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QObject \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QProcess \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/QRect \

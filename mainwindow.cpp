@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QStandardPaths>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -125,8 +126,19 @@ void MainWindow::setupConnections()
     });
 
     connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
-    connect(manager, &downloadManager::setupDownloadRequested, this, &MainWindow::setupBeforeDownload);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
+
+    connect(manager, &downloadManager::activeTasksCountChanged, this, 
+            [this] (const int count) {
+        if (count == 0) {
+            setupBeforeDownload(false);
+            logs->log("All Done!");
+            
+        } else if (count > 0) {
+            setupBeforeDownload(true);
+        }
+    });
+
     connect(manager, &downloadManager::updateStatusRequested, this, 
             [this] (const songInfo *song) {
         int row = logs->findRowById(song->id);
@@ -147,7 +159,8 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
     QString folder = inputFolder->text();
 
     if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
+    if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    
     manager->setIsStopped(false);
 
     for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 
