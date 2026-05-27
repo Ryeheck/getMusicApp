@@ -25,7 +25,7 @@ signals:
     void activeTasksCountChanged(const int count);
     void songAdded(const songInfo *song);
     void progressBarRequested(QProgressBar *bar, const int percent);
-    void updateStatusRequested(const songInfo *song);
+    void updateStatusRequested(const QString &id, const QString &status);
 
 public:
     explicit downloadManager(QObject *parent = nullptr);
@@ -45,7 +45,7 @@ public:
     int getSongsCount();
 
 private:
-    void setupProgressBar(const QString &id, QProgressBar *pBar, QString *status = nullptr);
+    void setupProgressBar(const QString &id, QProgressBar *pBar);
     void setWorking(QProcess *process);
     void setupProcessLogging(const QString &id, bool isLyrics = false);
     void cleanupProcess(const QString &id, int exitCode);

@@ -36,9 +36,10 @@ downloadManager::~downloadManager()
 
 void downloadManager::getSongs(const QString &url, const QString &folder, bool startAfter, bool lyrics)
 {
-    QString taskId = QUuid::createUuid().toString();
+    
     QProcess *process = new QProcess(this);
-    _activeProcesses.insert(taskId, process);
+    _activeProcesses.insert(url, process);
+
 
     connect(process, &QProcess::readyReadStandardOutput, [this, url, process] () {
         QString output = process->readAllStandardOutput();
@@ -75,13 +76,13 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-            [this, startAfter, folder, lyrics, taskId] (int exitCode) {
+            [this, startAfter, folder, lyrics, url] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
         
-        if (QProcess *process = _activeProcesses.value(taskId)) {
+        if (QProcess *process = _activeProcesses.value(url)) {
             process->deleteLater();
-            _activeProcesses.remove(taskId);
+            _activeProcesses.remove(url);
         }
         if (startAfter && !Songs.isEmpty()) {
             Songs[0]->isChecked = true;
@@ -113,7 +114,7 @@ void downloadManager::startDownload(const QString &folder, bool isLyrics)
         if (song->isChecked == false)  continue;
 
         song->status = "Updating";
-        emit updateStatusRequested(song);
+        emit updateStatusRequested(song->id, song->status);
 
         if (isLyrics)
             lyricsDownload(song, folder);
@@ -124,27 +125,28 @@ void downloadManager::startDownload(const QString &folder, bool isLyrics)
 
 void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
 {
-    QString taskId = QUuid::createUuid().toString();
     QProcess *process = new QProcess(this);
 
-    _activeProcesses.insert(taskId, process);
+    _activeProcesses.insert(song->id, process);
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(taskId, pBar, &song->status);
+        setupProgressBar(song->id, pBar);
     else 
-        setupProcessLogging(taskId, true);
+        setupProcessLogging(song->id, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, taskId, song] (int exitCode) {
-        cleanupProcess(taskId, exitCode);
+                [this, folder, song, process] (int exitCode) {
+        cleanupProcess(song->id, exitCode);
 
-        if (!exitCode && song->status == "Updating")
-            song->status = "Done";
-        else if (exitCode)
+        if (exitCode)
             song->status = "Error";
+        else if (process->property("notLyrics").toBool())
+            song->status = "Not Lyrics";
+        else
+            song->status = "Done";
         
-        emit updateStatusRequested(song);
+        emit updateStatusRequested(song->id, song->status);
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
@@ -157,8 +159,6 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
          << "-o" << folder + "/" + songName + ".lrc"
          << "--verbose";
 
-    emit logMessageRequested(QString("<span style='color:silver;'>Lyrics: %1</span>").arg(songName));
-
     process->start(appDir + "/syncedlyrics_bin", args);
 
     // syncedlyrics [args] songName
@@ -166,27 +166,23 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
 
 void downloadManager::songDownload(songInfo *song, const QString &folder)
 {
-    QString taskId = QUuid::createUuid().toString();
     QProcess *process = new QProcess(this);
 
-    _activeProcesses.insert(taskId, process);
+    _activeProcesses.insert(song->id, process);
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(taskId, pBar);
+        setupProgressBar(song->id, pBar);
     else
-        setupProcessLogging(taskId);
+        setupProcessLogging(song->id);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, taskId, song] (int exitCode) {
-        cleanupProcess(taskId, exitCode);
+                [this, folder, song] (int exitCode) {
+        cleanupProcess(song->id, exitCode);
 
-        if (!exitCode && song->status == "Updating")
-            song->status = "Done";
-        else if (exitCode)
-            song->status = "Error";
-
-        emit updateStatusRequested(song);
+        song->status = exitCode ? "Error" : "Done";
+        
+        emit updateStatusRequested(song->id, song->status);
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
@@ -207,8 +203,6 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
          << "--"
          << song->id;
 
-    emit logMessageRequested(QString("<span style='color:silver;'>Song: %1</span>").arg(songName));
-
     process->start(appDir + "/yt-dlp", args);
 
     // yt-dlp [args] (url/id)
@@ -216,7 +210,12 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
 
 void downloadManager::cleanupProcess(const QString &id, int exitCode)
 {
-    QString output = (exitCode == 0 ? "Done!" : "Error");
+    QString output;
+    for(int i = Songs.size() - 1; i >= 0; --i)
+    {
+        if (Songs[i]->id == id)  output = Songs[i]->name;
+    }
+    output += (exitCode ? ": Error" : ": Done!");
     emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
 
     if (_activeProcesses.contains(id)) {
@@ -226,7 +225,7 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
     }
 }
 
-void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar, QString *status) 
+void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar) 
 {
     if (!(pBar || _activeProcesses.contains(id)))  return;
     int *stepCount = new int(0);
@@ -242,11 +241,13 @@ void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar, QS
 
         if (match.hasMatch()) {
             int percent = static_cast<int >(match.captured(1).toFloat());
+            if (percent > 100)  percent = 100;
+
             emit progressBarRequested(pBar, percent);
         }
     });
 
-    connect(process, &QProcess::readyReadStandardError, [this, process, pBar, stepCount, status] () {
+    connect(process, &QProcess::readyReadStandardError, [this, process, stepCount, pBar] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
 
@@ -257,12 +258,12 @@ void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar, QS
             QString search = match.captured(1);
             int percent = ++(*stepCount) * 25;
             
-            if (search == "No suitable lyrics found for" && status) {
+            if (search == "No suitable lyrics found for") {
                 percent = 100;
-                *status = "Not lyric";
-            } else if(search == "Lyrics found" || percent > 100)  
-                percent = 100;  
-            
+                process->setProperty("notLyrics", true);
+            } else if(search == "Lyrics found" || percent > 100) {
+                percent = 100;
+            }
             emit progressBarRequested(pBar, percent);
         }
     });

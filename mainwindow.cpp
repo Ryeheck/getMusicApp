@@ -130,19 +130,18 @@ void MainWindow::setupConnections()
 
     connect(manager, &downloadManager::activeTasksCountChanged, this, 
             [this] (const int count) {
-        if (count == 0) {
-            setupBeforeDownload(false);
-            logs->log("All Done!");
-            
-        } else if (count > 0) {
+        if (count > 0) {
             setupBeforeDownload(true);
+        } else if (count == 0) {
+            setupBeforeDownload(false);
+            logs->log("All Done!");   
         }
     });
 
     connect(manager, &downloadManager::updateStatusRequested, this, 
-            [this] (const songInfo *song) {
-        int row = logs->findRowById(song->id);
-        logs->updateStatus(row, song->status); // Сделай упдейт под все!!!
+            [this] (const QString &id, const QString &status) {
+        int row = logs->findRowById(id);
+        logs->updateStatus(row, status);
     });
 
     connect(manager, &downloadManager::songAdded, this, 
