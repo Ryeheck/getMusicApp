@@ -4,10 +4,7 @@
 #include "downloadManager.h"
 
 #include <QPlainTextEdit>
-#include <QListWidgetItem>
-#include <QListWidget>
 #include <QList>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include <QTableWidget>
@@ -25,7 +22,7 @@ public:
 
     void log(const QString &message = "");
     void updateProgressBar(QProgressBar *progressBar, const int percent);
-    int getProgressBar(QProgressBar *progressBar);
+    int getProgressBarPercent(QProgressBar *progressBar);
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();

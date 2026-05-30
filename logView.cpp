@@ -1,14 +1,10 @@
 #include "logView.h"
-#include "mainwindow.h"
 #include "downloadManager.h"
 
 #include <QPlainTextEdit>
-#include <QProcess>
 #include <QString>
 #include <QDateTime>
 #include <QHBoxLayout>
-#include <QDir>
-#include <QObject>
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
@@ -97,7 +93,7 @@ void logView::updateProgressBar(QProgressBar *progressBar, const int percent)
     progressBar->setValue(percent);
 }
 
-int logView::getProgressBar(QProgressBar *progressBar)
+int logView::getProgressBarPercent(QProgressBar *progressBar)
 {
     return progressBar->value();
 }
