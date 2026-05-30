@@ -51,8 +51,8 @@ private:
     void cleanupProcess(const QString &id, int exitCode);
 
     QMap<QString, QProcess *> _activeProcesses; 
-    bool isStopped;
-    QList<songInfo *> Songs;
+    bool _isStopped;
+    QList<songInfo *> _Songs;
 };
 
 

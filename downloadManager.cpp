@@ -16,7 +16,7 @@
 downloadManager::downloadManager(QObject *parent)
     : QObject(parent)
 {
-    isStopped = false;
+    _isStopped = false;
 }
 
 downloadManager::~downloadManager()
@@ -27,11 +27,11 @@ downloadManager::~downloadManager()
     }
     _activeProcesses.clear();
 
-    for(songInfo *song : Songs)
+    for(songInfo *song : _Songs)
     {
         if (song != nullptr)  delete song;
     }
-    Songs.clear();
+    _Songs.clear();
 }
 
 void downloadManager::getSongs(const QString &url, const QString &folder, bool startAfter, bool lyrics)
@@ -61,14 +61,14 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
             song->widget = new QProgressBar();
 
             bool exist = false;
-            for(songInfo *songItem : Songs) 
+            for(songInfo *songItem : _Songs) 
                 if (songItem->id == song->id) {
                     exist = true;
                     break;
                 }
 
             if (!exist) {
-                Songs.append(song);
+                _Songs.append(song);
                 emit songAdded(song);
             } else
                 delete song;
@@ -84,14 +84,20 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
             process->deleteLater();
             _activeProcesses.remove(url);
         }
-        if (startAfter && !Songs.isEmpty()) {
-            Songs[0]->isChecked = true;
+        if (startAfter && !_Songs.isEmpty()) {
+            _Songs[0]->isChecked = true;
             startDownload(folder, lyrics);
         }
         
     });
 
     QString appDir = qApp->applicationDirPath();
+#ifdef Q_OS_WIN
+    QString program = appDir + "/yt-dlp.exe";
+#else
+    QString program = appDir + "/yt-dlp";
+#endif
+
     QStringList args;
     args // << "--flat-playlist"
          << "-O" << "%(filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
@@ -99,7 +105,7 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
 
     // yt-dlp --flat-playlist --get-id --get-title --get-filename -o "%(artist)s - %(track)s" https://youtube.com
 
-    process->start(appDir + "/yt-dlp", args);
+    process->start(program, args);
 }
 
 void downloadManager::startDownload(const QString &folder, bool isLyrics)
@@ -107,9 +113,9 @@ void downloadManager::startDownload(const QString &folder, bool isLyrics)
     emit logMessageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
     emit activeTasksCountChanged(1);
 
-    for(int i = 0; i < Songs.size() && !isStopped; ++i)
+    for(int i = 0; i < _Songs.size() && !_isStopped; ++i)
     {
-        songInfo *song = Songs[i];
+        songInfo *song = _Songs[i];
 
         if (song->isChecked == false)  continue;
 
@@ -151,6 +157,12 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
     });
 
     QString appDir = qApp->applicationDirPath();
+#ifdef Q_OS_WIN
+    QString program = appDir + "/syncedlyrics_bin.exe";
+#else
+    QString program = appDir + "/syncedlyrics_bin";
+#endif
+
     QString songName = song->name;
 
     QStringList args;
@@ -159,7 +171,7 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
          << "-o" << folder + "/" + songName + ".lrc"
          << "--verbose";
 
-    process->start(appDir + "/syncedlyrics_bin", args);
+    process->start(program, args);
 
     // syncedlyrics [args] songName
 }
@@ -187,6 +199,12 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
     });
 
     QString appDir = qApp->applicationDirPath();
+#ifdef Q_OS_WIN
+    QString program = appDir + "/yt-dlp.exe";
+#else
+    QString program = appDir + "/yt-dlp";
+#endif
+
     QString songName = song->name;
 
     QStringList args;
@@ -203,7 +221,7 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
          << "--"
          << song->id;
 
-    process->start(appDir + "/yt-dlp", args);
+    process->start(program, args);
 
     // yt-dlp [args] (url/id)
 }
@@ -211,9 +229,9 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
 void downloadManager::cleanupProcess(const QString &id, int exitCode)
 {
     QString output;
-    for(int i = Songs.size() - 1; i >= 0; --i)
+    for(int i = _Songs.size() - 1; i >= 0; --i)
     {
-        if (Songs[i]->id == id)  output = Songs[i]->name;
+        if (_Songs[i]->id == id)  output = _Songs[i]->name;
     }
     output += (exitCode ? ": Error" : ": Done!");
     emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
@@ -312,16 +330,21 @@ void downloadManager::setWorking(QProcess *process)
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString appDir = qApp->applicationDirPath();
 
+#ifdef Q_OS_WIN
+    env.insert("PATH", appDir + ";" + env.value("PATH"));
+#else
     env.insert("PATH", appDir + ":" + env.value("PATH"));
     env.remove("LD_LIBRARY_PATH");
     env.insert("LD_LIBRARY_PATH", ""); 
+#endif
+    
     process->setProcessEnvironment(env);
     process->setWorkingDirectory(QDir::tempPath());
 }
 
 void downloadManager::stopDownload()
 {
-    isStopped = true;
+    _isStopped = true;
 
     for(QProcess *process : _activeProcesses.values())
         if(process) {
@@ -338,10 +361,10 @@ void downloadManager::stopDownload()
 
 void downloadManager::updateSongCheckState(const QString &id, bool isChecked)
 {
-    for(int i = 0; i < Songs.size(); ++i)
+    for(int i = 0; i < _Songs.size(); ++i)
     {
-        if (Songs[i]->id == id) {
-            Songs[i]->isChecked = isChecked;
+        if (_Songs[i]->id == id) {
+            _Songs[i]->isChecked = isChecked;
             break;
         }
     }
@@ -349,17 +372,17 @@ void downloadManager::updateSongCheckState(const QString &id, bool isChecked)
 
 void downloadManager::setIsStopped(bool set)
 {
-    this->isStopped = set;
+    this->_isStopped = set;
 }
 
 void downloadManager::clearSongs()
 {
-    for(songInfo *song : Songs)
+    for(songInfo *song : _Songs)
     {
         if (song != nullptr)  delete song;
     }
 
-    Songs.clear();
+    _Songs.clear();
 }
 
 QString downloadManager::formatBytes(long long bytes)
