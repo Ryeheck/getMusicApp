@@ -11,9 +11,11 @@ qt_add_executable(getMusicApp
     mainwindow.cpp
     logView.cpp
     downloadManager.cpp
+    settingDialog.cpp
     downloadManager.h
     logView.h
     mainwindow.h
+    settingDialog.h
 )
 
 target_link_libraries(getMusicApp

@@ -28,5 +28,11 @@
   "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/downloadManager.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/downloadManager.cpp",
   "file": "/home/ryabi/my_apps/qt/getMusicApp/downloadManager.cpp",
   "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/downloadManager.cpp.o"
+},
+{
+  "directory": "/home/ryabi/my_apps/qt/getMusicApp/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/ryabi/my_apps/qt/getMusicApp/build/getMusicApp_autogen/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore -isystem /home/ryabi/Qt/6.11.0/gcc_64/include -isystem /home/ryabi/Qt/6.11.0/gcc_64/mkspecs/linux-g++ -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets -isystem /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -fPIC -o CMakeFiles/getMusicApp.dir/settingDialog.cpp.o -c /home/ryabi/my_apps/qt/getMusicApp/settingDialog.cpp",
+  "file": "/home/ryabi/my_apps/qt/getMusicApp/settingDialog.cpp",
+  "output": "/home/ryabi/my_apps/qt/getMusicApp/build/CMakeFiles/getMusicApp.dir/settingDialog.cpp.o"
 }
 ]

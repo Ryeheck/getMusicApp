@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "logView.h"
 #include "downloadManager.h"
+#include "settingDialog.h"
 
 #include <QString>
 #include <QPushButton>
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     lyricsButton = new QPushButton("Lyrics dowload(s)", this);
     musicButton = new QPushButton("Music dowload(s)", this);
     titleButton = new QPushButton("Playlist", this);
+    settingButton = new QPushButton("Setting", this);
     
     clearListButton = new QPushButton("Clear all", this);
     selectAllButton = new QPushButton("Select All", this);
@@ -53,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     layoutButtonsHOne->addWidget(musicButton, 4);
     layoutButtonsHOne->addWidget(lyricsButton, 4);
+    layoutButtonsHTwo->addWidget(settingButton, 4);
     layoutButtonsHTwo->addWidget(titleButton, 4);
     
     layoutButtonsHOne->addStretch();
@@ -94,6 +97,15 @@ void MainWindow::setupConnections()
         stopButton->show();
     }); 
     
+    connect(settingButton, &QPushButton::clicked, [this] () {
+        settingDialog diag(this);
+        logs->log("setting");
+
+        if(diag.exec() == QDialog::Accepted) {
+            diag.saveSetting();
+        }
+    });
+
     connect(musicButton, &QPushButton::clicked, [this] () {
         handleDownload(musicButton, false);
     });

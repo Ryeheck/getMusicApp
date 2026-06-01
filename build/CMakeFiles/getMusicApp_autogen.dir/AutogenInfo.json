@@ -498,6 +498,12 @@
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
 			null
+		],
+		[
+			"/home/ryabi/my_apps/qt/getMusicApp/settingDialog.h",
+			"MU",
+			"EWIEGA46WW/moc_settingDialog.cpp",
+			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -560,7 +566,8 @@
 		[ "/home/ryabi/my_apps/qt/getMusicApp/downloadManager.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/logView.cpp", "MU", null ],
 		[ "/home/ryabi/my_apps/qt/getMusicApp/main.cpp", "MU", null ],
-		[ "/home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp", "MU", null ]
+		[ "/home/ryabi/my_apps/qt/getMusicApp/mainwindow.cpp", "MU", null ],
+		[ "/home/ryabi/my_apps/qt/getMusicApp/settingDialog.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],
