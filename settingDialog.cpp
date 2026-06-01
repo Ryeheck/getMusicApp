@@ -68,7 +68,7 @@ QString settingDialog::getVideoFormat() const
 
 void settingDialog::saveSetting() const
 {
-    QFile file("setting.txt");
+    QFile file("config.conf");
 
     if (file.open(QIODeviceBase::WriteOnly | QIODevice::Text)) {
         QTextStream output(&file);
@@ -79,5 +79,5 @@ void settingDialog::saveSetting() const
         file.close();
     }
 
-    
+
 }

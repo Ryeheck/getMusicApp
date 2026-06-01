@@ -102,7 +102,7 @@ void MainWindow::setupConnections()
         logs->log("setting");
 
         if(diag.exec() == QDialog::Accepted) {
-            diag.saveSetting();
+            
         }
     });
 
