@@ -1,5 +1,6 @@
 #include "downloadManager.h"
 #include "logView.h"
+#include "settingDialog.h"
 
 #include <QProcess>
 #include <QListWidgetItem>
@@ -17,6 +18,9 @@ downloadManager::downloadManager(QObject *parent)
     : QObject(parent)
 {
     _isStopped = false;
+    
+    // Default formats
+    setFormats(".mp3", ".mp4", ".txt");
 }
 
 downloadManager::~downloadManager()
@@ -39,7 +43,6 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
     
     QProcess *process = new QProcess(this);
     _activeProcesses.insert(url, process);
-
 
     connect(process, &QProcess::readyReadStandardOutput, [this, url, process] () {
         QString output = process->readAllStandardOutput();
@@ -168,7 +171,7 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
     QStringList args;
     args << songName
          << "-p" << "Lrclib" << "NetEase" << "Megalobiz" << "Musixmatch"
-         << "-o" << folder + "/" + songName + ".lrc"
+         << "-o" << folder + "/" + songName + _formatLyrics
          << "--verbose";
 
     process->start(program, args);
@@ -184,10 +187,10 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
     setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(song->id, pBar);
+        setupProgressBar(song->id, pBar); 
     else
         setupProcessLogging(song->id);
-
+    
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, song] (int exitCode) {
         cleanupProcess(song->id, exitCode);
@@ -215,9 +218,9 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
          << "--no-playlist" 
          << "--newline"
          << "-x" 
-         << "--audio-format" << "mp3" 
+         << "--audio-format" << _formatAudio.sliced(1)
          << "--audio-quality" << "0"
-         << "-o" << folder + "/" + songName + ".%(ext)s"
+         << "-o" << folder + "/" + songName + _formatAudio
          << "--"
          << song->id;
 
@@ -398,4 +401,11 @@ QString downloadManager::formatBytes(long long bytes)
     }
 
     return QString::number(num, 'f', 1) + " " + format[i];
+}
+
+void downloadManager::setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics)
+{
+    _formatAudio = formatAudio;
+    _formatVideo = formatVideo;
+    _formatLyrics = formatLyrics;
 }

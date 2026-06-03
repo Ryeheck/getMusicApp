@@ -40,6 +40,7 @@ public:
     void clearSongs();
     void stopDownload();
     void setIsStopped(bool set);
+    void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics);
 
     static QString formatBytes(long long bytes);
     int getSongsCount();
@@ -51,6 +52,9 @@ private:
     void cleanupProcess(const QString &id, int exitCode);
 
     QMap<QString, QProcess *> _activeProcesses; 
+    QString _formatAudio;
+    QString _formatVideo;
+    QString _formatLyrics;
     bool _isStopped;
     QList<songInfo *> _Songs;
 };

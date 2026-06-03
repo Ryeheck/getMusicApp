@@ -4,9 +4,9 @@
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QFile>
-#include <QTextStream>
 #include <QDialogButtonBox>
+#include <QString>
+#include <QSettings>
 
 settingDialog::settingDialog(QWidget *parent)
     : QDialog(parent)
@@ -16,7 +16,7 @@ settingDialog::settingDialog(QWidget *parent)
     QLabel *titleLabel = new QLabel("Formats:", this);
     mainLayout->addWidget(titleLabel);
 
-    // Audio formats
+    // Audio format
     QHBoxLayout *layoutAudio = new QHBoxLayout();
     QLabel *titleAudio = new QLabel("Audio:", this);
     titleAudio->setFixedWidth(50);
@@ -28,7 +28,19 @@ settingDialog::settingDialog(QWidget *parent)
 
     mainLayout->addLayout(layoutAudio);
 
-    // Video formats
+    // Lyrics format
+    QHBoxLayout *layoutLyrics = new QHBoxLayout();
+    QLabel *titleLyrics = new QLabel("Lyrics:", this);
+    titleLyrics->setFixedWidth(50);
+    layoutLyrics->addWidget(titleLyrics);
+
+    formatLyrics = new QComboBox(this);
+    formatLyrics->addItems({".lrc", ".srt", ".vtt", ".txt"});
+    layoutLyrics->addWidget(formatLyrics);
+
+    mainLayout->addLayout(layoutLyrics);
+
+    // Video format
     QHBoxLayout *layoutVideo = new QHBoxLayout();
     QLabel *titleVideo = new QLabel("Video:", this);
     titleVideo->setFixedWidth(50);
@@ -47,6 +59,7 @@ settingDialog::settingDialog(QWidget *parent)
 
     mainLayout->addWidget(buttonBox);
 
+    loadSetting();
     connect(buttonBox, &QDialogButtonBox::accepted, this, [this] () {
         saveSetting();
         accept();
@@ -66,18 +79,29 @@ QString settingDialog::getVideoFormat() const
     return formatVideo->currentText().split(" ").first();
 }
 
-void settingDialog::saveSetting() const
+QString settingDialog::getLyricsFormat() const
 {
-    QFile file("config.conf");
+    return formatLyrics->currentText().split(" ").first();
+}
 
-    if (file.open(QIODeviceBase::WriteOnly | QIODevice::Text)) {
-        QTextStream output(&file);
+void settingDialog::saveSetting()
+{
+    QSettings setting("config.conf", QSettings::IniFormat);
 
-        output << "AudioFormat=" << getAudioFormat() << "\n";
-        output << "VideoFormat=" << getVideoFormat() << "\n";
+    // Formats
+    setting.setValue("Formats/AudioFormat", getAudioFormat());
+    setting.setValue("Formats/VideoFormat", getVideoFormat());
+    setting.setValue("Formats/LyricsFormat", getLyricsFormat());
 
-        file.close();
-    }
+}
 
+void settingDialog::loadSetting() 
+{
+    QSettings setting("config.conf", QSettings::IniFormat);
 
+    // Formats
+    formatAudio->setCurrentText(setting.value("Formats/AudioFormat", ".mp3").toString());
+    formatVideo->setCurrentText(setting.value("Formats/VideoFormat", ".mp4").toString());
+    formatLyrics->setCurrentText(setting.value("Formats/LyricsFormat", ".lrc").toString());
+    
 }

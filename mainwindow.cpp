@@ -14,33 +14,36 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    layoutMain = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
-    layoutButtons = new QVBoxLayout();
+    layoutMain        = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
+    layoutButtons     = new QVBoxLayout();
     layoutButtonsHOne = new QHBoxLayout();
     layoutButtonsHTwo = new QHBoxLayout();
 
     inputFolder = new QLineEdit(this);
-    inputURL = new QLineEdit(this);
+    inputURL    = new QLineEdit(this);
     inputFolder->setPlaceholderText("Enter folder... (default: system): ");
     inputURL->setPlaceholderText("Enter url... (only youtube)");
 
-    logs = new logView(this);
+    logs    = new logView(this);
     manager = new downloadManager(this);
-
-    lyricsButton = new QPushButton("Lyrics dowload(s)", this);
-    musicButton = new QPushButton("Music dowload(s)", this);
-    titleButton = new QPushButton("Playlist", this);
+    
+    settingDialog diag(this);
+    manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat());
+    
+    lyricsButton  = new QPushButton("Lyrics dowload(s)", this);
+    musicButton   = new QPushButton("Music dowload(s)", this);
+    titleButton   = new QPushButton("Playlist", this);
     settingButton = new QPushButton("Setting", this);
     
-    clearListButton = new QPushButton("Clear all", this);
-    selectAllButton = new QPushButton("Select All", this);
+    clearListButton   = new QPushButton("Clear all", this);
+    selectAllButton   = new QPushButton("Select All", this);
     deselectAllButton = new QPushButton("Deselect All", this);
 
     clearListButton->hide();
     selectAllButton->hide();
     deselectAllButton->hide();
 
-    stopButton = new QPushButton("Stop", this);
+    stopButton        = new QPushButton("Stop", this);
     stopForNextButton = new QPushButton("Stop for next", this);
 
     stopForNextButton->hide();
@@ -102,7 +105,7 @@ void MainWindow::setupConnections()
         logs->log("setting");
 
         if(diag.exec() == QDialog::Accepted) {
-            
+            manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat());
         }
     });
 
@@ -173,7 +176,7 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
     if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     
     manager->setIsStopped(false);
-
+    
     for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 
     {
         QString id = item->data(Qt::UserRole).toString();
