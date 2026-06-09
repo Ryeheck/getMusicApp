@@ -98,7 +98,7 @@ int logView::getProgressBarPercent(QProgressBar *progressBar)
     return progressBar->value();
 }
 
-void logView::addItem(const songInfo *song)
+void logView::addItem(const mediaInfo *song)
 {
     int row = tableWidget->rowCount();
     tableWidget->insertRow(row);

@@ -7,7 +7,7 @@
 #include <QProgressBar>
 #include <QMap>
 
-struct songInfo {
+struct mediaInfo {
     QString id;
     QString name;
     QString status;
@@ -23,7 +23,7 @@ class downloadManager : public QObject
 signals:
     void logMessageRequested(const QString &message);
     void activeTasksCountChanged(const int count);
-    void songAdded(const songInfo *song);
+    void mediaAdded(const mediaInfo *media);
     void progressBarRequested(QProgressBar *bar, const int percent);
     void updateStatusRequested(const QString &id, const QString &status);
 
@@ -33,8 +33,9 @@ public:
 
     void getSongs(const QString &url, const QString &folder = "", bool startAfter = false, bool lyrics = false);
     void startDownload(const QString &folder = "", bool isLyrics = false);
-    void songDownload(songInfo *song, const QString &folder);
-    void lyricsDownload(songInfo *song, const QString &folder);
+    void songDownload(mediaInfo *media, const QString &folder);
+    void lyricsDownload(mediaInfo *media, const QString &folder);
+    void videoDownload(const QString &folder);
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearSongs();
@@ -56,7 +57,7 @@ private:
     QString _formatVideo;
     QString _formatLyrics;
     bool _isStopped;
-    QList<songInfo *> _Songs;
+    QList<mediaInfo *> _Media;
 };
 
 

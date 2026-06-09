@@ -31,11 +31,11 @@ downloadManager::~downloadManager()
     }
     _activeProcesses.clear();
 
-    for(songInfo *song : _Songs)
+    for(mediaInfo *song : _Media)
     {
         if (song != nullptr)  delete song;
     }
-    _Songs.clear();
+    _Media.clear();
 }
 
 void downloadManager::getSongs(const QString &url, const QString &folder, bool startAfter, bool lyrics)
@@ -51,7 +51,7 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
         
         for(int i = 0; i + 3 < lines.size() && (i < MAX_SONGS * 4); i += 4) 
         {
-            songInfo *song = new songInfo();
+            mediaInfo *song = new mediaInfo();
 
             if (lines[i + 3] == "NA - NA")
                 song->name = lines[i + 1];
@@ -64,15 +64,15 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
             song->widget = new QProgressBar();
 
             bool exist = false;
-            for(songInfo *songItem : _Songs) 
+            for(mediaInfo *songItem : _Media) 
                 if (songItem->id == song->id) {
                     exist = true;
                     break;
                 }
 
             if (!exist) {
-                _Songs.append(song);
-                emit songAdded(song);
+                _Media.append(song);
+                emit mediaAdded(song);
             } else
                 delete song;
         }
@@ -87,8 +87,8 @@ void downloadManager::getSongs(const QString &url, const QString &folder, bool s
             process->deleteLater();
             _activeProcesses.remove(url);
         }
-        if (startAfter && !_Songs.isEmpty()) {
-            _Songs[0]->isChecked = true;
+        if (startAfter && !_Media.isEmpty()) {
+            _Media[0]->isChecked = true;
             startDownload(folder, lyrics);
         }
         
@@ -116,9 +116,9 @@ void downloadManager::startDownload(const QString &folder, bool isLyrics)
     emit logMessageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
     emit activeTasksCountChanged(1);
 
-    for(int i = 0; i < _Songs.size() && !_isStopped; ++i)
+    for(int i = 0; i < _Media.size() && !_isStopped; ++i)
     {
-        songInfo *song = _Songs[i];
+        mediaInfo *song = _Media[i];
 
         if (song->isChecked == false)  continue;
 
@@ -132,30 +132,30 @@ void downloadManager::startDownload(const QString &folder, bool isLyrics)
     }
 }
 
-void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
+void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
 {
     QProcess *process = new QProcess(this);
 
-    _activeProcesses.insert(song->id, process);
+    _activeProcesses.insert(media->id, process);
     setWorking(process);
     
-    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(song->widget))
-        setupProgressBar(song->id, pBar);
+    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
+        setupProgressBar(media->id, pBar);
     else 
-        setupProcessLogging(song->id, true);
+        setupProcessLogging(media->id, true);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-                [this, folder, song, process] (int exitCode) {
-        cleanupProcess(song->id, exitCode);
+                [this, folder, media, process] (int exitCode) {
+        cleanupProcess(media->id, exitCode);
 
         if (exitCode)
-            song->status = "Error";
+            media->status = "Error";
         else if (process->property("notLyrics").toBool())
-            song->status = "Not Lyrics";
+            media->status = "Not Lyrics";
         else
-            song->status = "Done";
+            media->status = "Done";
         
-        emit updateStatusRequested(song->id, song->status);
+        emit updateStatusRequested(media->id, media->status);
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
@@ -166,7 +166,7 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
     QString program = appDir + "/syncedlyrics_bin";
 #endif
 
-    QString songName = song->name;
+    QString songName = media->name;
 
     QStringList args;
     args << songName
@@ -179,7 +179,7 @@ void downloadManager::lyricsDownload(songInfo *song, const QString &folder)
     // syncedlyrics [args] songName
 }
 
-void downloadManager::songDownload(songInfo *song, const QString &folder)
+void downloadManager::songDownload(mediaInfo *song, const QString &folder)
 {
     QProcess *process = new QProcess(this);
 
@@ -229,12 +229,19 @@ void downloadManager::songDownload(songInfo *song, const QString &folder)
     // yt-dlp [args] (url/id)
 }
 
+void downloadManager::videoDownload(const QString &folder)
+{
+    QProcess *process = new QProcess();
+
+    _activeProcesses.insert(id, process);
+    
+}
 void downloadManager::cleanupProcess(const QString &id, int exitCode)
 {
     QString output;
-    for(int i = _Songs.size() - 1; i >= 0; --i)
+    for(int i = _Media.size() - 1; i >= 0; --i)
     {
-        if (_Songs[i]->id == id)  output = _Songs[i]->name;
+        if (_Media[i]->id == id)  output = _Media[i]->name;
     }
     output += (exitCode ? ": Error" : ": Done!");
     emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
@@ -364,10 +371,10 @@ void downloadManager::stopDownload()
 
 void downloadManager::updateSongCheckState(const QString &id, bool isChecked)
 {
-    for(int i = 0; i < _Songs.size(); ++i)
+    for(int i = 0; i < _Media.size(); ++i)
     {
-        if (_Songs[i]->id == id) {
-            _Songs[i]->isChecked = isChecked;
+        if (_Media[i]->id == id) {
+            _Media[i]->isChecked = isChecked;
             break;
         }
     }
@@ -380,12 +387,12 @@ void downloadManager::setIsStopped(bool set)
 
 void downloadManager::clearSongs()
 {
-    for(songInfo *song : _Songs)
+    for(mediaInfo *song : _Media)
     {
         if (song != nullptr)  delete song;
     }
 
-    _Songs.clear();
+    _Media.clear();
 }
 
 QString downloadManager::formatBytes(long long bytes)

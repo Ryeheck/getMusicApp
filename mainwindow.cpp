@@ -159,9 +159,9 @@ void MainWindow::setupConnections()
         logs->updateStatus(row, status);
     });
 
-    connect(manager, &downloadManager::songAdded, this, 
-            [this] (const songInfo *song) {
-        logs->addItem(song);
+    connect(manager, &downloadManager::mediaAdded, this, 
+            [this] (const mediaInfo *media) {
+        logs->addItem(media);
     });
 }
 

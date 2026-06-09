@@ -34,7 +34,7 @@ public:
 
     int findRowById(const QString &id);
     void removeAlso(int row);
-    void addItem(const songInfo *song);
+    void addItem(const mediaInfo *media);
     void updateStatus(int row, const QString &newStatus);
     void setWidget(int row, QWidget *widget);
 
