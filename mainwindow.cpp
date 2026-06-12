@@ -97,7 +97,7 @@ void MainWindow::setupConnections()
     connect(titleButton, &QPushButton::clicked, [this] () {
         logs->log("Wait...");
         
-        manager->getSongs(inputURL->text());
+        manager->getMedia(inputURL->text());
 
         setupBeforeDownload(false);
         stopButton->show();
@@ -130,7 +130,7 @@ void MainWindow::setupConnections()
 
     connect(clearListButton, &QPushButton::clicked, [this] () {
         logs->clearAll();
-        manager->clearSongs();
+        manager->clearMedia();
     });  
 
     connect(stopButton, &QPushButton::clicked, [this] () {
@@ -193,7 +193,7 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
     }
 
     if (!logs->getTableWidgetCount())
-        manager->getSongs(url, folder, true, isSongs, isLyrics);
+        manager->getMedia(url, folder, true, isSongs, isLyrics);
     else                         
         manager->startDownload(folder, isSongs, isLyrics);
 }

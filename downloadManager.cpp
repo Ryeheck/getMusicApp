@@ -38,7 +38,7 @@ downloadManager::~downloadManager()
     _Media.clear();
 }
 
-void downloadManager::getSongs(const QString &url, const QString &folder, bool startAfter, bool isSongs, bool lyrics)
+void downloadManager::getMedia(const QString &url, const QString &folder, bool startAfter, bool isSongs, bool lyrics)
 {
     
     QProcess *process = new QProcess(this);
@@ -382,7 +382,7 @@ void downloadManager::setIsStopped(bool set)
     this->_isStopped = set;
 }
 
-void downloadManager::clearSongs()
+void downloadManager::clearMedia()
 {
     for(mediaInfo *song : _Media)
     {

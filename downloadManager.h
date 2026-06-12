@@ -31,20 +31,20 @@ public:
     explicit downloadManager(QObject *parent = nullptr);
     ~downloadManager() override;
 
-    void getSongs(const QString &url, const QString &folder = "", 
+    void getMedia(const QString &url, const QString &folder = "", 
                   bool startAfter = false, bool isSongs = false, bool lyrics = false);
     void startDownload(const QString &folder = "", bool isSongs = false, bool isLyrics = false);
     void mediaDownload(mediaInfo *media, const QString &folder, bool isSong);
     void lyricsDownload(mediaInfo *media, const QString &folder);
 
     void updateSongCheckState(const QString &id, bool isChecked);
-    void clearSongs();
+    void clearMedia();
     void stopDownload();
     void setIsStopped(bool set);
     void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics);
 
     static QString formatBytes(long long bytes);
-    int getSongsCount();
+    int getMediaCount();
 
 private:
     void setupProgressBar(const QString &id, QProgressBar *pBar);
