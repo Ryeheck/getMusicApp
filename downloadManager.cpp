@@ -20,7 +20,8 @@ downloadManager::downloadManager(QObject *parent)
     _isStopped = false;
     
     // Default formats
-    setFormats(".mp3", ".mp4", ".txt");
+    setFormats(".mp3", ".mp4", ".txt", "2160p60", "0");
+    setCookies("firefox");
 }
 
 downloadManager::~downloadManager()
@@ -103,6 +104,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 
     QStringList args;
     args // << "--flat-playlist"
+         << "--cookies-from-browser" << _CookiesBrowser
          << "-O" << "%(filesize,filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
          << url;
 
@@ -171,7 +173,7 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
     QStringList args;
     args << songName
          << "-p" << "Lrclib" << "NetEase" << "Megalobiz" << "Musixmatch"
-         << "-o" << folder + "/" + songName + _formatLyrics
+         << "-o" << folder + "/" + songName + "." + _formatLyrics
          << "--verbose";
 
     process->start(program, args);
@@ -215,16 +217,19 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
          << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
          << "--no-mtime" << "--no-playlist" 
+         << "--cookies-from-browser" << _CookiesBrowser
          << "--newline";
 
     if (isSong)
         args << "-x" 
-             << "--audio-format" << _formatAudio.sliced(1)
-             << "--audio-quality" << "0"
-             << "-o" << folder + "/" + mediaName + _formatAudio;
+             << "--audio-format" << _formatAudio
+             << "--audio-quality" << _qualityAudio
+             << "-o" << folder + "/" + mediaName + "." + _formatAudio;
     else
-        args << "--merge-output-format" << _formatVideo.sliced(1)
-             << "-o" << folder + "/" + mediaName + _formatVideo;
+        args << "-f" 
+             << QString("bestvideo[height<=%1]+bestaudio/bestvideo+bestaudio").arg(_qualityVideo.split("p").first())
+             << "--merge-output-format" << _formatVideo
+             << "-o" << folder + "/" + mediaName + "." + _formatVideo;
 
     args << "--" << media->id;
 
@@ -407,9 +412,19 @@ QString downloadManager::formatBytes(long long bytes)
     return QString::number(num, 'f', 1) + " " + format[i];
 }
 
-void downloadManager::setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics)
+void downloadManager::setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
+                                 const QString &qualityVideo, const QString &qualityAudio)
 {
     _formatAudio = formatAudio;
     _formatVideo = formatVideo;
     _formatLyrics = formatLyrics;
+
+    _qualityVideo = qualityVideo;
+    _qualityAudio = qualityAudio;
+
+}
+
+void downloadManager::setCookies(const QString &Cookies)
+{
+    _CookiesBrowser = Cookies;
 }

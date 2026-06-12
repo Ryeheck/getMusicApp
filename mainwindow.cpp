@@ -28,8 +28,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     manager = new downloadManager(this);
     
     settingDialog diag(this);
-    manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat());
-    
+    manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat(),
+                        diag.getVideoQuality(), diag.getAudioQuality());
+    manager->setCookies(diag.getCookiesBrowser());
+
     lyricsButton  = new QPushButton("Lyric download(s)", this);
     musicButton   = new QPushButton("Music download(s)", this);
     titleButton   = new QPushButton("Playlist", this);
@@ -105,10 +107,11 @@ void MainWindow::setupConnections()
     
     connect(settingButton, &QPushButton::clicked, [this] () {
         settingDialog diag(this);
-        logs->log("setting");
 
         if(diag.exec() == QDialog::Accepted) {
-            manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat());
+            manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat(),
+                                diag.getVideoQuality(), diag.getAudioQuality());
+            manager->setCookies(diag.getCookiesBrowser());
         }
     });
 
@@ -180,8 +183,8 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
     QString folder = inputFolder->text();
 
     if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    if (folder.isEmpty())  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    
+    if (folder.isEmpty() && isSongs)  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    else if (folder.isEmpty())        folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
     
     for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 

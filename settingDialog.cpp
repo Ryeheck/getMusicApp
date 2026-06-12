@@ -23,9 +23,9 @@ settingDialog::settingDialog(QWidget *parent)
     layoutAudio->addWidget(titleAudio);
 
     formatAudio = new QComboBox(this);
-    formatAudio->addItems({".mp3", ".aac", ".flac"});
-    layoutAudio->addWidget(formatAudio);
+    formatAudio->addItems({"mp3", "aac", "flac"});
 
+    layoutAudio->addWidget(formatAudio);
     mainLayout->addLayout(layoutAudio);
 
     // Lyrics format
@@ -35,9 +35,9 @@ settingDialog::settingDialog(QWidget *parent)
     layoutLyrics->addWidget(titleLyrics);
 
     formatLyrics = new QComboBox(this);
-    formatLyrics->addItems({".lrc", ".srt", ".vtt", ".txt"});
-    layoutLyrics->addWidget(formatLyrics);
+    formatLyrics->addItems({"lrc", "srt", "vtt", "txt"});
 
+    layoutLyrics->addWidget(formatLyrics);
     mainLayout->addLayout(layoutLyrics);
 
     // Video format
@@ -47,10 +47,45 @@ settingDialog::settingDialog(QWidget *parent)
     layoutVideo->addWidget(titleVideo);
 
     formatVideo = new QComboBox(this);
-    formatVideo->addItems({".mp4", ".mkv", ".webm"});
-    layoutVideo->addWidget(formatVideo);
+    formatVideo->addItems({"mp4", "mkv", "webm"});
 
+    layoutVideo->addWidget(formatVideo);
     mainLayout->addLayout(layoutVideo);
+
+    // Quality
+    QHBoxLayout *layoutVideoQuality = new QHBoxLayout();
+    QLabel *titleVideoQuality = new QLabel("Quality:", this);
+    titleVideoQuality->setFixedWidth(50);
+    layoutVideoQuality->addWidget(titleVideoQuality);
+
+    qualityVideo = new QComboBox(this);
+    qualityVideo->addItems({"2160p60", "1440p60", "1080p60", "720p60", "480p60"});
+
+    layoutVideoQuality->addWidget(qualityVideo);
+    mainLayout->addLayout(layoutVideoQuality);
+
+    QHBoxLayout *layoutAudioQuality = new QHBoxLayout();
+    QLabel *titleAudioQuality = new QLabel("Quality:", this);
+    titleAudioQuality->setFixedWidth(50);
+    layoutAudioQuality->addWidget(titleAudioQuality);
+
+    qualityAudio = new QComboBox(this);
+    qualityAudio->addItems({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
+
+    layoutAudioQuality->addWidget(qualityAudio);
+    mainLayout->addLayout(layoutAudioQuality);
+
+    // Cookies
+    QHBoxLayout *layoutCookiesBrowser = new QHBoxLayout();
+    QLabel *titleCookiesBrowser = new QLabel("Cookies from browser:", this);
+    titleCookiesBrowser->setFixedWidth(50);
+    layoutCookiesBrowser->addWidget(titleCookiesBrowser);
+
+    CookiesBrowser = new QComboBox(this);
+    CookiesBrowser->addItems({"google", "chrome", "yandex", "firefox"});
+
+    layoutCookiesBrowser->addWidget(CookiesBrowser);
+    mainLayout->addLayout(layoutCookiesBrowser);
 
     // Buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(
@@ -69,21 +104,6 @@ settingDialog::settingDialog(QWidget *parent)
 
 }
 
-QString settingDialog::getAudioFormat() const
-{
-    return formatAudio->currentText().split(" ").first();
-}
-
-QString settingDialog::getVideoFormat() const
-{
-    return formatVideo->currentText().split(" ").first();
-}
-
-QString settingDialog::getLyricsFormat() const
-{
-    return formatLyrics->currentText().split(" ").first();
-}
-
 void settingDialog::saveSetting()
 {
     QSettings setting("config.conf", QSettings::IniFormat);
@@ -92,6 +112,13 @@ void settingDialog::saveSetting()
     setting.setValue("Formats/AudioFormat", getAudioFormat());
     setting.setValue("Formats/VideoFormat", getVideoFormat());
     setting.setValue("Formats/LyricsFormat", getLyricsFormat());
+    
+    // Quality
+    setting.setValue("Quality/VideoQuality", getVideoQuality());
+    setting.setValue("Quality/AudioQuality", getAudioQuality());
+
+    // Cookies
+    setting.setValue("Cookies/CookiesBrowser", getCookiesBrowser());
 
 }
 
@@ -103,5 +130,12 @@ void settingDialog::loadSetting()
     formatAudio->setCurrentText(setting.value("Formats/AudioFormat", ".mp3").toString());
     formatVideo->setCurrentText(setting.value("Formats/VideoFormat", ".mp4").toString());
     formatLyrics->setCurrentText(setting.value("Formats/LyricsFormat", ".lrc").toString());
-    
+
+    // Quality
+    qualityVideo->setCurrentText(setting.value("Quality/VideoQuality", "2160p60").toString());
+    qualityAudio->setCurrentText(setting.value("Quality/AudioQuality", "0").toString());
+
+    // Cookies
+    CookiesBrowser->setCurrentText(setting.value("Cookies/CookiesBrowser", "firefox").toString());
+
 }

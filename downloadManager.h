@@ -41,7 +41,9 @@ public:
     void clearMedia();
     void stopDownload();
     void setIsStopped(bool set);
-    void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics);
+    void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
+                    const QString &qualityVideo, const QString &qualityAudio);
+    void setCookies(const QString &Cookies);
 
     static QString formatBytes(long long bytes);
     int getMediaCount();
@@ -56,6 +58,10 @@ private:
     QString _formatAudio;
     QString _formatVideo;
     QString _formatLyrics;
+    QString _qualityVideo;
+    QString _qualityAudio;
+    QString _CookiesBrowser;
+    
     bool _isStopped;
     QList<mediaInfo *> _Media;
 };
