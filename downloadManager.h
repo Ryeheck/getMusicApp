@@ -31,11 +31,11 @@ public:
     explicit downloadManager(QObject *parent = nullptr);
     ~downloadManager() override;
 
-    void getSongs(const QString &url, const QString &folder = "", bool startAfter = false, bool lyrics = false);
-    void startDownload(const QString &folder = "", bool isLyrics = false);
-    void songDownload(mediaInfo *media, const QString &folder);
+    void getSongs(const QString &url, const QString &folder = "", 
+                  bool startAfter = false, bool isSongs = false, bool lyrics = false);
+    void startDownload(const QString &folder = "", bool isSongs = false, bool isLyrics = false);
+    void mediaDownload(mediaInfo *media, const QString &folder, bool isSong);
     void lyricsDownload(mediaInfo *media, const QString &folder);
-    void videoDownload(const QString &folder);
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearSongs();

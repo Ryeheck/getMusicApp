@@ -30,11 +30,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     settingDialog diag(this);
     manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat());
     
-    lyricsButton  = new QPushButton("Lyrics dowload(s)", this);
-    musicButton   = new QPushButton("Music dowload(s)", this);
+    lyricsButton  = new QPushButton("Lyric download(s)", this);
+    musicButton   = new QPushButton("Music download(s)", this);
     titleButton   = new QPushButton("Playlist", this);
     settingButton = new QPushButton("Setting", this);
-    
+    videoButton   = new QPushButton("Video download(s)", this);
+
     clearListButton   = new QPushButton("Clear all", this);
     selectAllButton   = new QPushButton("Select All", this);
     deselectAllButton = new QPushButton("Deselect All", this);
@@ -56,8 +57,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     layoutMain->addWidget(logs);
 
+    layoutButtonsHOne->addWidget(videoButton, 4);
     layoutButtonsHOne->addWidget(musicButton, 4);
     layoutButtonsHOne->addWidget(lyricsButton, 4);
+
     layoutButtonsHTwo->addWidget(settingButton, 4);
     layoutButtonsHTwo->addWidget(titleButton, 4);
     
@@ -110,7 +113,11 @@ void MainWindow::setupConnections()
     });
 
     connect(musicButton, &QPushButton::clicked, [this] () {
-        handleDownload(musicButton, false);
+        handleDownload(true);
+    });
+
+    connect(videoButton, &QPushButton::clicked, [this] () {
+        handleDownload();
     });
 
     connect(selectAllButton, &QPushButton::clicked, [this] () {
@@ -137,7 +144,7 @@ void MainWindow::setupConnections()
     });
 
     connect(lyricsButton, &QPushButton::clicked, [this] () {
-        handleDownload(lyricsButton, true);
+        handleDownload(false, true);
     });
 
     connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
@@ -165,7 +172,7 @@ void MainWindow::setupConnections()
     });
 }
 
-void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
+void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 {
     logs->log("Wait...");
 
@@ -186,9 +193,9 @@ void MainWindow::handleDownload(QPushButton *button, bool isLyrics)
     }
 
     if (!logs->getTableWidgetCount())
-        manager->getSongs(url, folder, true, isLyrics);
+        manager->getSongs(url, folder, true, isSongs, isLyrics);
     else                         
-        manager->startDownload(folder, isLyrics);
+        manager->startDownload(folder, isSongs, isLyrics);
 }
 
 void MainWindow::setupBeforeDownload(bool set)
