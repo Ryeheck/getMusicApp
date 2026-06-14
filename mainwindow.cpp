@@ -80,8 +80,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     layoutMain->addLayout(layoutButtons);
 
-    setupConnections();
-
     /*
     ПРИМЕР:
     
@@ -92,10 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->removeAlso(0);
     });
     */
-}
 
-void MainWindow::setupConnections()
-{
     connect(titleButton, &QPushButton::clicked, [this] () {
         logs->log("Wait...");
         
@@ -107,9 +102,8 @@ void MainWindow::setupConnections()
     
     connect(settingButton, &QPushButton::clicked, [this] () {
         settingDialog diag(this);
-
         if(diag.exec() == QDialog::Accepted) {
-            manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat(),
+            manager->setFormats(diag.getAudioFormat(),  diag.getVideoFormat(), diag.getLyricsFormat(),
                                 diag.getVideoQuality(), diag.getAudioQuality());
             manager->setCookies(diag.getCookiesBrowser());
         }

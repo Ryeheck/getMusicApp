@@ -22,7 +22,6 @@ public:
     void allTitle();
     
 private:
-    void setupConnections();
     QWidget *centralWidget;
     QBoxLayout *layoutMain;
     QBoxLayout *layoutButtons;
