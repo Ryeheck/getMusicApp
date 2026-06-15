@@ -8,6 +8,9 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QBoxLayout>
+#include <QToolButton>
+#include <QAction>
+#include <QMenu>
 
 class MainWindow : public QMainWindow
 {
@@ -21,27 +24,37 @@ public:
 
     void allTitle();
     
+private slots:
+    void onLogsToggled(bool checked);
+
 private:
     QWidget *centralWidget;
     QBoxLayout *layoutMain;
-    QBoxLayout *layoutButtons;
-    QHBoxLayout *layoutButtonsHOne;
-    QHBoxLayout *layoutButtonsHTwo;
+    QBoxLayout *layoutBtns;
+    QHBoxLayout *layoutBtnsHOne;
+    QHBoxLayout *layoutBtnsHTwo;
     
     logView *logs = nullptr;
     downloadManager *manager = nullptr;
 
     QLineEdit *inputURL;
     QLineEdit *inputFolder;
-    QPushButton *settingButton;
-    QPushButton *titleButton;
-    QPushButton *musicButton;
-    QPushButton *clearListButton;
-    QPushButton *selectAllButton;
-    QPushButton *deselectAllButton;
-    QPushButton *stopButton;
-    QPushButton *stopForNextButton;
-    QPushButton *lyricsButton;
-    QPushButton *videoButton;
+    QPushButton *settingBtn;
+    QPushButton *titleBtn;
+    QPushButton *musicBtn;
+
+    QToolButton *logsToolBtn;
+    QMenu *menuLogsBtns;
+    QAction *clearListBtn;
+    QAction *deselectAllBtn;
+    QAction *selectAllBtn;
+    QAction *logsAction;
+
+    QPushButton *stopBtn;
+    QPushButton *stopForNextBtn;
+    QPushButton *lyricsBtn;
+    QPushButton *videoBtn;
+    
+
 };
 #endif // MAINWINDOW_H

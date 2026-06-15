@@ -150,6 +150,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qversiontagging.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qxptype_traits.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtCore/qyieldcpu.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/QAction \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/QTransform \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qabstracttextdocumentlayout.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtGui/qaction.h \
@@ -202,10 +203,12 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QHBoxLayout \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QLineEdit \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QMainWindow \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QMenu \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPlainTextEdit \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QProgressBar \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QPushButton \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QTableWidget \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/QToolButton \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractbutton.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qabstractitemview.h \
@@ -219,6 +222,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlayoutitem.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qlineedit.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qmainwindow.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qmenu.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qplaintextedit.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qprogressbar.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qpushbutton.h \
@@ -232,6 +236,7 @@
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtablewidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtabwidget.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtextedit.h \
+  /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtoolbutton.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgets-config.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsexports.h \
   /home/ryabi/Qt/6.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \

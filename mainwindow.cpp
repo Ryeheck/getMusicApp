@@ -8,6 +8,9 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QStandardPaths>
+#include <QToolButton>
+#include <QAction>
+#include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -15,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setCentralWidget(centralWidget);
 
     layoutMain        = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
-    layoutButtons     = new QVBoxLayout();
-    layoutButtonsHOne = new QHBoxLayout();
-    layoutButtonsHTwo = new QHBoxLayout();
+    layoutBtns     = new QVBoxLayout();
+    layoutBtnsHOne = new QHBoxLayout();
+    layoutBtnsHTwo = new QHBoxLayout();
 
     inputFolder = new QLineEdit(this);
     inputURL    = new QLineEdit(this);
@@ -32,56 +35,58 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
                         diag.getVideoQuality(), diag.getAudioQuality());
     manager->setCookies(diag.getCookiesBrowser());
 
-    lyricsButton  = new QPushButton("Lyric download(s)", this);
-    musicButton   = new QPushButton("Music download(s)", this);
-    titleButton   = new QPushButton("Playlist", this);
-    settingButton = new QPushButton("Setting", this);
-    videoButton   = new QPushButton("Video download(s)", this);
+    lyricsBtn  = new QPushButton("Lyric download(s)", this);
+    musicBtn   = new QPushButton("Music download(s)", this);
+    titleBtn   = new QPushButton("Playlist", this);
+    settingBtn = new QPushButton("Setting", this);
+    videoBtn   = new QPushButton("Video download(s)", this);
 
-    clearListButton   = new QPushButton("Clear all", this);
-    selectAllButton   = new QPushButton("Select All", this);
-    deselectAllButton = new QPushButton("Deselect All", this);
+    logsToolBtn = new QToolButton(this);
+    logsToolBtn->setText("Tools:");
+    logsToolBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
-    clearListButton->hide();
-    selectAllButton->hide();
-    deselectAllButton->hide();
+    menuLogsBtns = new QMenu(this);
+    selectAllBtn   = menuLogsBtns->addAction("Select all");
+    deselectAllBtn = menuLogsBtns->addAction("Deselect all");
+    clearListBtn   = menuLogsBtns->addAction("Clear all");
+    logsAction     = menuLogsBtns->addAction("Show logs");
+    logsAction->setCheckable(true);
+    logsToolBtn->setMenu(menuLogsBtns);
+    
+    stopBtn        = new QPushButton("Stop", this);
+    stopForNextBtn = new QPushButton("Stop for next", this);
 
-    stopButton        = new QPushButton("Stop", this);
-    stopForNextButton = new QPushButton("Stop for next", this);
+    stopForNextBtn->hide();
+    stopBtn->hide();
 
-    stopForNextButton->hide();
-    stopButton->hide();
-
-    layoutButtons->setSpacing(3);
+    layoutBtns->setSpacing(3);
 
     layoutMain->addWidget(inputFolder);
     layoutMain->addWidget(inputURL);
 
     layoutMain->addWidget(logs);
 
-    layoutButtonsHOne->addWidget(videoButton, 4);
-    layoutButtonsHOne->addWidget(musicButton, 4);
-    layoutButtonsHOne->addWidget(lyricsButton, 4);
+    layoutBtnsHOne->addWidget(videoBtn, 4);
+    layoutBtnsHOne->addWidget(musicBtn, 4);
+    layoutBtnsHOne->addWidget(lyricsBtn, 4);
 
-    layoutButtonsHTwo->addWidget(settingButton, 4);
-    layoutButtonsHTwo->addWidget(titleButton, 4);
+    layoutBtnsHTwo->addWidget(settingBtn, 4);
+    layoutBtnsHTwo->addWidget(titleBtn, 4);
     
-    layoutButtonsHOne->addStretch();
-    layoutButtonsHOne->addWidget(selectAllButton);
-    layoutButtonsHOne->addWidget(deselectAllButton);
+    layoutBtnsHOne->addStretch();
+    layoutBtnsHOne->addWidget(logsToolBtn);
 
-    layoutButtonsHTwo->addStretch();
-    layoutButtonsHTwo->addWidget(stopButton);
-    layoutButtonsHTwo->addWidget(clearListButton);
-    layoutButtonsHTwo->addWidget(stopForNextButton);
+    layoutBtnsHTwo->addStretch();
+    layoutBtnsHTwo->addWidget(stopBtn);
+    layoutBtnsHTwo->addWidget(stopForNextBtn);
 
-    layoutButtons->addLayout(layoutButtonsHOne);
-    layoutButtons->addLayout(layoutButtonsHTwo);
+    layoutBtns->addLayout(layoutBtnsHOne);
+    layoutBtns->addLayout(layoutBtnsHTwo);
 
-    layoutMain->addLayout(layoutButtons);
+    layoutMain->addLayout(layoutBtns);
 
     /*
-    ПРИМЕР:
+    EXAMPLE:
     
     QPushButton *newbtn = new QPushButton("delete");
     logs->addItem("nirvana", "40vm", "deleted", newbtn);
@@ -91,16 +96,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
     */
 
-    connect(titleButton, &QPushButton::clicked, [this] () {
+    connect(titleBtn, &QPushButton::clicked, [this] () {
         logs->log("Wait...");
         
         manager->getMedia(inputURL->text());
 
         setupBeforeDownload(false);
-        stopButton->show();
+        stopBtn->show();
     }); 
     
-    connect(settingButton, &QPushButton::clicked, [this] () {
+    connect(settingBtn, &QPushButton::clicked, [this] () {
         settingDialog diag(this);
         if(diag.exec() == QDialog::Accepted) {
             manager->setFormats(diag.getAudioFormat(),  diag.getVideoFormat(), diag.getLyricsFormat(),
@@ -109,44 +114,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         }
     });
 
-    connect(musicButton, &QPushButton::clicked, [this] () {
-        handleDownload(true);
-    });
+    connect(musicBtn,  &QPushButton::clicked, [this] () {  handleDownload(true);  });
+    connect(videoBtn,  &QPushButton::clicked, [this] () {  handleDownload();  });
+    connect(lyricsBtn, &QPushButton::clicked, [this] () {  handleDownload(false, true);  });
 
-    connect(videoButton, &QPushButton::clicked, [this] () {
-        handleDownload();
-    });
-
-    connect(selectAllButton, &QPushButton::clicked, [this] () {
-        logs->setSelectAllItem();
-    });    
-
-    connect(deselectAllButton, &QPushButton::clicked, [this] () {
-        logs->setDeselectAllItem();
-    });
-
-    connect(clearListButton, &QPushButton::clicked, [this] () {
+    connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
+    connect(selectAllBtn,   &QAction::triggered, [this] () {  logs->setSelectAllItem();  });
+    connect(deselectAllBtn, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
+    connect(clearListBtn,   &QAction::triggered, [this] () {
         logs->clearAll();
         manager->clearMedia();
     });  
 
-    connect(stopButton, &QPushButton::clicked, [this] () {
+    connect(stopBtn, &QPushButton::clicked, [this] () {
         manager->stopDownload();
         setupBeforeDownload(false);
     });
 
-    connect(stopForNextButton, &QPushButton::clicked, [this] () {
+    connect(stopForNextBtn, &QPushButton::clicked, [this] () {
         manager->setIsStopped(true);
         setupBeforeDownload(false);
     });
 
-    connect(lyricsButton, &QPushButton::clicked, [this] () {
-        handleDownload(false, true);
-    });
-
+    connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
     connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
-
     connect(manager, &downloadManager::activeTasksCountChanged, this, 
             [this] (const int count) {
         if (count > 0) {
@@ -161,11 +153,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             [this] (const QString &id, const QString &status) {
         int row = logs->findRowById(id);
         logs->updateStatus(row, status);
-    });
-
-    connect(manager, &downloadManager::mediaAdded, this, 
-            [this] (const mediaInfo *media) {
-        logs->addItem(media);
     });
 }
 
@@ -198,22 +185,29 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 void MainWindow::setupBeforeDownload(bool set)
 {
     if (set) {
-        clearListButton->hide();
-        selectAllButton->hide();
-        deselectAllButton->hide();
+        logsToolBtn->hide();
 
-        stopButton->show();
-        stopForNextButton->show();
+        stopBtn->show();
+        stopForNextBtn->show();
     } else {
-        stopButton->hide();
-        stopForNextButton->hide();
+        stopBtn->hide();
+        stopForNextBtn->hide();
 
-        clearListButton->show();
-        selectAllButton->show();
-        deselectAllButton->show();
+        logsToolBtn->show();
     }
 }
 
+void MainWindow::onLogsToggled(bool checked)
+{
+    if (checked) {
+        logsAction->setText("Hide logs");
+        // manager->setupProcessLogging(id, isLyrics);
+    
+    } else {
+        logsAction->setText("Show logs");
+
+    }
+}
 MainWindow::~MainWindow()
 {
     qDebug() << "ok";

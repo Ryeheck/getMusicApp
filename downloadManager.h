@@ -47,6 +47,7 @@ public:
 
     static QString formatBytes(long long bytes);
     int getMediaCount();
+    
 
 private:
     void setupProgressBar(const QString &id, QProgressBar *pBar);
