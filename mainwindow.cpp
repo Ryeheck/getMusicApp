@@ -42,14 +42,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     videoBtn   = new QPushButton("Video download(s)", this);
 
     logsToolBtn = new QToolButton(this);
-    logsToolBtn->setText("Tools:");
+    logsToolBtn->setText("Select all");
     logsToolBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
     menuLogsBtns = new QMenu(this);
-    selectAllBtn   = menuLogsBtns->addAction("Select all");
-    deselectAllBtn = menuLogsBtns->addAction("Deselect all");
-    clearListBtn   = menuLogsBtns->addAction("Clear all");
-    logsAction     = menuLogsBtns->addAction("Show logs");
+    deselectAllAction = menuLogsBtns->addAction("Deselect all");
+    logsAction        = menuLogsBtns->addAction("Show logs");
+    clearTitleAction  = menuLogsBtns->addAction("Clear title");
+    clearListAction   = menuLogsBtns->addAction("Clear all");
+    
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
     
@@ -118,10 +119,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(videoBtn,  &QPushButton::clicked, [this] () {  handleDownload();  });
     connect(lyricsBtn, &QPushButton::clicked, [this] () {  handleDownload(false, true);  });
 
+    connect(logsToolBtn,   &QToolButton::clicked, [this] () {  logs->setSelectAllItem();  });
+
     connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
-    connect(selectAllBtn,   &QAction::triggered, [this] () {  logs->setSelectAllItem();  });
-    connect(deselectAllBtn, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
-    connect(clearListBtn,   &QAction::triggered, [this] () {
+    connect(deselectAllAction, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
+    connect(clearTitleAction,  &QAction::triggered, [this] () {  
+        logs->clearTitle();  
+        manager->clearMedia();
+    });
+    connect(clearListAction,   &QAction::triggered, [this] () {
         logs->clearAll();
         manager->clearMedia();
     });  
@@ -130,7 +136,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         manager->stopDownload();
         setupBeforeDownload(false);
     });
-
     connect(stopForNextBtn, &QPushButton::clicked, [this] () {
         manager->setIsStopped(true);
         setupBeforeDownload(false);

@@ -45,11 +45,12 @@ private:
 
     QToolButton *logsToolBtn;
     QMenu *menuLogsBtns;
-    QAction *clearListBtn;
-    QAction *deselectAllBtn;
-    QAction *selectAllBtn;
+    QAction *clearListAction;
+    QAction *deselectAllAction;
+    QAction *selectAllAction;
     QAction *logsAction;
-
+    QAction *clearTitleAction;
+    
     QPushButton *stopBtn;
     QPushButton *stopForNextBtn;
     QPushButton *lyricsBtn;

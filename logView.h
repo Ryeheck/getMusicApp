@@ -25,6 +25,7 @@ public:
     void clearAll();
     void clearSelect();
     void clearDeselect();
+    void clearTitle();
 
     void log(const QString &message = "");
     void addItem(const mediaInfo *media);
@@ -37,16 +38,16 @@ public:
     void hideLogText() {  logText->hide();  };
     void appendText(const QString &message) {  text->appendHtml(message);  };
     void updateProgressBar(QProgressBar *progressBar, const int percent) {  progressBar->setValue(percent);  };
-    void removeAlso(int row) {  tableWidget->removeRow(row);  };
+    void removeAlso(int row) {  titleWidget->removeRow(row);  };
     int getProgressBarPercent(QProgressBar *progressBar) {  return progressBar->value();  };
-    int getTableWidgetCount() {  return tableWidget->rowCount();  };
+    int getTableWidgetCount() {  return titleWidget->rowCount();  };
 
 private:
     QHBoxLayout *HLayout;
     QVBoxLayout *VLayout;
     QPlainTextEdit *logText;
     QPlainTextEdit *text;
-    QTableWidget *tableWidget;
+    QTableWidget *titleWidget;
 };
 
 #endif // LOGVIEW_H

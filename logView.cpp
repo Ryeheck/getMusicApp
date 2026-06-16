@@ -15,31 +15,33 @@ logView::logView(QWidget *parent)
 {
     logText = new QPlainTextEdit(this);
     logText->setReadOnly(true);
+    logText->document()->setMaximumBlockCount(500);
     logText->hide();
 
     text = new QPlainTextEdit(this);
+    text->document()->setMaximumBlockCount(500);
     text->setReadOnly(true);
 
-    tableWidget = new QTableWidget(this);
+    titleWidget = new QTableWidget(this);
 
     VLayout = new QVBoxLayout(this);
     HLayout = new QHBoxLayout();
 
-    tableWidget->setRowCount(0);
-    tableWidget->setColumnCount(4);
-    tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableWidget->verticalHeader()->setVisible(false);
+    titleWidget->setRowCount(0);
+    titleWidget->setColumnCount(4);
+    titleWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    titleWidget->verticalHeader()->setVisible(false);
 
     QStringList headers = {"Name", "Size", "Status", "Action"};
-    tableWidget->setHorizontalHeaderLabels(headers);
+    titleWidget->setHorizontalHeaderLabels(headers);
     
-    QHeaderView *header = tableWidget->horizontalHeader();
+    QHeaderView *header = titleWidget->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
     HLayout->addWidget(text);
-    HLayout->addWidget(tableWidget);
+    HLayout->addWidget(titleWidget);
     
     VLayout->addLayout(HLayout);
     VLayout->addWidget(logText);
@@ -47,18 +49,18 @@ logView::logView(QWidget *parent)
 
 void logView::setSelectAllItem()
 {
-    for(int row = 0; row < tableWidget->rowCount(); ++row)
+    for(int row = 0; row < titleWidget->rowCount(); ++row)
     {
-        tableWidget->item(row, 0)->setCheckState(Qt::Checked);
+        titleWidget->item(row, 0)->setCheckState(Qt::Checked);
     }
     update();
 }
 
 void logView::setDeselectAllItem()
 {
-    for(int row = 0; row < tableWidget->rowCount(); ++row)
+    for(int row = 0; row < titleWidget->rowCount(); ++row)
     {
-        tableWidget->item(row, 0)->setCheckState(Qt::Unchecked);
+        titleWidget->item(row, 0)->setCheckState(Qt::Unchecked);
     }
     update();
 }
@@ -67,21 +69,27 @@ QList<QTableWidgetItem *> logView::getItemsFromColumn(int column)
 {
     QList<QTableWidgetItem *> Items;
     
-    for(int row = 0; row < tableWidget->rowCount(); ++row)
+    for(int row = 0; row < titleWidget->rowCount(); ++row)
     {
-        QTableWidgetItem *item = tableWidget->item(row, column);
+        QTableWidgetItem *item = titleWidget->item(row, column);
 
         if(item)  Items.append(item);
     }
     return Items;
 }
 
-
-
 void logView::clearAll()
 {
-    tableWidget->clearContents();
-    tableWidget->setRowCount(0);
+    titleWidget->clearContents();
+    titleWidget->setRowCount(0);
+    text->clear();
+    logText->clear();
+}
+
+void logView::clearTitle() 
+{  
+    titleWidget->clearContents();  
+    titleWidget->setRowCount(0);
 }
 
 void logView::log(const QString &message)
@@ -92,8 +100,8 @@ void logView::log(const QString &message)
 
 void logView::addItem(const mediaInfo *song)
 {
-    int row = tableWidget->rowCount();
-    tableWidget->insertRow(row);
+    int row = titleWidget->rowCount();
+    titleWidget->insertRow(row);
 
     QTableWidgetItem *itemName = new QTableWidgetItem(song->name);
     itemName->setFlags(itemName->flags() | Qt::ItemIsUserCheckable);
@@ -101,33 +109,33 @@ void logView::addItem(const mediaInfo *song)
     itemName->setForeground(Qt::white);
     itemName->setData(Qt::UserRole, song->id);
 
-    tableWidget->setItem(row, 0, itemName);
-    tableWidget->setItem(row, 1, new QTableWidgetItem(downloadManager::formatBytes(song->size)));
-    tableWidget->setItem(row, 2, new QTableWidgetItem(song->status));
+    titleWidget->setItem(row, 0, itemName);
+    titleWidget->setItem(row, 1, new QTableWidgetItem(downloadManager::formatBytes(song->size)));
+    titleWidget->setItem(row, 2, new QTableWidgetItem(song->status));
 
     if (song->widget) {
-        song->widget->setParent(tableWidget);   
-        tableWidget->setCellWidget(row, 3, song->widget);
+        song->widget->setParent(titleWidget);   
+        titleWidget->setCellWidget(row, 3, song->widget);
     }
 }
 
 void logView::updateStatus(int row, const QString &newStatus)
 {
-    QTableWidgetItem *item = tableWidget->item(row, 2);
+    QTableWidgetItem *item = titleWidget->item(row, 2);
 
     if (item != nullptr)  item->setText(newStatus);
 }
 
 void logView::setWidget(int row, QWidget *widget) 
 {  
-    if (widget)  tableWidget->setCellWidget(row, 3, widget);
+    if (widget)  titleWidget->setCellWidget(row, 3, widget);
 }
 
 int logView::findRowById(const QString &id)
 {
-    for(int row = 0; row < tableWidget->rowCount(); ++row)
+    for(int row = 0; row < titleWidget->rowCount(); ++row)
     {
-        QString itemId = tableWidget->item(row, 0)->data(Qt::UserRole).toString();
+        QString itemId = titleWidget->item(row, 0)->data(Qt::UserRole).toString();
 
         if (itemId == id)  return row;
     }
