@@ -20,28 +20,32 @@ public:
     explicit logView(QWidget *parent = nullptr);
     // ~logView() override;
 
-    void log(const QString &message = "");
-    void updateProgressBar(QProgressBar *progressBar, const int percent);
-    int getProgressBarPercent(QProgressBar *progressBar);
     void setSelectAllItem();
     void setDeselectAllItem();
     void clearAll();
     void clearSelect();
     void clearDeselect();
 
-    QList<QTableWidgetItem *> getItemsFromColumn(int column);
-    int getTableWidgetCount();
-
-    int findRowById(const QString &id);
-    void removeAlso(int row);
+    void log(const QString &message = "");
     void addItem(const mediaInfo *media);
     void updateStatus(int row, const QString &newStatus);
     void setWidget(int row, QWidget *widget);
+    int findRowById(const QString &id);
+    QList<QTableWidgetItem *> getItemsFromColumn(int column);
+
+    void showLogText() {  logText->show();  };
+    void hideLogText() {  logText->hide();  };
+    void appendText(const QString &message) {  text->appendHtml(message);  };
+    void updateProgressBar(QProgressBar *progressBar, const int percent) {  progressBar->setValue(percent);  };
+    void removeAlso(int row) {  tableWidget->removeRow(row);  };
+    int getProgressBarPercent(QProgressBar *progressBar) {  return progressBar->value();  };
+    int getTableWidgetCount() {  return tableWidget->rowCount();  };
 
 private:
     QHBoxLayout *HLayout;
     QVBoxLayout *VLayout;
     QPlainTextEdit *logText;
+    QPlainTextEdit *text;
     QTableWidget *tableWidget;
 };
 

@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     */
 
     connect(titleBtn, &QPushButton::clicked, [this] () {
-        logs->log("Wait...");
+        logs->appendText("Wait...");
         
         manager->getMedia(inputURL->text());
 
@@ -139,13 +139,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
     connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
+    connect(manager, &downloadManager::messageRequested, logs, &logView::appendText);
     connect(manager, &downloadManager::activeTasksCountChanged, this, 
             [this] (const int count) {
         if (count > 0) {
             setupBeforeDownload(true);
         } else if (count == 0) {
             setupBeforeDownload(false);
-            logs->log("All Done!");   
+            logs->appendText("All Done!");   
         }
     });
 
@@ -158,7 +159,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 {
-    logs->log("Wait...");
+    logs->appendText("Wait...");
 
     QString url = inputURL->text();
     QString folder = inputFolder->text();
@@ -202,9 +203,11 @@ void MainWindow::onLogsToggled(bool checked)
     if (checked) {
         logsAction->setText("Hide logs");
         // manager->setupProcessLogging(id, isLyrics);
+        logs->showLogText();
     
     } else {
         logsAction->setText("Show logs");
+        logs->hideLogText();
 
     }
 }

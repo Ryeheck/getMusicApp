@@ -21,6 +21,7 @@ class downloadManager : public QObject
     Q_OBJECT
 
 signals:
+    void messageRequested(const QString &message);
     void logMessageRequested(const QString &message);
     void activeTasksCountChanged(const int count);
     void mediaAdded(const mediaInfo *media);
@@ -50,9 +51,8 @@ public:
     
 
 private:
-    void setupProgressBar(const QString &id, QProgressBar *pBar);
+    void setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics);
     void setWorking(QProcess *process);
-    void setupProcessLogging(const QString &id, bool isLyrics = false);
     void cleanupProcess(const QString &id, int exitCode);
 
     QMap<QString, QProcess *> _activeProcesses; 

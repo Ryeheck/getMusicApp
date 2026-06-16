@@ -15,9 +15,13 @@ logView::logView(QWidget *parent)
 {
     logText = new QPlainTextEdit(this);
     logText->setReadOnly(true);
+    logText->hide();
+
+    text = new QPlainTextEdit(this);
+    text->setReadOnly(true);
 
     tableWidget = new QTableWidget(this);
-    
+
     VLayout = new QVBoxLayout(this);
     HLayout = new QHBoxLayout();
 
@@ -34,10 +38,11 @@ logView::logView(QWidget *parent)
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
-    HLayout->addWidget(logText);
+    HLayout->addWidget(text);
     HLayout->addWidget(tableWidget);
     
     VLayout->addLayout(HLayout);
+    VLayout->addWidget(logText);
 }
 
 void logView::setSelectAllItem()
@@ -71,10 +76,7 @@ QList<QTableWidgetItem *> logView::getItemsFromColumn(int column)
     return Items;
 }
 
-int logView::getTableWidgetCount()
-{
-    return tableWidget->rowCount();
-}
+
 
 void logView::clearAll()
 {
@@ -86,16 +88,6 @@ void logView::log(const QString &message)
 {
     QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
     logText->appendHtml("[" + time + "] " + message);
-}
-
-void logView::updateProgressBar(QProgressBar *progressBar, const int percent)
-{
-    progressBar->setValue(percent);
-}
-
-int logView::getProgressBarPercent(QProgressBar *progressBar)
-{
-    return progressBar->value();
 }
 
 void logView::addItem(const mediaInfo *song)
@@ -126,14 +118,9 @@ void logView::updateStatus(int row, const QString &newStatus)
     if (item != nullptr)  item->setText(newStatus);
 }
 
-void logView::setWidget(int row, QWidget *widget)
-{
+void logView::setWidget(int row, QWidget *widget) 
+{  
     if (widget)  tableWidget->setCellWidget(row, 3, widget);
-}
-
-void logView::removeAlso(int row)
-{
-    tableWidget->removeRow(row);
 }
 
 int logView::findRowById(const QString &id)

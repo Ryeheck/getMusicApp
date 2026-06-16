@@ -82,7 +82,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
             [=, this] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
-        emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
+        emit messageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
         
         if (QProcess *process = _activeProcesses.value(url)) {
             process->deleteLater();
@@ -115,7 +115,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 
 void downloadManager::startDownload(const QString &folder, bool isSongs, bool isLyrics)
 {
-    emit logMessageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
+    emit messageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
     emit activeTasksCountChanged(1);
 
     for(int i = 0; i < _Media.size() && !_isStopped; ++i)
@@ -141,10 +141,8 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
     _activeProcesses.insert(media->id, process);
     setWorking(process);
     
-    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
-        setupProgressBar(media->id, pBar);
-    else 
-        setupProcessLogging(media->id, true);
+    QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
+    setupProcessLogging(media->id, pBar, false); 
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, media, process] (int exitCode) {
@@ -188,10 +186,8 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
     _activeProcesses.insert(media->id, process);
     setWorking(process);
     
-    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
-        setupProgressBar(media->id, pBar); 
-    else
-        setupProcessLogging(media->id);
+    QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
+    setupProcessLogging(media->id, pBar, false); 
     
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, media] (int exitCode) {
@@ -246,7 +242,7 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
         if (_Media[i]->id == id)  output = _Media[i]->name;
     }
     output += (exitCode ? ": Error" : ": Done!");
-    emit logMessageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
+    emit messageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
 
     if (_activeProcesses.contains(id)) {
         if (QProcess *process = _activeProcesses.value(id))  process->deleteLater();
@@ -255,26 +251,34 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
     }
 }
 
-void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar) 
+void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics) 
 {
-    if (!(pBar || _activeProcesses.contains(id)))  return;
+    if (!_activeProcesses.contains(id))  return;
     int *stepCount = new int(0);
     
     QProcess *process = _activeProcesses.value(id);
     
-    connect(process, &QProcess::readyReadStandardOutput, [this, process, pBar] () {
+    connect(process, &QProcess::readyReadStandardOutput, [this, process, pBar, isLyrics] () {
         QByteArray data = process->readAllStandardOutput();
         QString output = QString::fromUtf8(data).trimmed();
 
         QRegularExpression percentReg(R"(\[download\]\s+(\d+(?:\.\d+)?)\s*%)");
         QRegularExpressionMatch match = percentReg.match(output);
 
-        if (match.hasMatch()) {
+        if (output.isEmpty())  return;  
+
+        if (match.hasMatch() && pBar) {
             int percent = static_cast<int >(match.captured(1).toFloat());
             if (percent > 100)  percent = 100;
 
             emit progressBarRequested(pBar, percent);
         }
+
+        if (isLyrics)  
+            emit logMessageRequested(QString("<span style='color:DarkSeaGreen;'>INFO: %1</span>").arg(output));
+        else           
+            emit logMessageRequested(QString("<span style='color:silver;'>INFO: </span>") + output);
+        
     });
 
     connect(process, &QProcess::readyReadStandardError, [this, process, stepCount, pBar] () {
@@ -283,6 +287,8 @@ void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar)
 
         QRegularExpression percentReg(R"((continuing search|Lyrics found|No suitable lyrics found for))");
         QRegularExpressionMatch match = percentReg.match(output);
+
+        if (output.isEmpty())  return;
 
         if (match.hasMatch()) {
             QString search = match.captured(1);
@@ -296,44 +302,18 @@ void downloadManager::setupProgressBar(const QString &id, QProgressBar *pBar)
             }
             emit progressBarRequested(pBar, percent);
         }
+
+        output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
+        output.replace("INFO:", QString("<span style='color:silver;'>INFO: </span>"));
+        output.replace("WARNING:", QString("<span style='color:DarkOrange;'>WARNING:</span>"));
+        output.replace("ERROR:", QString("<span style='color:IndianRed;'>ERROR:</span>"));
+
+        emit logMessageRequested(output);
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [stepCount] (int) {
         delete stepCount;
-    });
-}
-
-void downloadManager::setupProcessLogging(const QString &id, bool isLyrics)
-{
-    if (!_activeProcesses.contains(id))  return;
-
-    QProcess *process = _activeProcesses.value(id);
-
-    connect(process, &QProcess::readyReadStandardOutput, [this, process, isLyrics] () {
-        QByteArray data = process->readAllStandardOutput();
-        QString output = QString::fromUtf8(data).trimmed();
-
-        if (!output.isEmpty()) {
-            if (isLyrics)
-                emit logMessageRequested(QString("<span style='color:DarkSeaGreen;'>INFO: %1</span>").arg(output));
-            else
-                emit logMessageRequested(QString("<span style='color:silver;'>INFO: </span>") + output);
-        }
-    });
-
-    connect(process, &QProcess::readyReadStandardError, [this, process] () {
-        QByteArray data = process->readAllStandardError();
-        QString output = QString::fromUtf8(data);
-
-        if (!output.isEmpty()) {
-            output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
-            output.replace("INFO:", QString("<span style='color:silver;'>INFO: </span>"));
-            output.replace("WARNING:", QString("<span style='color:DarkOrange;'>WARNING:</span>"));
-            output.replace("ERROR:", QString("<span style='color:IndianRed;'>ERROR:</span>"));
-
-            emit logMessageRequested(output);
-        }
     });
 }
 
@@ -365,9 +345,9 @@ void downloadManager::stopDownload()
 
             process->deleteLater();
 
-            emit logMessageRequested(QString("<span style='color:silver;'>User killed process</span>"));
+            emit messageRequested(QString("<span style='color:silver;'>User killed process</span>"));
         } else
-            emit logMessageRequested(QString("<span style='color:silver;'>No active processes</span>"));
+            emit messageRequested(QString("<span style='color:silver;'>No active processes</span>"));
     _activeProcesses.clear();
 }
 
