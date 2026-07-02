@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     logsAction        = menuLogsBtns->addAction("Show logs");
     clearTitleAction  = menuLogsBtns->addAction("Clear title");
     clearListAction   = menuLogsBtns->addAction("Clear all");
+    checkForUpdate    = menuLogsBtns->addAction("Check for updates");
     
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
@@ -131,6 +132,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->clearAll();
         manager->clearMedia();
     });  
+    connect(checkForUpdate, &QAction::triggered, [this] () {  manager->checkForUpdate();  });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {
         manager->stopDownload();

@@ -50,6 +50,7 @@ private:
     QAction *selectAllAction;
     QAction *logsAction;
     QAction *clearTitleAction;
+    QAction *checkForUpdate;
     
     QPushButton *stopBtn;
     QPushButton *stopForNextBtn;

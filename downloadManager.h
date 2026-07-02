@@ -45,7 +45,8 @@ public:
     void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
                     const QString &qualityVideo, const QString &qualityAudio);
     void setCookies(const QString &Cookies);
-
+    void checkForUpdate();
+    
     static QString formatBytes(long long bytes);
     int getMediaCount();
     

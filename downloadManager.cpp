@@ -408,3 +408,28 @@ void downloadManager::setCookies(const QString &Cookies)
 {
     _CookiesBrowser = Cookies;
 }
+
+void downloadManager::checkForUpdate()
+{
+    QProcess *process = new QProcess();
+    QString appDir = qApp->applicationDirPath();
+    QString program = appDir + "/yt-dlp";
+
+    connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
+        QByteArray data = process->readAllStandardOutput();
+        QString output = QString::fromUtf8(data).trimmed();
+
+        emit logMessageRequested(output);
+    });
+    connect(process, &QProcess::readyReadStandardError, [this, process] () {
+        QByteArray data = process->readAllStandardOutput();
+        QString output = QString::fromUtf8(data).trimmed();
+
+        emit logMessageRequested(output);
+    });
+
+    QStringList args;
+    args << "-U";
+
+    process->start(program, args);
+}
