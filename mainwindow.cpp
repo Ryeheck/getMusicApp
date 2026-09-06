@@ -134,9 +134,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });  
     connect(checkForUpdate, &QAction::triggered, [this] () {  
         // manager->checkForUpdate();  
-        QString path = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux";
-        QUrl url(path);
+        QUrl url("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux");
         manager->downloadFile(url);    
+        // QUrl url(/* ffmpeg */);
+        // manager->downloadFile(url);    
+        // QUrl url(/* ffprobe */);
+        // manager->downloadFile(url);    
+        // QUrl url(/* syncedlyrics */);
+        // manager->downloadFile(url); 
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {

@@ -104,11 +104,10 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         
     });
 
-    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDataDir + "/yt-dlp";
+    QString program = appDataDir + "/yt-dlp_linux";
 #endif
 
     QStringList args;
@@ -168,7 +167,6 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
-    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/syncedlyrics_bin.exe";
 #else
@@ -208,7 +206,6 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
-    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";
 #else
@@ -218,7 +215,7 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
     QString mediaName = media->name;
 
     QStringList args;
-    args << "--ffmpeg-location" << appDataDir
+    args // << "--ffmpeg-location" << appDataDir
          << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
          << "--no-mtime" << "--no-playlist" 
@@ -385,7 +382,6 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
 void downloadManager::setWorking(QProcess *process)
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    appDataDir = qApp->applicationDirPath();
 
 #ifdef Q_OS_WIN
     env.insert("PATH", appDataDir + ";" + env.value("PATH"));
@@ -482,12 +478,11 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
 void downloadManager::checkForUpdate()
 {
     QProcess *process = new QProcess();
-    appDataDir = qApp->applicationDirPath();
 
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDataDir + "/yt-dlp";
+    QString program = appDataDir + "/yt-dlp_linux";
 #endif
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
