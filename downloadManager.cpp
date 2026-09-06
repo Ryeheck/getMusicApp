@@ -420,7 +420,12 @@ void downloadManager::checkForUpdate()
 {
     QProcess *process = new QProcess();
     QString appDir = qApp->applicationDirPath();
+
+#ifdef Q_OS_WIN
+    QString program = appDir + "/yt-dlp.exe";
+#else
     QString program = appDir + "/yt-dlp";
+#endif
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();
