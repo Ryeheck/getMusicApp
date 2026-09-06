@@ -25,6 +25,7 @@ public:
     QString getVideoQuality()   const {  return qualityVideo->currentText().split(" ").first();   };
     QString getAudioQuality()   const {  return qualityAudio->currentText().split(" ").first();   };
     QString getCookiesBrowser() const {  return CookiesBrowser->currentText().split(" ").first(); };
+    QString getJSRuntime()      const {  return jsRuntime->currentText().split(" ").first();      };
 
 private:
     QVBoxLayout *mainLayout;
@@ -34,6 +35,7 @@ private:
     QComboBox *qualityVideo;
     QComboBox *qualityAudio;
     QComboBox *CookiesBrowser;
+    QComboBox *jsRuntime;
 };
 
 #endif // SETTINGWINDOW_H

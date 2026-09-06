@@ -87,6 +87,19 @@ settingDialog::settingDialog(QWidget *parent)
     layoutCookiesBrowser->addWidget(CookiesBrowser);
     mainLayout->addLayout(layoutCookiesBrowser);
 
+    // JS runtime
+    QHBoxLayout *layoutJSRuntime = new QHBoxLayout();
+    QLabel *titleJSRuntime = new QLabel("JS runtimes:", this);
+    
+    titleJSRuntime->setFixedWidth(50);
+    layoutJSRuntime->addWidget(titleJSRuntime);
+
+    jsRuntime = new QComboBox(this);
+    jsRuntime->addItems({"deno", "node"});
+    
+    layoutJSRuntime->addWidget(jsRuntime);
+    mainLayout->addLayout(layoutJSRuntime);
+
     // Buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(
         QDialogButtonBox::Ok | QDialogButtonBox::Cancel, 
@@ -119,7 +132,9 @@ void settingDialog::saveSetting()
 
     // Cookies
     setting.setValue("Cookies/CookiesBrowser", getCookiesBrowser());
-
+    
+    // JavaScript
+    setting.setValue("JavaScript/jsRuntime", getJSRuntime());
 }
 
 void settingDialog::loadSetting() 
@@ -137,5 +152,8 @@ void settingDialog::loadSetting()
 
     // Cookies
     CookiesBrowser->setCurrentText(setting.value("Cookies/CookiesBrowser", "firefox").toString());
+
+    // JavaScript
+    jsRuntime->setCurrentText(setting.value("JavaScript/jsRuntime", "deno").toString());
 
 }
