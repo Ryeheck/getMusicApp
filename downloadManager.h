@@ -45,6 +45,7 @@ public:
     void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
                     const QString &qualityVideo, const QString &qualityAudio);
     void setCookies(const QString &Cookies);
+    void setJavaScript(const QString &jsRuntime);
     void checkForUpdate();
     
     static QString formatBytes(long long bytes);
@@ -63,6 +64,7 @@ private:
     QString _qualityVideo;
     QString _qualityAudio;
     QString _CookiesBrowser;
+    QString _jsRuntime;
     
     bool _isStopped;
     QList<mediaInfo *> _Media;

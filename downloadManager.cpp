@@ -22,6 +22,7 @@ downloadManager::downloadManager(QObject *parent)
     // Default formats
     setFormats(".mp3", ".mp4", ".txt", "2160p60", "0");
     setCookies("firefox");
+    setJavaScript("deno");
 }
 
 downloadManager::~downloadManager()
@@ -103,7 +104,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 #endif
 
     QStringList args;
-    args // << "--flat-playlist"
+    args << "--js-runtimes" << _jsRuntime
          << "--cookies-from-browser" << _CookiesBrowser
          << "-O" << "%(filesize,filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
          << url;
@@ -213,6 +214,7 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
          << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
          << "--no-mtime" << "--no-playlist" 
+         << "--js-runtimes" << _jsRuntime
          << "--cookies-from-browser" << _CookiesBrowser
          << "--newline";
 
@@ -407,6 +409,11 @@ void downloadManager::setFormats(const QString &formatAudio, const QString &form
 void downloadManager::setCookies(const QString &Cookies)
 {
     _CookiesBrowser = Cookies;
+}
+
+void downloadManager::setJavaScript(const QString &jsRuntime)
+{
+    _jsRuntime = jsRuntime;
 }
 
 void downloadManager::checkForUpdate()
