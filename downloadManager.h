@@ -6,6 +6,7 @@
 #include <QList>
 #include <QProgressBar>
 #include <QMap>
+#include <QStandardPaths>
 
 struct mediaInfo {
     QString id;
@@ -37,6 +38,7 @@ public:
     void startDownload(const QString &folder = "", bool isSongs = false, bool isLyrics = false);
     void mediaDownload(mediaInfo *media, const QString &folder, bool isSong);
     void lyricsDownload(mediaInfo *media, const QString &folder);
+    void downloadFile(QUrl &url, QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearMedia();
@@ -65,7 +67,8 @@ private:
     QString _qualityAudio;
     QString _CookiesBrowser;
     QString _jsRuntime;
-    
+    QString appDataDir;
+
     bool _isStopped;
     QList<mediaInfo *> _Media;
 };

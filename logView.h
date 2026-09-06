@@ -37,7 +37,7 @@ public:
     void showLogText() {  logText->show();  };
     void hideLogText() {  logText->hide();  };
     void appendText(const QString &message) {  text->appendHtml(message);  };
-    void updateProgressBar(QProgressBar *progressBar, const int percent) {  progressBar->setValue(percent);  };
+    void updateProgressBar(QProgressBar *progressBar, const qint64 percent) {  progressBar->setValue(percent);  };
     void removeAlso(int row) {  titleWidget->removeRow(row);  };
     int getProgressBarPercent(QProgressBar *progressBar) {  return progressBar->value();  };
     int getTableWidgetCount() {  return titleWidget->rowCount();  };

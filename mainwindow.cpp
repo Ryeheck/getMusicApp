@@ -132,7 +132,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->clearAll();
         manager->clearMedia();
     });  
-    connect(checkForUpdate, &QAction::triggered, [this] () {  manager->checkForUpdate();  });
+    connect(checkForUpdate, &QAction::triggered, [this] () {  
+        // manager->checkForUpdate();  
+        QString path = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux";
+        QUrl url(path);
+        manager->downloadFile(url);    
+    });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {
         manager->stopDownload();

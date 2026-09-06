@@ -11,6 +11,9 @@
 #include <QProgressBar>
 #include <QMap>
 #include <QUuid>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QStandardPaths>
 
 #define MAX_SONGS   50
 
@@ -23,6 +26,11 @@ downloadManager::downloadManager(QObject *parent)
     setFormats(".mp3", ".mp4", ".txt", "2160p60", "0");
     setCookies("firefox");
     setJavaScript("deno");
+
+    // Default path
+    appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataDir);
+
 }
 
 downloadManager::~downloadManager()
@@ -96,11 +104,11 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         
     });
 
-    QString appDir = qApp->applicationDirPath();
+    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
-    QString program = appDir + "/yt-dlp.exe";
+    QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDir + "/yt-dlp";
+    QString program = appDataDir + "/yt-dlp";
 #endif
 
     QStringList args;
@@ -160,11 +168,11 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
-    QString appDir = qApp->applicationDirPath();
+    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
-    QString program = appDir + "/syncedlyrics_bin.exe";
+    QString program = appDataDir + "/syncedlyrics_bin.exe";
 #else
-    QString program = appDir + "/syncedlyrics_bin";
+    QString program = appDataDir + "/syncedlyrics_bin";
 #endif
 
     QString songName = media->name;
@@ -200,17 +208,17 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
         emit activeTasksCountChanged(_activeProcesses.size());
     });
 
-    QString appDir = qApp->applicationDirPath();
+    appDataDir = qApp->applicationDirPath();
 #ifdef Q_OS_WIN
-    QString program = appDir + "/yt-dlp.exe";
+    QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDir + "/yt-dlp";
+    QString program = appDataDir + "/yt-dlp";
 #endif
 
     QString mediaName = media->name;
 
     QStringList args;
-    args << "--ffmpeg-location" << appDir
+    args << "--ffmpeg-location" << appDataDir
          << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
          << "--no-mtime" << "--no-playlist" 
@@ -234,6 +242,61 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
     process->start(program, args);
 
     // yt-dlp [args] (id)
+}
+
+void downloadManager::downloadFile(QUrl &url, QString path)
+{
+    appDataDir = path;
+    QFile *file = new QFile(this);
+    
+    mediaInfo *media = new mediaInfo();
+    media->isChecked = true;
+    media->status = "Download";
+    media->widget = new QProgressBar();
+    QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
+    
+    QNetworkAccessManager *netManager = new QNetworkAccessManager(this);
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
+
+    QNetworkReply *reply = netManager->get(request);
+    connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media] () {
+        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        if (size <= 0)  return;
+        if (reply->error() != QNetworkReply::NoError) {
+            emit logMessageRequested("Reply return error: " + reply->errorString());
+            media->status = "Error";
+            return;
+        }
+
+        media->size = size;
+        media->name = reply->header(QNetworkRequest::ContentDispositionHeader).toString().split("=").last();
+        media->id   = reply->header(QNetworkRequest::ETagHeader).toString();
+
+        QString pathApp = appDataDir + "/" + media->name;
+
+        file->setFileName(pathApp);
+        if (!file->open(QIODevice::WriteOnly)) {
+            emit logMessageRequested("Couldn't create file for download");
+            return;
+        }
+        
+        _Media.append(media);
+        emit mediaAdded(media);
+    });
+    
+    connect(reply, &QNetworkReply::readyRead, this, [this, file, reply] () {
+        if (file->isOpen())  file->write(reply->readAll());
+    });
+    connect(reply, &QNetworkReply::downloadProgress, this, [this, pBar] (qint64 bytes, qint64 total) {
+        if (total > 0)  emit progressBarRequested(pBar, static_cast<qint64>(bytes * 100) / total);
+    });
+    connect(reply, &QNetworkReply::finished, this, [this, file, reply, media] () {
+        file->close();
+        reply->deleteLater();
+        media->status = "Done";
+        emit updateStatusRequested(media->id, media->status);
+    });
 }
 
 void downloadManager::cleanupProcess(const QString &id, int exitCode)
@@ -322,12 +385,12 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
 void downloadManager::setWorking(QProcess *process)
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QString appDir = qApp->applicationDirPath();
+    appDataDir = qApp->applicationDirPath();
 
 #ifdef Q_OS_WIN
-    env.insert("PATH", appDir + ";" + env.value("PATH"));
+    env.insert("PATH", appDataDir + ";" + env.value("PATH"));
 #else
-    env.insert("PATH", appDir + ":" + env.value("PATH"));
+    env.insert("PATH", appDataDir + ":" + env.value("PATH"));
     env.remove("LD_LIBRARY_PATH");
     env.insert("LD_LIBRARY_PATH", ""); 
 #endif
@@ -394,7 +457,7 @@ QString downloadManager::formatBytes(long long bytes)
     return QString::number(num, 'f', 1) + " " + format[i];
 }
 
-void downloadManager::setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
+void downloadManager::setFormats(const QString &formatAudio,  const QString &formatVideo, const QString &formatLyrics,
                                  const QString &qualityVideo, const QString &qualityAudio)
 {
     _formatAudio = formatAudio;
@@ -419,12 +482,12 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
 void downloadManager::checkForUpdate()
 {
     QProcess *process = new QProcess();
-    QString appDir = qApp->applicationDirPath();
+    appDataDir = qApp->applicationDirPath();
 
 #ifdef Q_OS_WIN
-    QString program = appDir + "/yt-dlp.exe";
+    QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDir + "/yt-dlp";
+    QString program = appDataDir + "/yt-dlp";
 #endif
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
