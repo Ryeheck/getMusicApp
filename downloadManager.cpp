@@ -62,7 +62,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         
         for(int i = 0; i + 3 < lines.size() && (i < MAX_SONGS * 4); i += 4) 
         {
-            auto media = mediaPtr();
+            auto media = mediaPtr(new mediaInfo());
 
             if (lines[i + 3] == "NA - NA")
                 media->name = lines[i + 1];
@@ -252,7 +252,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
     appDataDir = savePath;
     QFile *file = new QFile(this);
     
-    auto media = std::make_shared<mediaInfo>();
+    auto media = mediaPtr(new mediaInfo());
     media->isChecked = true;
     media->status = "Download";
     media->widget = new QProgressBar();
