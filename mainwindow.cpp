@@ -154,9 +154,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
 
     connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
-    connect(manager, &downloadManager::progressBarRequested, logs, &logView::updateProgressBar);
+    connect(manager, &downloadManager::pBarRequested, logs, &logView::updatePBar);
     connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
     connect(manager, &downloadManager::messageRequested, logs, &logView::appendText);
+    connect(manager, &downloadManager::colorLogMessageRequested, logs, &logView::colorLog);
     connect(manager, &downloadManager::activeTasksCountChanged, this, 
             [this] (const int count) {
         if (count > 0) {

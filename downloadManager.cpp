@@ -31,6 +31,9 @@ downloadManager::downloadManager(QObject *parent)
     appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(appDataDir);
 
+    // Network
+    netManager = new QNetworkAccessManager(this);
+
 }
 
 downloadManager::~downloadManager()
@@ -91,7 +94,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
             [=, this] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
-        emit messageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
+        emit messageRequested(output);
         
         if (QProcess *process = _activeProcesses.value(url)) {
             process->deleteLater();
@@ -123,7 +126,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 
 void downloadManager::startDownload(const QString &folder, bool isSongs, bool isLyrics)
 {
-    emit messageRequested(QString("<span style='color:silver;'>FOLDER: %1</span>").arg(folder));
+    emit messageRequested("Folder: " + folder);
     emit activeTasksCountChanged(1);
 
     for(int i = 0; i < _Media.size() && !_isStopped; ++i)
@@ -241,9 +244,9 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
     // yt-dlp [args] (id)
 }
 
-void downloadManager::downloadFile(QUrl &url, QString path)
+void downloadManager::downloadFile(QUrl &url, QString savePath)
 {
-    appDataDir = path;
+    appDataDir = savePath;
     QFile *file = new QFile(this);
     
     mediaInfo *media = new mediaInfo();
@@ -252,29 +255,40 @@ void downloadManager::downloadFile(QUrl &url, QString path)
     media->widget = new QProgressBar();
     QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
     
-    QNetworkAccessManager *netManager = new QNetworkAccessManager(this);
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
 
     QNetworkReply *reply = netManager->get(request);
     connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media] () {
-        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
-        if (size <= 0)  return;
         if (reply->error() != QNetworkReply::NoError) {
-            emit logMessageRequested("Reply return error: " + reply->errorString());
+            emit colorLogMessageRequested("silver", "Reply return error: ", "IndianRed", reply->errorString());
             media->status = "Error";
             return;
         }
 
-        media->size = size;
-        media->name = reply->header(QNetworkRequest::ContentDispositionHeader).toString().split("=").last();
-        media->id   = reply->header(QNetworkRequest::ETagHeader).toString();
-
-        QString pathApp = appDataDir + "/" + media->name;
-
+        QString filename = reply->header(QNetworkRequest::ContentDispositionHeader).toString();
+        if (filename.contains("filename=")) 
+            filename = filename.section("filename=", 1).section(";", 0, 0);
+        else 
+            filename = reply->url().fileName();
+        
+        media->id   = QUuid::createUuid().toString();
+        media->size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        media->name = filename;
+        
+        QString pathApp = QDir(appDataDir).filePath(media->name);
         file->setFileName(pathApp);
+
+        if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
+            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", "File in path");
+            return;
+        } 
+        if (file->exists()) {
+            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", "File already exists");
+            return;
+        } 
         if (!file->open(QIODevice::WriteOnly)) {
-            emit logMessageRequested("Couldn't create file for download");
+            emit colorLogMessageRequested("silver", "Download: ", "IndianRed", "Couldn't create file for download");
             return;
         }
         
@@ -283,16 +297,23 @@ void downloadManager::downloadFile(QUrl &url, QString path)
     });
     
     connect(reply, &QNetworkReply::readyRead, this, [this, file, reply] () {
-        if (file->isOpen())  file->write(reply->readAll());
+        if (file->isOpen())  
+            file->write(reply->readAll());
     });
-    connect(reply, &QNetworkReply::downloadProgress, this, [this, pBar] (qint64 bytes, qint64 total) {
-        if (total > 0)  emit progressBarRequested(pBar, static_cast<qint64>(bytes * 100) / total);
+
+    connect(reply, &QNetworkReply::downloadProgress, this, [this, pBar, file] (qint64 bytes, qint64 total) {
+        if (file->isOpen() && total > 0)  
+            emit pBarRequested(pBar, static_cast<qint64>(bytes * 100) / total);
     });
+
     connect(reply, &QNetworkReply::finished, this, [this, file, reply, media] () {
-        file->close();
+        if (file->isOpen()) {
+            file->close();
+            media->status = "Done";
+            emit updateStatusRequested(media->id, media->status);
+        }
+        file->deleteLater();
         reply->deleteLater();
-        media->status = "Done";
-        emit updateStatusRequested(media->id, media->status);
     });
 }
 
@@ -304,7 +325,7 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
         if (_Media[i]->id == id)  output = _Media[i]->name;
     }
     output += (exitCode ? ": Error" : ": Done!");
-    emit messageRequested(QString("<span style='color:silver;'>%1</span>").arg(output));
+    emit messageRequested(output);
 
     if (_activeProcesses.contains(id)) {
         if (QProcess *process = _activeProcesses.value(id))  process->deleteLater();
@@ -333,13 +354,13 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
             int percent = static_cast<int >(match.captured(1).toFloat());
             if (percent > 100)  percent = 100;
 
-            emit progressBarRequested(pBar, percent);
+            emit pBarRequested(pBar, percent);
         }
 
         if (isLyrics)  
-            emit logMessageRequested(QString("<span style='color:DarkSeaGreen;'>INFO: %1</span>").arg(output));
+            emit colorLogMessageRequested("silver", "Download: INFO: ", "DarkSeaGreen", output);
         else           
-            emit logMessageRequested(QString("<span style='color:silver;'>INFO: </span>") + output);
+            emit colorLogMessageRequested("silver","Download: INFO: " + output);
         
     });
 
@@ -362,7 +383,7 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
             } else if(search == "Lyrics found" || percent > 100) {
                 percent = 100;
             }
-            emit progressBarRequested(pBar, percent);
+            emit pBarRequested(pBar, percent);
         }
 
         output.replace("DEBUG:", QString("<span style='color:silver;'>DEBUG: </span>"));
@@ -406,9 +427,9 @@ void downloadManager::stopDownload()
 
             process->deleteLater();
 
-            emit messageRequested(QString("<span style='color:silver;'>User killed process</span>"));
+            emit messageRequested("User killed process");
         } else
-            emit messageRequested(QString("<span style='color:silver;'>No active processes</span>"));
+            emit messageRequested("No active processes");
     _activeProcesses.clear();
 }
 

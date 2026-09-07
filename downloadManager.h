@@ -7,6 +7,7 @@
 #include <QProgressBar>
 #include <QMap>
 #include <QStandardPaths>
+#include <QNetworkAccessManager>
 
 struct mediaInfo {
     QString id;
@@ -22,11 +23,13 @@ class downloadManager : public QObject
     Q_OBJECT
 
 signals:
+    void colorLogMessageRequested(const QString &firstColor, const QString &firstMessage, 
+                                  const QString &lastColor="", const QString &lastMessage="");
     void messageRequested(const QString &message);
     void logMessageRequested(const QString &message);
     void activeTasksCountChanged(const int count);
     void mediaAdded(const mediaInfo *media);
-    void progressBarRequested(QProgressBar *bar, const int percent);
+    void pBarRequested(QProgressBar *pBar, const int percent);
     void updateStatusRequested(const QString &id, const QString &status);
 
 public:
@@ -59,7 +62,8 @@ private:
     void setWorking(QProcess *process);
     void cleanupProcess(const QString &id, int exitCode);
 
-    QMap<QString, QProcess *> _activeProcesses; 
+    QMap<QString, QProcess *> _activeProcesses;
+    QNetworkAccessManager *netManager;
     QString _formatAudio;
     QString _formatVideo;
     QString _formatLyrics;

@@ -98,6 +98,22 @@ void logView::log(const QString &message)
     logText->appendHtml("[" + time + "] " + message);
 }
 
+
+void logView::colorLog(const QString &firstColor, const QString &firstMessage, 
+                       const QString &lastColor, const QString &lastMessage)
+{
+    QString time = QDateTime::currentDateTime().toString("hh:mm:ss");
+
+    if (lastColor.isEmpty() || lastMessage.isEmpty())
+        logText->appendHtml("[" + time + "] " + 
+                            QString("<span style='color:%1;'>%2:</span>").arg(
+                                firstColor, firstMessage));
+    else
+        logText->appendHtml("[" + time + "] " + 
+                            QString("<span style='color:%1;'>%2</span><span style='color:%3;'>%4</span>").arg(
+                                firstColor, firstMessage, lastColor, lastMessage));
+}
+
 void logView::addItem(const mediaInfo *song)
 {
     int row = titleWidget->rowCount();
