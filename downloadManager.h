@@ -45,12 +45,12 @@ public:
     explicit downloadManager(QObject *parent = nullptr);
     ~downloadManager() override;
 
-    void getMedia(const QString &url, const QString &folder = "", 
-                  bool startAfter = false, bool isSongs = false, bool lyrics = false);
-    void startDownload(const QString &folder = "", bool isSongs = false, bool isLyrics = false);
+    void getMedia(const QString &url, const QString &folder="", 
+                  bool startAfter=false, bool isSongs=false, bool lyrics=false);
+    void startDownload(const QString &folder="", bool isSongs=false, bool isLyrics=false);
     void mediaDownload(mediaPtr media, const QString &folder, bool isSong);
     void lyricsDownload(mediaPtr media, const QString &folder);
-    void downloadFile(QUrl &url, QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    void downloadFile(QUrl &url, QString path=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearMedia();

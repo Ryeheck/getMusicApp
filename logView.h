@@ -18,7 +18,7 @@ signals:
     void setupDownloadRequested(bool set);
 
 public:
-    explicit logView(QWidget *parent = nullptr);
+    explicit logView(QWidget *parent=nullptr);
     // ~logView() override;
 
     void setSelectAllItem();
@@ -30,7 +30,7 @@ public:
 
     void colorLog(const QString &firstColor, const QString &firstMessage, 
                   const QString &lastColor="", const QString &lastMessage="");
-    void log(const QString &message = "");
+    void log(const QString &message="");
     void addItem(const mediaInfo *media);
     void updateStatus(int row, const QString &newStatus);
     void setWidget(int row, QWidget *widget);

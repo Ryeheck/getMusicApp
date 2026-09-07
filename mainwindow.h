@@ -17,9 +17,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent=nullptr);
     void setupBeforeDownload(bool set);
-    void handleDownload(bool isSongs = false, bool isLyrics = false);
+    void handleDownload(bool isSongs=false, bool isLyrics=false);
     ~MainWindow() override;
 
     void allTitle();

@@ -13,7 +13,7 @@ signals:
     void logMessageRequested(const QString &message);
 
 public:
-    explicit settingDialog(QWidget *parent = nullptr);
+    explicit settingDialog(QWidget *parent=nullptr);
     // ~settingWindow() override;
 
     void saveSetting();
