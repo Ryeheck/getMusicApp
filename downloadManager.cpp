@@ -14,6 +14,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QStandardPaths>
+#include <QFile>
 
 #define MAX_SONGS   50
 
@@ -91,6 +92,12 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         }
     });
 
+    connect(process, &QProcess::readyReadStandardError, [this, process] () {
+        QByteArray data = process->readAllStandardError();
+        QString output = QString::fromUtf8(data);
+        emit logMessageRequested(output);
+    });
+
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
             [=, this] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
@@ -110,7 +117,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDataDir + "/yt-dlp_linux";
+    QString program = QDir(appDataDir).filePath("yt-dlp_linux");
 #endif
 
     QStringList args;
@@ -173,7 +180,7 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/syncedlyrics_bin.exe";
 #else
-    QString program = appDataDir + "/syncedlyrics_bin";
+    QString program = QDir(appDataDir).filePath("syncedlyrics_bin");
 #endif
 
     QString songName = media->name;
@@ -212,7 +219,7 @@ void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, boo
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";
 #else
-    QString program = appDataDir + "/yt-dlp";
+    QString program = QDir(appDataDir).filePath("yt-dlp_linux");
 #endif
 
     QString mediaName = media->name;
@@ -273,22 +280,23 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
             filename = reply->url().fileName();
         
         media->id   = QUuid::createUuid().toString();
-        media->size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        media->size = size;
         media->name = filename;
         
         QString pathApp = QDir(appDataDir).filePath(media->name);
         file->setFileName(pathApp);
 
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
-            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", "File in path");
+            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 in path").arg(media->name));
             return;
         } 
         if (file->exists()) {
-            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", "File already exists");
+            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exists").arg(media->name));
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
-            emit colorLogMessageRequested("silver", "Download: ", "IndianRed", "Couldn't create file for download");
+            emit colorLogMessageRequested("silver", "Download: ", "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
             return;
         }
         
@@ -308,6 +316,13 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
 
     connect(reply, &QNetworkReply::finished, this, [this, file, reply, media] () {
         if (file->isOpen()) {
+#ifdef Q_OS_WIN
+            //file
+#else
+            QFile::setPermissions(file->fileName(), QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                                                    QFile::ReadGroup | QFile::ExeGroup |
+                                                    QFile::ReadOther | QFile::ExeOther);
+#endif
             file->close();
             media->status = "Done";
             emit updateStatusRequested(media->id, media->status);

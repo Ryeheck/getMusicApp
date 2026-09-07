@@ -8,6 +8,7 @@
 #include <QMap>
 #include <QStandardPaths>
 #include <QNetworkAccessManager>
+#include <QPointer>
 
 struct mediaInfo {
     QString id;
