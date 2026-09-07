@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    layoutMain        = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
+    layoutMain     = new QBoxLayout(QBoxLayout::TopToBottom, centralWidget);
     layoutBtns     = new QVBoxLayout();
     layoutBtnsHOne = new QHBoxLayout();
     layoutBtnsHTwo = new QHBoxLayout();
@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     logsAction        = menuLogsBtns->addAction("Show logs");
     clearTitleAction  = menuLogsBtns->addAction("Clear title");
     clearListAction   = menuLogsBtns->addAction("Clear all");
-    checkForUpdate    = menuLogsBtns->addAction("Check for updates");
+    checkForUpdate    = menuLogsBtns->addAction("Check and prepare program");
     
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
@@ -133,15 +133,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         manager->clearMedia();
     });  
     connect(checkForUpdate, &QAction::triggered, [this] () {  
-        // manager->checkForUpdate();  
-        QUrl url("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux");
-        manager->downloadFile(url);    
-        // QUrl url(/* ffmpeg */);
-        // manager->downloadFile(url);    
-        // QUrl url(/* ffprobe */);
-        // manager->downloadFile(url);    
-        // QUrl url(/* syncedlyrics */);
-        // manager->downloadFile(url); 
+        manager->checkAndPrepareFiles();  
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {

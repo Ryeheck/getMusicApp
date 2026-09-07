@@ -510,9 +510,29 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
     _jsRuntime = jsRuntime;
 }
 
-void downloadManager::checkForUpdate()
+void downloadManager::checkAndPrepareFiles()
 {
     QProcess *process = new QProcess();
+
+    if (!QFile::exists(QDir(appDataDir).filePath("yt-dlp_linux"))) {
+        QUrl url("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux");
+        downloadFile(url);
+    }
+
+    /*
+    if (QFile::exists(QDir(appDataDir).filePath("syncedlyrics"))) {
+        QUrl url( syncedlyrics );
+        downloadFile(url);
+    }
+    if (QFile::exists(QDir(appDataDir).filePath("ffmpeg"))) {
+        QUrl url( ffmpeg );
+        downloadFile(url);
+    }
+    if (QFile::exists(QDir(appDataDir).filePath("ffprobe"))) {
+        QUrl url( ffprobe );
+        downloadFile(url);
+    }
+    */
 
 #ifdef Q_OS_WIN
     QString program = appDataDir + "/yt-dlp.exe";

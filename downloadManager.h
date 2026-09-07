@@ -60,7 +60,7 @@ public:
                     const QString &qualityVideo, const QString &qualityAudio);
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
-    void checkForUpdate();
+    void checkAndPrepareFiles();
     
     static QString formatBytes(long long bytes);
     int getMediaCount();
