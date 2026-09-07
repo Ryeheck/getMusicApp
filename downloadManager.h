@@ -9,15 +9,23 @@
 #include <QStandardPaths>
 #include <QNetworkAccessManager>
 #include <QPointer>
+#include <memory>
 
 struct mediaInfo {
     QString id;
     QString name;
     QString status;
-    QWidget *widget;
+    QPointer<QWidget> widget;
     long long size;
     bool isChecked = false;
+
+    ~mediaInfo() {
+        if (widget)  
+            widget->deleteLater();
+    }
 };
+
+using mediaPtr = std::shared_ptr<mediaInfo>;
 
 class downloadManager : public QObject
 {
@@ -40,8 +48,8 @@ public:
     void getMedia(const QString &url, const QString &folder = "", 
                   bool startAfter = false, bool isSongs = false, bool lyrics = false);
     void startDownload(const QString &folder = "", bool isSongs = false, bool isLyrics = false);
-    void mediaDownload(mediaInfo *media, const QString &folder, bool isSong);
-    void lyricsDownload(mediaInfo *media, const QString &folder);
+    void mediaDownload(mediaPtr media, const QString &folder, bool isSong);
+    void lyricsDownload(mediaPtr media, const QString &folder);
     void downloadFile(QUrl &url, QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     void updateSongCheckState(const QString &id, bool isChecked);
@@ -75,7 +83,7 @@ private:
     QString appDataDir;
 
     bool _isStopped;
-    QList<mediaInfo *> _Media;
+    QList<std::shared_ptr<mediaInfo>> _Media;
 };
 
 

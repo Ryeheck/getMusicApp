@@ -15,6 +15,7 @@
 #include <QNetworkReply>
 #include <QStandardPaths>
 #include <QFile>
+#include <memory>
 
 #define MAX_SONGS   50
 
@@ -45,10 +46,6 @@ downloadManager::~downloadManager()
     }
     _activeProcesses.clear();
 
-    for(mediaInfo *song : _Media)
-    {
-        if (song != nullptr)  delete song;
-    }
     _Media.clear();
 }
 
@@ -65,7 +62,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         
         for(int i = 0; i + 3 < lines.size() && (i < MAX_SONGS * 4); i += 4) 
         {
-            mediaInfo *media = new mediaInfo();
+            auto media = mediaPtr();
 
             if (lines[i + 3] == "NA - NA")
                 media->name = lines[i + 1];
@@ -78,7 +75,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
             media->widget = new QProgressBar();
 
             bool exist = false;
-            for(mediaInfo *songItem : _Media) 
+            for(mediaPtr songItem : _Media) 
                 if (songItem->id == media->id) {
                     exist = true;
                     break;
@@ -86,9 +83,8 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 
             if (!exist) {
                 _Media.append(media);
-                emit mediaAdded(media);
-            } else
-                delete media;
+                emit mediaAdded(media.get());
+            } 
         }
     });
 
@@ -138,7 +134,7 @@ void downloadManager::startDownload(const QString &folder, bool isSongs, bool is
 
     for(int i = 0; i < _Media.size() && !_isStopped; ++i)
     {
-        mediaInfo *media = _Media[i];
+        auto media = _Media[i];
 
         if (media->isChecked == false)  continue;
 
@@ -152,7 +148,7 @@ void downloadManager::startDownload(const QString &folder, bool isSongs, bool is
     }
 }
 
-void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
+void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
 {
     QProcess *process = new QProcess(this);
 
@@ -196,7 +192,7 @@ void downloadManager::lyricsDownload(mediaInfo *media, const QString &folder)
     // syncedlyrics [args] songName
 }
 
-void downloadManager::mediaDownload(mediaInfo *media, const QString &folder, bool isSong)
+void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool isSong)
 {
     QProcess *process = new QProcess(this);
 
@@ -256,7 +252,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
     appDataDir = savePath;
     QFile *file = new QFile(this);
     
-    mediaInfo *media = new mediaInfo();
+    auto media = std::make_shared<mediaInfo>();
     media->isChecked = true;
     media->status = "Download";
     media->widget = new QProgressBar();
@@ -289,19 +285,22 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
 
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
             emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 in path").arg(media->name));
+            file->deleteLater();
             return;
         } 
         if (file->exists()) {
             emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exists").arg(media->name));
+            file->deleteLater();
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
             emit colorLogMessageRequested("silver", "Download: ", "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
+            file->deleteLater();
             return;
         }
         
         _Media.append(media);
-        emit mediaAdded(media);
+        emit mediaAdded(media.get());
     });
     
     connect(reply, &QNetworkReply::readyRead, this, [this, file, reply] () {
@@ -466,11 +465,6 @@ void downloadManager::setIsStopped(bool set)
 
 void downloadManager::clearMedia()
 {
-    for(mediaInfo *song : _Media)
-    {
-        if (song != nullptr)  delete song;
-    }
-
     _Media.clear();
 }
 
