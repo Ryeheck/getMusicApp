@@ -263,6 +263,9 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
 
     QNetworkReply *reply = netManager->get(request);
     connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media] () {
+        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        if (size <= 0) return;
+
         if (reply->error() != QNetworkReply::NoError) {
             emit colorLogMessageRequested("silver", "Reply return error: ", "IndianRed", reply->errorString());
             media->status = "Error";
@@ -276,7 +279,6 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
             filename = reply->url().fileName();
         
         media->id   = QUuid::createUuid().toString();
-        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
         media->size = size;
         media->name = filename;
         
@@ -286,16 +288,19 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
             emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 in path").arg(media->name));
             file->deleteLater();
+            reply->deleteLater();
             return;
         } 
         if (file->exists()) {
             emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exists").arg(media->name));
             file->deleteLater();
+            reply->deleteLater();
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
             emit colorLogMessageRequested("silver", "Download: ", "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
             file->deleteLater();
+            reply->deleteLater();
             return;
         }
         
