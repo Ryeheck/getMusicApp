@@ -61,7 +61,7 @@ public:
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
     void checkAndPrepareFiles();
-    
+    void extractFile(QString &targetPath, QString &savePath);
     static QString formatBytes(long long bytes);
     int getMediaCount();
     

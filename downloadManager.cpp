@@ -16,6 +16,8 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <memory>
+#include <quazip.h>
+#include <quazipfile.h>
 
 #define MAX_SONGS   50
 
@@ -286,19 +288,22 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
         file->setFileName(pathApp);
 
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
-            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 in path").arg(media->name));
+            emit colorLogMessageRequested("silver", "Download: ", 
+                                          "DarkSeaGreen", QString("%1 in path").arg(media->name));
             file->deleteLater();
             reply->deleteLater();
             return;
         } 
         if (file->exists()) {
-            emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exists").arg(media->name));
+            emit colorLogMessageRequested("silver", "Download: ", 
+                                          "DarkSeaGreen", QString("%1 already exists").arg(media->name));
             file->deleteLater();
             reply->deleteLater();
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
-            emit colorLogMessageRequested("silver", "Download: ", "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
+            emit colorLogMessageRequested("silver", "Download: ", 
+                                          "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
             file->deleteLater();
             reply->deleteLater();
             return;
@@ -333,6 +338,8 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
         }
         file->deleteLater();
         reply->deleteLater();
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 installed").arg(media->name));
     });
 }
 
@@ -417,6 +424,51 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
                 [stepCount] (int) {
         delete stepCount;
     });
+}
+
+void downloadManager::extractFile(QString &targetPath, QString &savePath)
+{
+    // Open zip archive and extract all files
+    QuaZip zip(targetPath);
+    if (!zip.open(QuaZip::mdUnzip)) {
+        emit colorLogMessageRequested("silver", "Extract: ", "IndianRed", "not open zip archive");
+        return;
+    }
+
+    for (bool more = zip.goToFirstFile(); more; more = zip.goToNextFile())
+    {
+        QuaZipFile inFile(&zip);
+        if (!inFile.open(QIODevice::ReadOnly)) {
+            emit colorLogMessageRequested("silver", "Extract: ", 
+                                          "IndianRed", QString("not open file to read: %1").arg(targetPath));
+            return;
+        }
+
+        // Get file info
+        QuaZipFileInfo64 fileInfo;
+        if (!zip.getCurrentFileInfo(&fileInfo)) {
+            emit colorLogMessageRequested("silver", "Extract: ", "IndianRed", "not current file info");
+            return;
+        }
+
+        // Create output file
+        QString outPath = QDir(appDataDir).filePath(fileInfo.name);
+
+        QFile outFile(outPath);
+        if (!outFile.open(QIODevice::WriteOnly)) {
+            emit colorLogMessageRequested("silver", "Extract: ", 
+                                          "IndianRed", QString("not open file to write: %1").arg(outPath));
+            return;
+        }
+
+        // Copy data
+        outFile.write(inFile.readAll());
+
+        outFile.close();
+        inFile.close();
+    }
+    zip.close();
+    emit colorLogMessageRequested("silver", "Extract: ", "DarkSeaGreen", QString("succesful"));
 }
 
 void downloadManager::setWorking(QProcess *process)
