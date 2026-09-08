@@ -468,7 +468,8 @@ void downloadManager::extractFile(QString &targetPath, QString &savePath)
         inFile.close();
     }
     zip.close();
-    emit colorLogMessageRequested("silver", "Extract: ", "DarkSeaGreen", QString("succesful"));
+    emit colorLogMessageRequested("silver", "Extract: ", 
+                                  "DarkSeaGreen", QString("Succesful: ").arg(savePath));
 }
 
 void downloadManager::setWorking(QProcess *process)
@@ -566,20 +567,65 @@ void downloadManager::checkAndPrepareFiles()
 {
     QProcess *process = new QProcess();
 
-    if (!QFile::exists(QDir(appDataDir).filePath("yt-dlp_linux"))) {
-        QUrl url("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux");
-        downloadFile(url);
-    }
+#ifdef Q_OS_WIN
+    QString yt_dlp       = "yt-dlp.exe";
+    QString syncedlyrics = "syncedlyrics.exe";
+    QString ffmpeg       = "ffmpeg.exe";
+    QString ffprobe      = "ffprobe.exe";
+    QString jsRuntime    = _jsRuntime + ".exe";
+    QString zip          = "deno-x86_64-pc-windows-msvc.zip";
+#else
+    QString yt_dlp       = "yt-dlp_linux";
+    QString syncedlyrics = "syncedlyrics";
+    QString ffmpeg       = "ffmpeg";
+    QString ffprobe      = "ffprobe";
+    QString jsRuntime    = _jsRuntime;
+    QString zip          = "deno-x86_64-pc-windows-msvc.zip";
+#endif
 
-    /*
-    if (QFile::exists(QDir(appDataDir).filePath("syncedlyrics"))) {
-        QUrl url( syncedlyrics );
+    QString path = QDir(appDataDir).filePath(yt_dlp);
+    if (!QFile::exists(path)) {
+        QUrl url(QString("https://github.com/yt-dlp/yt-dlp/releases/latest/download/%1").arg(yt_dlp));
         downloadFile(url);
-    }
+    } 
+    emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exist").arg(yt_dlp));
+
+    path = QDir(appDataDir).filePath(syncedlyrics);
+    if (!QFile::exists(path)) {
+        if (QFile::exists(syncedlyrics)) {
+            QFile::rename(syncedlyrics, path);
+        } else {
+            emit colorLogMessageRequested("silver", "Download: ", 
+                                          "DarkOrange", QString("please install %1: pip install syncedlyrics").arg(syncedlyrics));
+            emit messageRequested(QString("Please install %1").arg(syncedlyrics));
+        }
+    } else
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 already exist").arg(syncedlyrics));
+
+    path = QDir(appDataDir).filePath(jsRuntime);
+    if (!QFile::exists(path)) {
+        QString filename = QDir(appDataDir).filePath(zip);
+        
+        if (_jsRuntime == "deno") {
+            QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zip));
+            downloadFile(url);
+            extractFile(filename, appDataDir);
+        } else if (_jsRuntime == "node") {
+            emit messageRequested("Please install node");
+            /* comming soon... */
+        }
+    } else
+        emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exist").arg(jsRuntime));
+    
+    /*
+    path = QDir(appDataDir).filePath("ffmpeg.exe");
     if (QFile::exists(QDir(appDataDir).filePath("ffmpeg"))) {
         QUrl url( ffmpeg );
         downloadFile(url);
     }
+
+    path = QDir(appDataDir).filePath("syncedlyrics.exe");
     if (QFile::exists(QDir(appDataDir).filePath("ffprobe"))) {
         QUrl url( ffprobe );
         downloadFile(url);
