@@ -18,6 +18,7 @@
 #include <memory>
 #include <quazip.h>
 #include <quazipfile.h>
+#include <functional>
 
 #define MAX_SONGS   50
 
@@ -249,7 +250,7 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     // yt-dlp [args] (id)
 }
 
-void downloadManager::downloadFile(QUrl &url, QString savePath)
+void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<void()> onSuccess)
 {
     appDataDir = savePath;
     QFile *file = new QFile(this);
@@ -323,7 +324,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
             emit pBarRequested(pBar, static_cast<qint64>(bytes * 100) / total);
     });
 
-    connect(reply, &QNetworkReply::finished, this, [this, file, reply, media] () {
+    connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess] () {
         if (file->isOpen()) {
 #ifdef Q_OS_WIN
             //file
@@ -336,6 +337,9 @@ void downloadManager::downloadFile(QUrl &url, QString savePath)
             media->status = "Done";
             emit updateStatusRequested(media->id, media->status);
         }
+        if (onSuccess)  
+            onSuccess();
+
         file->deleteLater();
         reply->deleteLater();
         emit colorLogMessageRequested("silver", "Download: ", 
@@ -426,7 +430,7 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
     });
 }
 
-void downloadManager::extractFile(QString &targetPath, QString &savePath)
+void downloadManager::extractFile(const QString targetPath, const QString savePath)
 {
     // Open zip archive and extract all files
     QuaZip zip(targetPath);
@@ -580,18 +584,27 @@ void downloadManager::checkAndPrepareFiles()
     QString ffmpeg       = "ffmpeg";
     QString ffprobe      = "ffprobe";
     QString jsRuntime    = _jsRuntime;
-    QString zip          = "deno-x86_64-pc-windows-msvc.zip";
+    QString zip          = "deno-x86_64-unknown-linux-gnu.zip";
 #endif
-
-    QString path = QDir(appDataDir).filePath(yt_dlp);
-    if (!QFile::exists(path)) {
+    
+// Check the yt-dlp and download it if necessary 
+    QString path         = QDir(appDataDir).filePath(yt_dlp);
+    bool existsInAppData = QFile::exists(path);
+    bool existsInSystem  = QStandardPaths::findExecutable(yt_dlp).isEmpty();
+    
+    if (!(existsInAppData || existsInSystem)) {
         QUrl url(QString("https://github.com/yt-dlp/yt-dlp/releases/latest/download/%1").arg(yt_dlp));
         downloadFile(url);
-    } 
-    emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exist").arg(yt_dlp));
+    } else
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 already exists").arg(yt_dlp));
 
-    path = QDir(appDataDir).filePath(syncedlyrics);
-    if (!QFile::exists(path)) {
+    // Check the syncedlirycs and move it if to appDataDir
+    path            = QDir(appDataDir).filePath(syncedlyrics);
+    existsInAppData = QFile::exists(path);
+    existsInSystem  = QStandardPaths::findExecutable(syncedlyrics).isEmpty();
+
+    if (!(existsInAppData || existsInSystem)) {
         if (QFile::exists(syncedlyrics)) {
             QFile::rename(syncedlyrics, path);
         } else {
@@ -601,22 +614,34 @@ void downloadManager::checkAndPrepareFiles()
         }
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exist").arg(syncedlyrics));
+                                      "DarkSeaGreen", QString("%1 already exists").arg(syncedlyrics));
 
-    path = QDir(appDataDir).filePath(jsRuntime);
-    if (!QFile::exists(path)) {
-        QString filename = QDir(appDataDir).filePath(zip);
-        
+    // Check javascript and extract -> remove ZIP file 
+    path            = QDir(appDataDir).filePath(jsRuntime);
+    existsInAppData = QFile::exists(path);
+    existsInSystem  = QStandardPaths::findExecutable(jsRuntime).isEmpty();
+
+    if (!(existsInAppData || existsInSystem)) {
+        QString filenameZIP = QDir(appDataDir).filePath(zip);
+
         if (_jsRuntime == "deno") {
             QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zip));
-            downloadFile(url);
-            extractFile(filename, appDataDir);
+            downloadFile(url, appDataDir, 
+                        [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
+                            extractFile(filenameZIP, appDataDir);
+                            QFile::remove(filenameZIP);
+                        });
+
         } else if (_jsRuntime == "node") {
             emit messageRequested("Please install node");
+            emit colorLogMessageRequested("silver", "Download: ", 
+                                          "DarkOrange", 
+                                          QString("please install %1: https://nodejs.org/en/download/current").arg(_jsRuntime));
             /* comming soon... */
         }
     } else
-        emit colorLogMessageRequested("silver", "Download: ", "DarkSeaGreen", QString("%1 already exist").arg(jsRuntime));
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 already exists").arg(jsRuntime));
     
     /*
     path = QDir(appDataDir).filePath("ffmpeg.exe");

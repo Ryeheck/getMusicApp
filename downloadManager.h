@@ -10,6 +10,7 @@
 #include <QNetworkAccessManager>
 #include <QPointer>
 #include <memory>
+#include <functional>
 
 struct mediaInfo {
     QString id;
@@ -50,7 +51,9 @@ public:
     void startDownload(const QString &folder="", bool isSongs=false, bool isLyrics=false);
     void mediaDownload(mediaPtr media, const QString &folder, bool isSong);
     void lyricsDownload(mediaPtr media, const QString &folder);
-    void downloadFile(QUrl &url, QString path=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    void downloadFile(QUrl &url, 
+                      QString path=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation), 
+                      std::function<void()> onSuccess=nullptr);
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearMedia();
@@ -61,7 +64,7 @@ public:
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
     void checkAndPrepareFiles();
-    void extractFile(QString &targetPath, QString &savePath);
+    void extractFile(const QString targetPath, const QString savePath);
     static QString formatBytes(long long bytes);
     int getMediaCount();
     
