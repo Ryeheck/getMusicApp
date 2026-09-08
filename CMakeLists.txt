@@ -3,6 +3,19 @@ project(getMusicApp LANGUAGES CXX)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
 
+
+include(FetchContent)
+
+set(QUAZIP_ENABLE_QTEXTCODEC OFF CACHE BOOL "Disable Core5Compat check" FORCE)
+
+FetchContent_Declare(
+    quazip
+    GIT_REPOSITORY "https://github.com/stachenov/quazip.git"
+    GIT_TAG        "v1.7.0"
+)
+
+FetchContent_MakeAvailable(quazip)
+
 qt_standard_project_setup()
 
 qt_add_executable(getMusicApp
@@ -23,6 +36,7 @@ target_link_libraries(getMusicApp
         Qt::Core
         Qt::Widgets
         Qt::Network
+        QuaZip::QuaZip
 )
 
 include(GNUInstallDirs)
