@@ -34,7 +34,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     manager->setFormats(diag.getAudioFormat(), diag.getVideoFormat(), diag.getLyricsFormat(),
                         diag.getVideoQuality(), diag.getAudioQuality());
     manager->setCookies(diag.getCookiesBrowser());
-
+    manager->setJavaScript(diag.getJSRuntime());
+    
     lyricsBtn  = new QPushButton("Lyric download(s)", this);
     musicBtn   = new QPushButton("Music download(s)", this);
     titleBtn   = new QPushButton("Playlist", this);
@@ -113,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             manager->setFormats(diag.getAudioFormat(),  diag.getVideoFormat(), diag.getLyricsFormat(),
                                 diag.getVideoQuality(), diag.getAudioQuality());
             manager->setCookies(diag.getCookiesBrowser());
+            manager->setJavaScript(diag.getJSRuntime());
         }
     });
 
