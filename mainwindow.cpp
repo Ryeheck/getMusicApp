@@ -135,7 +135,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         manager->clearMedia();
     });  
     connect(checkForUpdate, &QAction::triggered, [this] () {  
-        manager->checkAndPrepareFiles();  
+        manager->checkAndPrepareFiles();
+        setupBeforeDownload(true);
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {
