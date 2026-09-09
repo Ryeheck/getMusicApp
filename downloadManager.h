@@ -64,10 +64,14 @@ public:
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
     void checkAndPrepareFiles();
-    void extractFile(const QString targetPath, const QString savePath);
+    /**
+     * The extractProgram() function only extract program, not any folders/files
+     * If you need to extract the program from the .zip archive, use...
+     * In the future, I will handle everything through the libarchive
+     */
+    void extractProgram(const QString targetPath, const QString savePath);
     static QString formatBytes(long long bytes);
     int getMediaCount();
-    
 
 private:
     void setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics);
