@@ -265,15 +265,24 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
 
     QNetworkReply *reply = netManager->get(request);
-    connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media] () {
-        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
-        if (size <= 0) return;
+    
+    auto cleanup = [file, reply] () {
+        file->deleteLater();
+        reply->deleteLater();
+    };
 
+    connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media, cleanup, onSuccess] () {
         if (reply->error() != QNetworkReply::NoError) {
-            emit colorLogMessageRequested("silver", "Reply return error: ", "IndianRed", reply->errorString());
             media->status = "Error";
+            cleanup();
+            emit colorLogMessageRequested("silver", "Reply return error: ", 
+                                          "IndianRed", reply->errorString());
             return;
         }
+        
+        // If doesnt start download
+        qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
+        if (size <= 0) return;
 
         QString filename = reply->header(QNetworkRequest::ContentDispositionHeader).toString();
         if (filename.contains("filename=")) 
@@ -291,22 +300,21 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkSeaGreen", QString("%1 in path").arg(media->name));
-            file->deleteLater();
-            reply->deleteLater();
+            if (onSuccess) onSuccess();  // Example: extract files
+            cleanup();
             return;
         } 
         if (file->exists()) {
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkSeaGreen", QString("%1 already exists").arg(media->name));
-            file->deleteLater();
-            reply->deleteLater();
+            if (onSuccess) onSuccess();  // Example: extract files
+            cleanup();
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
+            cleanup();
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
-            file->deleteLater();
-            reply->deleteLater();
             return;
         }
         
@@ -324,10 +332,19 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
             emit pBarRequested(pBar, static_cast<qint64>(bytes * 100) / total);
     });
 
-    connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess] () {
+    connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess, cleanup] () {
+        if (reply->error() != QNetworkReply::NoError) {
+            if (file->isOpen())  file->close();
+
+            media->status = "Error";
+            cleanup();
+            emit colorLogMessageRequested("silver", "Reply return error: ", 
+                                          "IndianRed", reply->errorString());
+            return;
+        }
         if (file->isOpen()) {
 #ifdef Q_OS_WIN
-            //file
+            // Permissions on windows
 #else
             QFile::setPermissions(file->fileName(), QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
                                                     QFile::ReadGroup | QFile::ExeGroup |
@@ -336,12 +353,9 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
             file->close();
             media->status = "Done";
             emit updateStatusRequested(media->id, media->status);
-        }
-        if (onSuccess)  
-            onSuccess();
-
-        file->deleteLater();
-        reply->deleteLater();
+        }  
+        if (onSuccess)  onSuccess();
+        cleanup();
         emit colorLogMessageRequested("silver", "Download: ", 
                                       "DarkSeaGreen", QString("%1 installed").arg(media->name));
     });
@@ -624,10 +638,10 @@ void downloadManager::checkAndPrepareFiles()
     existsInSystem  = QStandardPaths::findExecutable(jsRuntime).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
-        QString filenameZIP = QDir(appDataDir).filePath(zip);
+        QString filenameZIP = QDir(appDataDir).filePath(zipDeno);
 
         if (_jsRuntime == "deno") {
-            QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zip));
+            QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zipDeno));
             downloadFile(url, appDataDir, 
                         [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                             extractFile(filenameZIP, appDataDir);
