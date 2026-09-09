@@ -444,7 +444,7 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
     });
 }
 
-void downloadManager::extractFile(const QString targetPath, const QString savePath)
+void downloadManager::extractProgram(const QString targetPath, const QString savePath)
 {
     // Open zip archive and extract all files
     QuaZip zip(targetPath);
@@ -468,14 +468,24 @@ void downloadManager::extractFile(const QString targetPath, const QString savePa
             emit colorLogMessageRequested("silver", "Extract: ", "IndianRed", "not current file info");
             return;
         }
-
+        // If it isnt a program
+        int lastPoint = fileInfo.name.lastIndexOf(".");
+        QString ext = (lastPoint > 0 && lastPoint < fileInfo.name.length() - 1) 
+                      ? fileInfo.name.mid(lastPoint + 1) 
+                      : "";  // this is linux
+        if (!(ext.isEmpty() || ext == "exe")) {  // Its executable file 
+            inFile.close();
+            continue;
+        }
+        
         // Create output file
-        QString outPath = QDir(appDataDir).filePath(fileInfo.name);
+        QString outPath = QDir(savePath).filePath(fileInfo.name.section("/", -1));
 
         QFile outFile(outPath);
         if (!outFile.open(QIODevice::WriteOnly)) {
             emit colorLogMessageRequested("silver", "Extract: ", 
                                           "IndianRed", QString("not open file to write: %1").arg(outPath));
+            inFile.close();
             return;
         }
 
@@ -484,10 +494,10 @@ void downloadManager::extractFile(const QString targetPath, const QString savePa
 
         outFile.close();
         inFile.close();
+        emit colorLogMessageRequested("silver", "Extract: ", 
+                                      "DarkSeaGreen", QString("%1 successful").arg(outPath));
     }
     zip.close();
-    emit colorLogMessageRequested("silver", "Extract: ", 
-                                  "DarkSeaGreen", QString("Succesful: ").arg(savePath));
 }
 
 void downloadManager::setWorking(QProcess *process)
@@ -592,7 +602,7 @@ void downloadManager::checkAndPrepareFiles()
     QString ffprobe      = "ffprobe.exe";
     QString jsRuntime    = _jsRuntime + ".exe";
     QString zipDeno      = "deno-x86_64-pc-windows-msvc.zip";
-    QString zipFfmpeg    = "ffmpeg-9.0.1-essentials_build.zip";
+    QString zipFfmpeg    = "ffmpeg-master-latest-win64-gpl.zip";
 #else
     QString yt_dlp       = "yt-dlp_linux";
     QString syncedlyrics = "syncedlyrics";
@@ -600,10 +610,10 @@ void downloadManager::checkAndPrepareFiles()
     QString ffprobe      = "ffprobe";
     QString jsRuntime    = _jsRuntime;
     QString zipDeno      = "deno-x86_64-unknown-linux-gnu.zip";
-    QString zipFfmpeg    = "ffmpeg-9.0.1-essentials_build.zip";
+    QString zipFfmpeg    = "ffmpeg-master-latest-linux64-gpl.tar.xz";
 #endif
     
-// Check the yt-dlp and download it if necessary 
+    // Check the yt-dlp and download it if necessary 
     QString path         = QDir(appDataDir).filePath(yt_dlp);
     bool existsInAppData = QFile::exists(path);
     bool existsInSystem  = QStandardPaths::findExecutable(yt_dlp).isEmpty();
@@ -638,13 +648,13 @@ void downloadManager::checkAndPrepareFiles()
     existsInSystem  = QStandardPaths::findExecutable(jsRuntime).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
-        QString filenameZIP = QDir(appDataDir).filePath(zip);
+        QString filenameZIP = QDir(appDataDir).filePath(zipDeno);
 
         if (_jsRuntime == "deno") {
-            QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zip));
+            QUrl url(QString("https://github.com/denoland/deno/releases/latest/download/%1").arg(zipDeno));
             downloadFile(url, appDataDir, 
                         [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
-                            extractFile(filenameZIP, appDataDir);
+                            extractProgram(filenameZIP, appDataDir);
                             QFile::remove(filenameZIP);
                         });
 
@@ -659,17 +669,16 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", "Download: ", 
                                       "DarkSeaGreen", QString("%1 already exists").arg(jsRuntime));
     
-    
     path = QDir(appDataDir).filePath(ffmpeg);
     existsInAppData = QFile::exists(path);
     existsInSystem  = QStandardPaths::findExecutable(ffmpeg).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
         QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
-        QUrl url(QString("https://github.com/GyanD/codexffmpeg/releases/latest/download/%1").arg(zipFfmpeg));
+        QUrl url(QString("https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/%1").arg(zipFfmpeg));
         downloadFile(url, appDataDir, 
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
-                        extractFile(filenameZIP, appDataDir);
+                        extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
                     });
     }
