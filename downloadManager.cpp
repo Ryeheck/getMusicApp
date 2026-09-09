@@ -577,14 +577,16 @@ void downloadManager::checkAndPrepareFiles()
     QString ffmpeg       = "ffmpeg.exe";
     QString ffprobe      = "ffprobe.exe";
     QString jsRuntime    = _jsRuntime + ".exe";
-    QString zip          = "deno-x86_64-pc-windows-msvc.zip";
+    QString zipDeno      = "deno-x86_64-pc-windows-msvc.zip";
+    QString zipFfmpeg    = "ffmpeg-9.0.1-essentials_build.zip";
 #else
     QString yt_dlp       = "yt-dlp_linux";
     QString syncedlyrics = "syncedlyrics";
     QString ffmpeg       = "ffmpeg";
     QString ffprobe      = "ffprobe";
     QString jsRuntime    = _jsRuntime;
-    QString zip          = "deno-x86_64-unknown-linux-gnu.zip";
+    QString zipDeno      = "deno-x86_64-unknown-linux-gnu.zip";
+    QString zipFfmpeg    = "ffmpeg-9.0.1-essentials_build.zip";
 #endif
     
 // Check the yt-dlp and download it if necessary 
@@ -643,25 +645,30 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", "Download: ", 
                                       "DarkSeaGreen", QString("%1 already exists").arg(jsRuntime));
     
-    /*
-    path = QDir(appDataDir).filePath("ffmpeg.exe");
-    if (QFile::exists(QDir(appDataDir).filePath("ffmpeg"))) {
-        QUrl url( ffmpeg );
-        downloadFile(url);
+    
+    path = QDir(appDataDir).filePath(ffmpeg);
+    existsInAppData = QFile::exists(path);
+    existsInSystem  = QStandardPaths::findExecutable(ffmpeg).isEmpty();
+
+    if (!(existsInAppData || existsInSystem)) {
+        QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
+        QUrl url(QString("https://github.com/GyanD/codexffmpeg/releases/latest/download/%1").arg(zipFfmpeg));
+        downloadFile(url, appDataDir, 
+                    [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
+                        extractFile(filenameZIP, appDataDir);
+                        QFile::remove(filenameZIP);
+                    });
     }
 
-    path = QDir(appDataDir).filePath("syncedlyrics.exe");
-    if (QFile::exists(QDir(appDataDir).filePath("ffprobe"))) {
-        QUrl url( ffprobe );
-        downloadFile(url);
-    }
-    */
+    path = QDir(appDataDir).filePath(ffprobe);
+    existsInAppData = QFile::exists(path);
+    existsInSystem  = QStandardPaths::findExecutable(ffprobe).isEmpty();
 
-#ifdef Q_OS_WIN
-    QString program = appDataDir + "/yt-dlp.exe";
-#else
-    QString program = appDataDir + "/yt-dlp_linux";
-#endif
+    if (!(existsInAppData || existsInSystem)) {
+        /* comming soon... */
+    }
+
+    QString program = yt_dlp;
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();
