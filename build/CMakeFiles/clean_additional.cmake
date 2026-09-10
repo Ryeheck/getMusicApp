@@ -5,6 +5,9 @@ if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "Debug")
   file(REMOVE_RECURSE
   "CMakeFiles/getMusicApp_autogen.dir/AutogenUsed.txt"
   "CMakeFiles/getMusicApp_autogen.dir/ParseCache.txt"
+  "_deps/quazip-build/quazip/CMakeFiles/QuaZip_autogen.dir/AutogenUsed.txt"
+  "_deps/quazip-build/quazip/CMakeFiles/QuaZip_autogen.dir/ParseCache.txt"
+  "_deps/quazip-build/quazip/QuaZip_autogen"
   "getMusicApp_autogen"
   )
 endif()
