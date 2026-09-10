@@ -20,15 +20,15 @@ qt_standard_project_setup()
 
 qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
-    main.cpp
-    mainwindow.cpp
-    logView.cpp
-    downloadManager.cpp
-    settingDialog.cpp
-    downloadManager.h
-    logView.h
-    mainwindow.h
-    settingDialog.h
+    src/main.cpp
+    src/mainwindow.cpp
+    src/logView.cpp
+    src/downloadManager.cpp
+    src/settingDialog.cpp
+    src/downloadManager.h
+    src/logView.h
+    src/mainwindow.h
+    src/settingDialog.h
 )
 
 target_link_libraries(getMusicApp
