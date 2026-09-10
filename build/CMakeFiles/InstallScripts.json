@@ -1,9 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/ryabi/my_apps/qt/getMusicApp/build/cmake_install.cmake",
-		"/home/ryabi/my_apps/qt/getMusicApp/build/_deps/quazip-build/cmake_install.cmake",
-		"/home/ryabi/my_apps/qt/getMusicApp/build/_deps/quazip-build/quazip/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
