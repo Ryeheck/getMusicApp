@@ -1,13 +1,10 @@
 #include "downloadManager.h"
 
 #include <QProcess>
-#include <QListWidgetItem>
-#include <QApplication>
 #include <QProcessEnvironment>
 #include <QDir>
 #include <QString>
 #include <QProgressBar>
-#include <QMap>
 #include <QUuid>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -17,6 +14,7 @@
 #include <quazip.h>
 #include <quazipfile.h>
 #include <functional>
+#include <QRegularExpression>
 
 #define MAX_SONGS   50
 
