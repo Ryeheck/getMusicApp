@@ -1,6 +1,4 @@
 #include "downloadManager.h"
-#include "logView.h"
-#include "settingDialog.h"
 
 #include <QProcess>
 #include <QListWidgetItem>
@@ -98,7 +96,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     });
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
-            [=, this] (int exitCode) {
+            [this, url, startAfter, folder, isSongs, lyrics] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         emit messageRequested(output);
         
