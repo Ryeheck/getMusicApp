@@ -11,6 +11,11 @@
 #include <QToolButton>
 #include <QAction>
 #include <QMenu>
+#include <QTranslator>
+#include <qcoreevent.h>
+#include <qguiapplication.h>
+#include <qmainwindow.h>
+#include <qtranslator.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -36,6 +41,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     manager->setCookies(diag.getCookiesBrowser());
     manager->setJavaScript(diag.getJSRuntime());
     
+    // Translator
+    m_translator = new QTranslator(this);
+
+
     lyricsBtn  = new QPushButton("Lyric download(s)", this);
     musicBtn   = new QPushButton("Music download(s)", this);
     titleBtn   = new QPushButton("Playlist", this);
@@ -52,13 +61,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     clearTitleAction  = menuLogsBtns->addAction("Clear title");
     clearListAction   = menuLogsBtns->addAction("Clear all");
     checkForUpdate    = menuLogsBtns->addAction("Check and prepare program");
-    
+    switchLanguage    = menuLogsBtns->addAction("Switch language");
+
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
     
     stopBtn        = new QPushButton("Stop", this);
     stopForNextBtn = new QPushButton("Stop for next", this);
-
+    
     stopForNextBtn->hide();
     stopBtn->hide();
 
@@ -124,6 +134,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(logsToolBtn,   &QToolButton::clicked, [this] () {  logs->setSelectAllItem();  });
 
+    connect(switchLanguage, &QAction::toggled, this, &MainWindow::switchLanguageClicked);
     connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
     connect(deselectAllAction, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
     connect(clearTitleAction,  &QAction::triggered, [this] () {  
@@ -168,6 +179,50 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         int row = logs->findRowById(id);
         logs->updateStatus(row, status);
     });
+}
+
+void MainWindow::retranslateUI()
+{
+    inputFolder->setText(tr("Введите папку загрузки (по умолчанию: система):"));
+    inputURL->setText(tr("Введите ссылку:"));
+    settingBtn->setText(tr("Настройки"));
+    logsToolBtn->setText(tr("Логи"));
+    clearListAction->setText(tr("Очистить список"));
+    deselectAllAction->setText(tr("Убрать галочки"));
+    selectAllAction->setText(tr("Поставить галочки"));
+    logsAction->setText(tr("Логи еще"));
+    clearTitleAction->setText(tr("Очистить все"));
+    checkForUpdate->setText(tr("Проверить обновления"));
+    stopBtn->setText(tr("Стоп"));
+    stopForNextBtn->setText(tr("Стоп на следующем"));
+    lyricsBtn->setText(tr("Субтитры"));
+    videoBtn->setText(tr("Видео"));
+    
+    if (!m_russian)
+        switchLanguage->setText(tr("Change language"));
+    else
+        switchLanguage->setText(tr("Сменить язык"));
+}
+
+void MainWindow::switchLanguageClicked()
+{
+    if (m_russian) {
+        if (m_translator->load("filename")) {
+            qApp->installTranslator(m_translator);
+            m_russian = false;
+        }
+    } else {
+        qApp->removeTranslator(m_translator);
+        m_russian = true;
+    }
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange)
+        retranslateUI();
+
+    QMainWindow::changeEvent(event);
 }
 
 void MainWindow::handleDownload(bool isSongs, bool isLyrics)

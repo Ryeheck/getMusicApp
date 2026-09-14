@@ -11,6 +11,8 @@
 #include <QToolButton>
 #include <QAction>
 #include <QMenu>
+#include <QTranslator>
+#include <qcoreapplication.h>
 
 class MainWindow : public QMainWindow
 {
@@ -28,6 +30,11 @@ private slots:
     void onLogsToggled(bool checked);
 
 private:
+    void retranslateUI();
+    void switchLanguageClicked();
+    bool m_russian;
+    QTranslator *m_translator;
+    
     QWidget *centralWidget;
     QBoxLayout *layoutMain;
     QBoxLayout *layoutBtns;
@@ -51,7 +58,8 @@ private:
     QAction *logsAction;
     QAction *clearTitleAction;
     QAction *checkForUpdate;
-    
+    QAction *switchLanguage;
+
     QPushButton *stopBtn;
     QPushButton *stopForNextBtn;
     QPushButton *lyricsBtn;
