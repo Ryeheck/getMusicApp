@@ -12,10 +12,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QTranslator>
-#include <qcoreevent.h>
-#include <qguiapplication.h>
-#include <qmainwindow.h>
-#include <qtranslator.h>
+#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -29,8 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     inputFolder = new QLineEdit(this);
     inputURL    = new QLineEdit(this);
-    inputFolder->setPlaceholderText("Enter folder... (default: system): ");
-    inputURL->setPlaceholderText("Enter url... (only youtube)");
+    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
+    inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
 
     logs    = new logView(this);
     manager = new downloadManager(this);
@@ -45,29 +42,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_translator = new QTranslator(this);
 
 
-    lyricsBtn  = new QPushButton("Lyric download(s)", this);
-    musicBtn   = new QPushButton("Music download(s)", this);
-    titleBtn   = new QPushButton("Playlist", this);
-    settingBtn = new QPushButton("Setting", this);
-    videoBtn   = new QPushButton("Video download(s)", this);
+    lyricsBtn  = new QPushButton(tr("Lyrics download(s)"), this);
+    musicBtn   = new QPushButton(tr("Music download(s)"), this);
+    titleBtn   = new QPushButton(tr("Playlist"), this);
+    settingBtn = new QPushButton(tr("Setting"), this);
+    videoBtn   = new QPushButton(tr("Video download(s)"), this);
 
     logsToolBtn = new QToolButton(this);
-    logsToolBtn->setText("Select all");
+    logsToolBtn->setText(tr("Select all"));
     logsToolBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
     menuLogsBtns = new QMenu(this);
-    deselectAllAction = menuLogsBtns->addAction("Deselect all");
-    logsAction        = menuLogsBtns->addAction("Show logs");
-    clearTitleAction  = menuLogsBtns->addAction("Clear title");
-    clearListAction   = menuLogsBtns->addAction("Clear all");
-    checkForUpdate    = menuLogsBtns->addAction("Check and prepare program");
-    switchLanguage    = menuLogsBtns->addAction("Switch language");
+    deselectAllAction = menuLogsBtns->addAction(tr("Deselect all"));
+    logsAction        = menuLogsBtns->addAction(tr("Show logs"));
+    clearTitleAction  = menuLogsBtns->addAction(tr("Clear title"));
+    clearListAction   = menuLogsBtns->addAction(tr("Clear all"));
+    checkForUpdate    = menuLogsBtns->addAction(tr("Check and prepare program"));
+    switchLanguage    = menuLogsBtns->addAction(tr("Switch language"));
 
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
     
-    stopBtn        = new QPushButton("Stop", this);
-    stopForNextBtn = new QPushButton("Stop for next", this);
+    stopBtn        = new QPushButton(tr("Stop"), this);
+    stopForNextBtn = new QPushButton(tr("Stop for next"), this);
     
     stopForNextBtn->hide();
     stopBtn->hide();
@@ -134,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(logsToolBtn,   &QToolButton::clicked, [this] () {  logs->setSelectAllItem();  });
 
-    connect(switchLanguage, &QAction::toggled, this, &MainWindow::switchLanguageClicked);
+    connect(switchLanguage, &QAction::triggered, this, &MainWindow::switchLanguageClicked);
     connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
     connect(deselectAllAction, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
     connect(clearTitleAction,  &QAction::triggered, [this] () {  
@@ -183,33 +180,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::retranslateUI()
 {
-    inputFolder->setText(tr("Введите папку загрузки (по умолчанию: система):"));
-    inputURL->setText(tr("Введите ссылку:"));
-    settingBtn->setText(tr("Настройки"));
-    logsToolBtn->setText(tr("Логи"));
-    clearListAction->setText(tr("Очистить список"));
-    deselectAllAction->setText(tr("Убрать галочки"));
-    selectAllAction->setText(tr("Поставить галочки"));
-    logsAction->setText(tr("Логи еще"));
-    clearTitleAction->setText(tr("Очистить все"));
-    checkForUpdate->setText(tr("Проверить обновления"));
-    stopBtn->setText(tr("Стоп"));
-    stopForNextBtn->setText(tr("Стоп на следующем"));
-    lyricsBtn->setText(tr("Субтитры"));
-    videoBtn->setText(tr("Видео"));
-    
-    if (!m_russian)
-        switchLanguage->setText(tr("Change language"));
-    else
-        switchLanguage->setText(tr("Сменить язык"));
+    inputFolder->setText(tr("Enter folder... (default: system): "));
+    inputURL->setText(tr("Enter url... (only youtube)"));
+    settingBtn->setText(tr("Setting"));
+    titleBtn->setText(tr("Playlist"));
+    musicBtn->setText(tr("Music download(s)"));
+    logsToolBtn->setText(tr("Logs"));
+    clearListAction->setText(tr("Clear all"));
+    deselectAllAction->setText(tr("Deselect all"));
+    logsAction->setText(tr("Show logs"));
+    clearTitleAction->setText(tr("Clear title"));
+    checkForUpdate->setText(tr("Check and prepare program"));
+    stopBtn->setText(tr("Stop"));
+    stopForNextBtn->setText(tr("Stop for next"));
+    lyricsBtn->setText(tr("Lyrics download(s)"));
+    videoBtn->setText(tr("Video download(s)"));
+    switchLanguage->setText(tr("Change language"));
+
 }
 
 void MainWindow::switchLanguageClicked()
 {
+    QString path = QCoreApplication::applicationDirPath() + "/translate_en.qm";
     if (m_russian) {
-        if (m_translator->load("filename")) {
+        if (m_translator->load(path)) {
             qApp->installTranslator(m_translator);
             m_russian = false;
+        } else {
+            logs->appendText(QString("invalid path: %1").arg(path));
         }
     } else {
         qApp->removeTranslator(m_translator);

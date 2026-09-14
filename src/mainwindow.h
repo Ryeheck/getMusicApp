@@ -32,6 +32,7 @@ private slots:
 private:
     void retranslateUI();
     void switchLanguageClicked();
+    void changeEvent(QEvent *event) override;
     bool m_russian;
     QTranslator *m_translator;
     

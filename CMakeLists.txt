@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(getMusicApp LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network LinguistTools)
 
 
 include(FetchContent)
@@ -18,6 +18,8 @@ FetchContent_MakeAvailable(quazip)
 
 qt_standard_project_setup()
 
+
+
 qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
     src/main.cpp
@@ -29,6 +31,10 @@ qt_add_executable(getMusicApp
     src/logView.h
     src/mainwindow.h
     src/settingDialog.h
+)
+
+qt_add_translations(getMusicApp
+    TS_FILES translate_ru.ts
 )
 
 target_link_libraries(getMusicApp
