@@ -26,8 +26,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     inputFolder = new QLineEdit(this);
     inputURL    = new QLineEdit(this);
-    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
-    inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
 
     logs    = new logView(this);
     manager = new downloadManager(this);
@@ -42,29 +40,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_translator = new QTranslator(this);
 
 
-    lyricsBtn  = new QPushButton(tr("Lyrics download(s)"), this);
-    musicBtn   = new QPushButton(tr("Music download(s)"), this);
-    titleBtn   = new QPushButton(tr("Playlist"), this);
-    settingBtn = new QPushButton(tr("Setting"), this);
-    videoBtn   = new QPushButton(tr("Video download(s)"), this);
+    lyricsBtn  = new QPushButton(this);
+    musicBtn   = new QPushButton(this);
+    titleBtn   = new QPushButton(this);
+    settingBtn = new QPushButton(this);
+    videoBtn   = new QPushButton(this);
 
     logsToolBtn = new QToolButton(this);
-    logsToolBtn->setText(tr("Select all"));
     logsToolBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
     menuLogsBtns = new QMenu(this);
-    deselectAllAction = menuLogsBtns->addAction(tr("Deselect all"));
-    logsAction        = menuLogsBtns->addAction(tr("Show logs"));
-    clearTitleAction  = menuLogsBtns->addAction(tr("Clear title"));
-    clearListAction   = menuLogsBtns->addAction(tr("Clear all"));
-    checkForUpdate    = menuLogsBtns->addAction(tr("Check and prepare program"));
-    switchLanguage    = menuLogsBtns->addAction(tr("Switch language"));
+
+    deselectAllAction = menuLogsBtns->addAction("");
+    logsAction        = menuLogsBtns->addAction("");
+    clearTitleAction  = menuLogsBtns->addAction("");
+    clearListAction   = menuLogsBtns->addAction("");
+    checkForUpdate    = menuLogsBtns->addAction("");
+    switchLanguage    = menuLogsBtns->addAction("");
+
+
 
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
     
-    stopBtn        = new QPushButton(tr("Stop"), this);
-    stopForNextBtn = new QPushButton(tr("Stop for next"), this);
+    stopBtn        = new QPushButton(this);
+    stopForNextBtn = new QPushButton(this);
     
     stopForNextBtn->hide();
     stopBtn->hide();
@@ -105,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->removeAlso(0);
     });
     */
+
+    retranslateUI();
 
     connect(titleBtn, &QPushButton::clicked, [this] () {
         logs->appendText("Wait...");
@@ -180,28 +182,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::retranslateUI()
 {
-    inputFolder->setText(tr("Enter folder... (default: system): "));
-    inputURL->setText(tr("Enter url... (only youtube)"));
+    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
+    inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
+    
     settingBtn->setText(tr("Setting"));
     titleBtn->setText(tr("Playlist"));
     musicBtn->setText(tr("Music download(s)"));
-    logsToolBtn->setText(tr("Logs"));
+    logsToolBtn->setText(tr("Select all"));
+    
     clearListAction->setText(tr("Clear all"));
     deselectAllAction->setText(tr("Deselect all"));
     logsAction->setText(tr("Show logs"));
     clearTitleAction->setText(tr("Clear title"));
     checkForUpdate->setText(tr("Check and prepare program"));
+    switchLanguage->setText(tr("Switch language"));
+
     stopBtn->setText(tr("Stop"));
     stopForNextBtn->setText(tr("Stop for next"));
-    lyricsBtn->setText(tr("Lyrics download(s)"));
+    lyricsBtn->setText(tr("Lyric download(s)"));
     videoBtn->setText(tr("Video download(s)"));
-    switchLanguage->setText(tr("Change language"));
-
 }
 
 void MainWindow::switchLanguageClicked()
 {
-    QString path = QCoreApplication::applicationDirPath() + "/translate_en.qm";
+    QString path = QCoreApplication::applicationDirPath() + "/translate_ru.qm";
     if (m_russian) {
         if (m_translator->load(path)) {
             qApp->installTranslator(m_translator);

@@ -15,13 +15,13 @@
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="45"/>
-        <source>Lyrics download(s)</source>
-        <translation>Скачать субтитров</translation>
+        <source>Lyric download(s)</source>
+        <translation>Скачивание субтитров</translation>
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="46"/>
         <source>Music download(s)</source>
-        <translation>Скачать музыки</translation>
+        <translation>Скачивание музыки</translation>
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="47"/>
@@ -86,11 +86,6 @@
     <message>
         <location filename="src/mainwindow.cpp" line="200"/>
         <source>Change language</source>
-        <translation>Сменить язык</translation>
-    </message>
-    <message>
-        <location filename="src/mainwindow.cpp" line="202"/>
-        <source>Сменить язык</source>
         <translation>Сменить язык</translation>
     </message>
 </context>
