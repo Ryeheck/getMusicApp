@@ -207,13 +207,10 @@ void MainWindow::retranslateUI()
 
 void MainWindow::switchLanguageClicked()
 {
-    QString path = QCoreApplication::applicationDirPath() + "/translate_ru.qm";
     if (!m_russian) {
-        if (m_translator->load(path)) {
+        if (m_translator->load(":/translate_ru.qm")) {
             qApp->installTranslator(m_translator);
             m_russian = true;
-        } else {
-            logs->appendText(QString("invalid path: %1").arg(path));
         }
     } else {
         qApp->removeTranslator(m_translator);

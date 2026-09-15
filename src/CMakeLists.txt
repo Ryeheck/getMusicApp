@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(getMusicApp LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network LinguistTools)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core Widgets Network LinguistTools)
 
 
 include(FetchContent)
@@ -16,22 +16,24 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(quazip)
 
-qt_standard_project_setup()
+# qt_standard_project_setup()
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 
 
 
 qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
-    src/main.cpp
-    src/mainwindow.cpp
-    src/logView.cpp
-    src/downloadManager.cpp
-    src/settingDialog.cpp
-    src/downloadManager.h
-    src/logView.h
-    src/mainwindow.h
-    src/settingDialog.h
-    resources.qrc
+    main.cpp
+    mainwindow.cpp
+    logView.cpp
+    downloadManager.cpp
+    settingDialog.cpp
+    downloadManager.h
+    logView.h
+    mainwindow.h
+    settingDialog.h
+    ../resources.qrc
 )
 
 qt_add_translations(getMusicApp
@@ -54,9 +56,8 @@ install(TARGETS getMusicApp
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-qt_generate_deploy_app_script(
-    TARGET getMusicApp
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})
+# qt_generate_deploy_app_script(
+#    TARGET getMusicApp
+#    OUTPUT_SCRIPT deploy_script
+#)
+# install(SCRIPT ${deploy_script})
