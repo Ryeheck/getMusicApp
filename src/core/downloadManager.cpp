@@ -11,7 +11,6 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <memory>
-#include <qobject.h>
 #include <quazip.h>
 #include <quazipfile.h>
 #include <functional>
@@ -190,7 +189,6 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
             media->status = "Done";
         
         emit updateStatusRequested(media->id, media->status);
-        emit activeTasksCountChanged(_activeProcesses.size());
     });
 
 #ifdef Q_OS_WIN
@@ -244,7 +242,6 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
         media->status = exitCode ? "Error" : "Done";
         
         emit updateStatusRequested(media->id, media->status);
-        emit activeTasksCountChanged(_activeProcesses.size());
     });
 
 #ifdef Q_OS_WIN
@@ -306,7 +303,8 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     media->status = "Download";
     media->widget = new QProgressBar();
     QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
-    
+    emit updateStatusRequested(media->id, media->status);
+
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
 
@@ -321,6 +319,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         if (reply->error() != QNetworkReply::NoError) {
             media->status = "Error";
             cleanup();
+            emit updateStatusRequested(media->id, media->status);
             emit colorLogMessageRequested("silver", "Reply return error: ", 
                                           "IndianRed", reply->errorString());
             return;
@@ -385,6 +384,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
 
             media->status = "Error";
             cleanup();
+            emit updateStatusRequested(media->id, media->status);
             emit colorLogMessageRequested("silver", "Reply return error: ", 
                                           "IndianRed", reply->errorString());
             return;
@@ -410,11 +410,15 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
 
 void downloadManager::cleanupProcess(const QString &id, int exitCode)
 {
-    QString output;
+    QString output = id;
     for(int i = _Media.size() - 1; i >= 0; --i)
     {
-        if (_Media[i]->id == id)  output = _Media[i]->name;
+        if (_Media[i]->id == id) {
+            output = _Media[i]->name;
+            break;
+        }
     }
+
     output += (exitCode ? ": Error!" : ": Done!");
     emit messageRequested(output);
 
@@ -643,7 +647,8 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
 void downloadManager::checkAndPrepareFiles()
 {
     QProcess *process = new QProcess();
-    _activeProcesses.insert(QUuid::createUuid().toString(), process);
+    QString id = QUuid::createUuid().toString();
+    _activeProcesses.insert(id, process);
 
 #ifdef Q_OS_WIN
     QString yt_dlp       = "yt-dlp.exe";
@@ -768,6 +773,11 @@ void downloadManager::checkAndPrepareFiles()
         emit logMessageRequested(output);
     });
     
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
+                [this, id] (int exitCode) {
+        cleanupProcess(id, exitCode);
+    });
+
     QString program;
     path = QDir(appDataDir).filePath(yt_dlp);
     if (QFile::exists(path)) 
