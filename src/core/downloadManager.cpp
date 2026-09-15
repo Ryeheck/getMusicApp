@@ -11,6 +11,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <memory>
+#include <qobject.h>
 #include <quazip.h>
 #include <quazipfile.h>
 #include <functional>
@@ -643,7 +644,7 @@ void downloadManager::checkAndPrepareFiles()
 {
     QProcess *process = new QProcess();
     _activeProcesses.insert(QUuid::createUuid().toString(), process);
-    
+
 #ifdef Q_OS_WIN
     QString yt_dlp       = "yt-dlp.exe";
     QString syncedlyrics = "syncedlyrics.exe";
@@ -730,7 +731,7 @@ void downloadManager::checkAndPrepareFiles()
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
-                        emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
+                        emit colorLogMessageRequested("silver", "Remove: ", "silver", filenameZIP);
                     });
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
@@ -747,6 +748,7 @@ void downloadManager::checkAndPrepareFiles()
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
+                        emit colorLogMessageRequested("silver", "Remove: ", "silver", filenameZIP);
                     });
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
