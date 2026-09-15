@@ -146,7 +146,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });  
     connect(checkForUpdate, &QAction::triggered, [this] () {  
         manager->checkAndPrepareFiles();
-        setupBeforeDownload(true);
+        setupBeforeDownload(false);
+        stopBtn->show();
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {

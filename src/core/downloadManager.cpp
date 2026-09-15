@@ -157,6 +157,8 @@ void downloadManager::startDownload(const QString &folder, bool isSongs, bool is
 
         media->status = "Updating";
         emit updateStatusRequested(media->id, media->status);
+        if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
+            emit pBarRequested(pBar, 0);
 
         if (isLyrics)
             lyricsDownload(media, folder);
@@ -172,8 +174,8 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
     _activeProcesses.insert(media->id, process);
     setWorking(process);
     
-    QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
-    setupProcessLogging(media->id, pBar, false); 
+    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
+        setupProcessLogging(media->id, pBar, false); 
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, media, process] (int exitCode) {
@@ -231,8 +233,8 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     _activeProcesses.insert(media->id, process);
     setWorking(process);
     
-    QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
-    setupProcessLogging(media->id, pBar, false); 
+    if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
+        setupProcessLogging(media->id, pBar, false); 
     
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
                 [this, folder, media] (int exitCode) {
@@ -336,7 +338,8 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         media->id   = QUuid::createUuid().toString();
         media->size = size;
         media->name = filename;
-        
+        _Media.append(media);
+
         QString pathApp = QDir(appDataDir).filePath(media->name);
         file->setFileName(pathApp);
 
@@ -411,7 +414,7 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
     {
         if (_Media[i]->id == id)  output = _Media[i]->name;
     }
-    output += (exitCode ? ": Error" : ": Done!");
+    output += (exitCode ? ": Error!" : ": Done!");
     emit messageRequested(output);
 
     if (_activeProcesses.contains(id)) {
@@ -419,6 +422,8 @@ void downloadManager::cleanupProcess(const QString &id, int exitCode)
 
         _activeProcesses.remove(id);
     }
+
+    emit activeTasksCountChanged(_activeProcesses.size());
 }
 
 void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics) 
@@ -637,7 +642,8 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
 void downloadManager::checkAndPrepareFiles()
 {
     QProcess *process = new QProcess();
-
+    _activeProcesses.insert(QUuid::createUuid().toString(), process);
+    
 #ifdef Q_OS_WIN
     QString yt_dlp       = "yt-dlp.exe";
     QString syncedlyrics = "syncedlyrics.exe";
