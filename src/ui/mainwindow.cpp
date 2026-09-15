@@ -208,7 +208,7 @@ void MainWindow::retranslateUI()
 void MainWindow::switchLanguageClicked()
 {
     if (!m_russian) {
-        if (m_translator->load(":/translate_ru.qm")) {
+        if (m_translator->load(":/i18n/translate_ru.qm")) {
             qApp->installTranslator(m_translator);
             m_russian = true;
         }

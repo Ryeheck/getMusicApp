@@ -16,9 +16,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(quazip)
 
-qt_standard_project_setup()
-
-
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
@@ -31,11 +31,13 @@ qt_add_executable(getMusicApp
     src/ui/logView.h
     src/ui/mainwindow.h
     src/ui/settingDialog.h
-    assert/resources.qrc
 )
 
 qt_add_translations(getMusicApp
-    TS_FILES translations/translate_ru.ts
+    TS_FILES 
+        translations/translate_ru.ts
+    RESOURCE_PREFIX
+        "/i18n"
 )
 
 target_link_libraries(getMusicApp
