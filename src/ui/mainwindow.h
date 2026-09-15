@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "logView.h"
-#include "downloadManager.h"
+#include "../core/downloadManager.h"
 
 #include <QMainWindow>
 #include <QLineEdit>

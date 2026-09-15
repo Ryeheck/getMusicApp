@@ -23,19 +23,19 @@ qt_standard_project_setup()
 qt_add_executable(getMusicApp
     WIN32 MACOSX_BUNDLE
     src/main.cpp
-    src/mainwindow.cpp
-    src/logView.cpp
-    src/downloadManager.cpp
-    src/settingDialog.cpp
-    src/downloadManager.h
-    src/logView.h
-    src/mainwindow.h
-    src/settingDialog.h
-    resources.qrc
+    src/ui/mainwindow.cpp
+    src/ui/logView.cpp
+    src/core/downloadManager.cpp
+    src/ui/settingDialog.cpp
+    src/core/downloadManager.h
+    src/ui/logView.h
+    src/ui/mainwindow.h
+    src/ui/settingDialog.h
+    assert/resources.qrc
 )
 
 qt_add_translations(getMusicApp
-    TS_FILES translate_ru.ts
+    TS_FILES translations/translate_ru.ts
 )
 
 target_link_libraries(getMusicApp

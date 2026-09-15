@@ -1,5 +1,5 @@
 #include "logView.h"
-#include "downloadManager.h"
+#include "../core/downloadManager.h"
 
 #include <QPlainTextEdit>
 #include <QString>

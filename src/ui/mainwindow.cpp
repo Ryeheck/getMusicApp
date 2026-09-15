@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "logView.h"
-#include "downloadManager.h"
+#include "../core/downloadManager.h"
 #include "settingDialog.h"
 
 #include <QString>

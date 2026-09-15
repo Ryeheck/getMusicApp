@@ -1,7 +1,7 @@
 #ifndef LOGVIEW_H
 #define LOGVIEW_H
 
-#include "downloadManager.h"
+#include "../core/downloadManager.h"
 
 #include <QPlainTextEdit>
 #include <QList>
