@@ -27,7 +27,8 @@ public:
     void clearSelect();
     void clearDeselect();
     void clearTitle();
-
+    void retranslateUI();
+    
     void colorLog(const QString &firstColor, const QString &firstMessage, 
                   const QString &lastColor="", const QString &lastMessage="");
     void log(const QString &message="");

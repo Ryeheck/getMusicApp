@@ -32,8 +32,7 @@ logView::logView(QWidget *parent)
     titleWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     titleWidget->verticalHeader()->setVisible(false);
 
-    QStringList headers = {"Name", "Size", "Status", "Action"};
-    titleWidget->setHorizontalHeaderLabels(headers);
+    retranslateUI();
     
     QHeaderView *header = titleWidget->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -54,6 +53,12 @@ void logView::setSelectAllItem()
         titleWidget->item(row, 0)->setCheckState(Qt::Checked);
     }
     update();
+}
+
+void logView::retranslateUI()
+{
+    QStringList headers = {tr("Name"),tr("Size"), tr("Status"), tr("Action")};
+    titleWidget->setHorizontalHeaderLabels(headers);
 }
 
 void logView::setDeselectAllItem()
