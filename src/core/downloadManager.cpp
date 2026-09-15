@@ -172,7 +172,6 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
     QProcess *process = new QProcess(this);
 
     _activeProcesses.insert(media->id, process);
-    setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
         setupProcessLogging(media->id, pBar, false); 
@@ -230,7 +229,6 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     QProcess *process = new QProcess(this);
 
     _activeProcesses.insert(media->id, process);
-    setWorking(process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
         setupProcessLogging(media->id, pBar, false); 
@@ -526,7 +524,7 @@ void downloadManager::extractProgram(const QString targetPath, const QString sav
         QString ext = (lastPoint > 0 && lastPoint < fileInfo.name.length() - 1) 
                       ? fileInfo.name.mid(lastPoint + 1) 
                       : "";  // this is linux
-        if (!(ext.isEmpty() || ext == "exe")) {  // Its executable file 
+        if (!(ext.isEmpty() || ext == "exe") || fileInfo.name.endsWith("/")) {  // If its not executable file 
             inFile.close();
             continue;
         }
@@ -551,22 +549,6 @@ void downloadManager::extractProgram(const QString targetPath, const QString sav
                                       "DarkSeaGreen", QString("%1 successful").arg(outPath));
     }
     zip.close();
-}
-
-void downloadManager::setWorking(QProcess *process)
-{
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
-#ifdef Q_OS_WIN
-    env.insert("PATH", appDataDir + ";" + env.value("PATH"));
-#else
-    env.insert("PATH", appDataDir + ":" + env.value("PATH"));
-    env.remove("LD_LIBRARY_PATH");
-    env.insert("LD_LIBRARY_PATH", ""); 
-#endif
-    
-    process->setProcessEnvironment(env);
-    process->setWorkingDirectory(QDir::tempPath());
 }
 
 void downloadManager::stopDownload()
@@ -736,7 +718,7 @@ void downloadManager::checkAndPrepareFiles()
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
-                        emit colorLogMessageRequested("silver", "Remove: ", "silver", filenameZIP);
+                        emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
@@ -753,7 +735,7 @@ void downloadManager::checkAndPrepareFiles()
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
-                        emit colorLogMessageRequested("silver", "Remove: ", "silver", filenameZIP);
+                        emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
