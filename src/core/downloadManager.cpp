@@ -90,6 +90,8 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, &QProcess::readyReadStandardError, [this, process] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
+        if (output.contains("Failed to resolve") || output.contains("Failed to establish"))
+            emit messageRequested("Maybe fix: use another VPN");
         emit logMessageRequested(output);
     });
 
@@ -188,9 +190,9 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
     });
 
 #ifdef Q_OS_WIN
-    QString exec = "syncedlyrics_bin.exe";
+    QString exec = "syncedlyrics.exe";
 #else
-    QString exec = "syncedlyrics_bin";
+    QString exec = "syncedlyrics";
 #endif
 
     QString program;
