@@ -110,10 +110,25 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     });
 
 #ifdef Q_OS_WIN
-    QString program = appDataDir + "/yt-dlp.exe";
+    QString exec ="yt-dlp.exe";
 #else
-    QString program = QDir(appDataDir).filePath("yt-dlp_linux");
+    QString exec = "yt-dlp_linux";
 #endif
+
+    QString program;
+    QString path = QDir(appDataDir).filePath(exec);
+    if (QFile::exists(path)) {
+        // If exec in appData
+        program = path;
+    } else if (!QStandardPaths::findExecutable(exec).isEmpty()) {
+        // If exec in system
+        program = exec;
+    } else {
+        // If not exec
+        emit messageRequested(QString("%1 not exists").arg(exec));
+        emit messageRequested("Please prepare program");
+        return;
+    }
 
     QStringList args;
     args << "--js-runtimes" << _jsRuntime
@@ -173,10 +188,25 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
     });
 
 #ifdef Q_OS_WIN
-    QString program = appDataDir + "/syncedlyrics_bin.exe";
+    QString exec = "syncedlyrics_bin.exe";
 #else
-    QString program = QDir(appDataDir).filePath("syncedlyrics_bin");
+    QString exec = "syncedlyrics_bin";
 #endif
+
+    QString program;
+    QString path = QDir(appDataDir).filePath(exec);
+    if (QFile::exists(path)) {
+        // If exec in appData
+        program = path;
+    } else if (!QStandardPaths::findExecutable(exec).isEmpty()) {
+        // If exec in system
+        program = exec;
+    } else {
+        // If not exec
+        emit messageRequested(QString("%1 not exists").arg(exec));
+        emit messageRequested("Please prepare program");
+        return;
+    }
 
     QString songName = media->name;
 
@@ -212,11 +242,25 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     });
 
 #ifdef Q_OS_WIN
-    QString program = appDataDir + "/yt-dlp.exe";
+    QString exec = "yt-dlp.exe";
 #else
-    QString program = QDir(appDataDir).filePath("yt-dlp_linux");
+    QString exec = "yt-dlp_linux";
 #endif
 
+    QString program;
+    QString path = QDir(appDataDir).filePath(exec);
+    if (QFile::exists(path)) {
+        // If exec in appData
+        program = path;
+    } else if (!QStandardPaths::findExecutable(exec).isEmpty()) {
+        // If exec in system
+        program = exec;
+    } else {
+        // If not exec
+        emit messageRequested(QString("%1 not exists").arg(exec));
+        emit messageRequested("Please prepare program");
+        return;
+    }
     QString mediaName = media->name;
 
     QStringList args;
@@ -612,7 +656,7 @@ void downloadManager::checkAndPrepareFiles()
     // Check the yt-dlp and download it if necessary 
     QString path         = QDir(appDataDir).filePath(yt_dlp);
     bool existsInAppData = QFile::exists(path);
-    bool existsInSystem  = QStandardPaths::findExecutable(yt_dlp).isEmpty();
+    bool existsInSystem  = !QStandardPaths::findExecutable(yt_dlp).isEmpty();
     
     if (!(existsInAppData || existsInSystem)) {
         QUrl url(QString("https://github.com/yt-dlp/yt-dlp/releases/latest/download/%1").arg(yt_dlp));
@@ -624,7 +668,7 @@ void downloadManager::checkAndPrepareFiles()
     // Check the syncedlirycs and move it if to appDataDir
     path            = QDir(appDataDir).filePath(syncedlyrics);
     existsInAppData = QFile::exists(path);
-    existsInSystem  = QStandardPaths::findExecutable(syncedlyrics).isEmpty();
+    existsInSystem  = !QStandardPaths::findExecutable(syncedlyrics).isEmpty(); 
 
     if (!(existsInAppData || existsInSystem)) {
         if (QFile::exists(syncedlyrics)) {
@@ -641,7 +685,7 @@ void downloadManager::checkAndPrepareFiles()
     // Check javascript and extract -> remove ZIP file 
     path            = QDir(appDataDir).filePath(jsRuntime);
     existsInAppData = QFile::exists(path);
-    existsInSystem  = QStandardPaths::findExecutable(jsRuntime).isEmpty();
+    existsInSystem  = !QStandardPaths::findExecutable(jsRuntime).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
         QString filenameZIP = QDir(appDataDir).filePath(zipDeno);
@@ -667,7 +711,7 @@ void downloadManager::checkAndPrepareFiles()
     
     path = QDir(appDataDir).filePath(ffmpeg);
     existsInAppData = QFile::exists(path);
-    existsInSystem  = QStandardPaths::findExecutable(ffmpeg).isEmpty();
+    existsInSystem  = !QStandardPaths::findExecutable(ffmpeg).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
         QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
@@ -677,17 +721,26 @@ void downloadManager::checkAndPrepareFiles()
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
                     });
-    }
+    } else
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 already exists").arg(ffmpeg));
 
     path = QDir(appDataDir).filePath(ffprobe);
     existsInAppData = QFile::exists(path);
-    existsInSystem  = QStandardPaths::findExecutable(ffprobe).isEmpty();
+    existsInSystem  = !QStandardPaths::findExecutable(ffprobe).isEmpty();
 
     if (!(existsInAppData || existsInSystem)) {
-        /* comming soon... */
-    }
-
-    QString program = yt_dlp;
+        QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
+        QUrl url(QString("https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/%1").arg(zipFfmpeg));
+        downloadFile(url, appDataDir, 
+                    [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
+                        extractProgram(filenameZIP, appDataDir);
+                        QFile::remove(filenameZIP);
+                    });
+    } else
+        emit colorLogMessageRequested("silver", "Download: ", 
+                                      "DarkSeaGreen", QString("%1 already exists").arg(ffprobe));
+    
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();
@@ -701,6 +754,18 @@ void downloadManager::checkAndPrepareFiles()
 
         emit logMessageRequested(output);
     });
+    
+    QString program;
+    path = QDir(appDataDir).filePath(yt_dlp);
+    if (QFile::exists(path)) 
+        program = path;
+    else if (!QStandardPaths::findExecutable(yt_dlp).isEmpty())
+        program = yt_dlp;
+    else {
+        emit messageRequested(QString("%1 not exists").arg(yt_dlp));
+        emit messageRequested("Please prepare program");
+        return;
+    }
 
     QStringList args;
     args << "-U";
