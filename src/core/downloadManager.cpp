@@ -99,7 +99,8 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
             [this, url, startAfter, folder, isSongs, lyrics] (int exitCode) {
         QString output = (exitCode == 0 ? "Done!" : "Error");
         emit messageRequested(output);
-        
+        _isStopped = false;
+
         if (QProcess *process = _activeProcesses.value(url)) {
             process->deleteLater();
             _activeProcesses.remove(url);
@@ -324,7 +325,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         
         // If doesnt start download
         qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
-        if (size <= 0) return;
+        if (size <= 0 || _isStopped) return;
 
         QString filename = reply->header(QNetworkRequest::ContentDispositionHeader).toString();
         if (filename.contains("filename=")) 
@@ -698,6 +699,7 @@ void downloadManager::checkAndPrepareFiles()
                         [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                             extractProgram(filenameZIP, appDataDir);
                             QFile::remove(filenameZIP);
+                            emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                         });
 
         } else if (_jsRuntime == "node") {
@@ -722,6 +724,7 @@ void downloadManager::checkAndPrepareFiles()
                     [this, filenameZIP] () {  // Extract in appDataDir and remove .zip file
                         extractProgram(filenameZIP, appDataDir);
                         QFile::remove(filenameZIP);
+                        emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
     } else
         emit colorLogMessageRequested("silver", "Download: ", 
