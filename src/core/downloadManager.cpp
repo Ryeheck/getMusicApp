@@ -12,6 +12,7 @@
 #include <QFile>
 #include <memory>
 #include <qobject.h>
+#include <qtmetamacros.h>
 #include <quazip.h>
 #include <quazipfile.h>
 #include <functional>
@@ -663,10 +664,12 @@ void downloadManager::checkAndPrepareFiles()
     if (!(existsInAppData || existsInSystem)) {
         QUrl url(QString("https://github.com/yt-dlp/yt-dlp/releases/latest/download/%1").arg(yt_dlp));
         downloadFile(url);
-    } else
+    } else {
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(yt_dlp));
-
+                                       "DarkSeaGreen", QString("%1 already exists").arg(yt_dlp));
+        emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
+                                      "silver", QString("or in system: %1").arg(existsInSystem));
+    }
     // Check the syncedlirycs and move it if to appDataDir
     path            = QDir(appDataDir).filePath(syncedlyrics);
     existsInAppData = QFile::exists(path);
@@ -680,10 +683,12 @@ void downloadManager::checkAndPrepareFiles()
                                           "DarkOrange", QString("please install %1: pip install syncedlyrics").arg(syncedlyrics));
             emit messageRequested(QString("Please install %1").arg(syncedlyrics));
         }
-    } else
+    } else {
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(syncedlyrics));
-
+                                       "DarkSeaGreen", QString("%1 already exists").arg(syncedlyrics));
+        emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
+                                      "silver", QString("or in system: %1").arg(existsInSystem));
+    }
     // Check javascript and extract -> remove ZIP file 
     path            = QDir(appDataDir).filePath(jsRuntime);
     existsInAppData = QFile::exists(path);
@@ -708,10 +713,12 @@ void downloadManager::checkAndPrepareFiles()
                                           QString("please install %1: https://nodejs.org/en/download/current").arg(_jsRuntime));
             /* comming soon... */
         }
-    } else
+    } else {
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(jsRuntime));
-    
+                                       "DarkSeaGreen", QString("%1 already exists").arg(jsRuntime));
+        emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
+                                      "silver", QString("or in system: %1").arg(existsInSystem));
+    }
     path = QDir(appDataDir).filePath(ffmpeg);
     existsInAppData = QFile::exists(path);
     existsInSystem  = !QStandardPaths::findExecutable(ffmpeg).isEmpty();
@@ -725,10 +732,12 @@ void downloadManager::checkAndPrepareFiles()
                         QFile::remove(filenameZIP);
                         emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
-    } else
+    } else {
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(ffmpeg));
-
+                                       "DarkSeaGreen", QString("%1 already exists").arg(ffmpeg));
+        emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
+                                      "silver", QString("or in system: %1").arg(existsInSystem));
+    }
     path = QDir(appDataDir).filePath(ffprobe);
     existsInAppData = QFile::exists(path);
     existsInSystem  = !QStandardPaths::findExecutable(ffprobe).isEmpty();
@@ -742,10 +751,12 @@ void downloadManager::checkAndPrepareFiles()
                         QFile::remove(filenameZIP);
                         emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
-    } else
+    } else {
         emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(ffprobe));
-    
+                                       "DarkSeaGreen", QString("%1 already exists").arg(ffprobe));
+        emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
+                                      "silver", QString("or in system: %1").arg(existsInSystem));
+    }
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();
