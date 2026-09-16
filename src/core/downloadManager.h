@@ -64,6 +64,7 @@ public:
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
     void checkAndPrepareFiles();
+    void updateYtDlp();
     /**
      * The extractProgram() function only extract program, not any folders/files
      * If you need to extract the program from the .zip archive, use...

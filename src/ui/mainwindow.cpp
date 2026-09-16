@@ -13,6 +13,7 @@
 #include <QMenu>
 #include <QTranslator>
 #include <QApplication>
+#include <qaction.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -39,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // Translator
     m_translator = new QTranslator(this);
 
-
     lyricsBtn  = new QPushButton(this);
     musicBtn   = new QPushButton(this);
     titleBtn   = new QPushButton(this);
@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     clearListAction   = menuLogsBtns->addAction("");
     checkForUpdate    = menuLogsBtns->addAction("");
     switchLanguage    = menuLogsBtns->addAction("");
+    prepareProgram    = menuLogsBtns->addAction("");
 
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
@@ -138,8 +139,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->clearAll();
         manager->clearMedia();
     });  
+    connect(prepareProgram, &QAction::triggered, manager, &downloadManager::checkAndPrepareFiles);
     connect(checkForUpdate, &QAction::triggered, [this] () {  
-        manager->checkAndPrepareFiles();
+        manager->updateYtDlp();
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {
@@ -170,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->updateStatus(row, status);
     });
     
-    checkForUpdate->trigger();
+    prepareProgram->trigger();
     retranslateUI();
 }
 
@@ -190,8 +192,9 @@ void MainWindow::retranslateUI()
     deselectAllAction->setText(tr("Deselect all"));
     logsAction->setText(tr("Show logs"));
     clearTitleAction->setText(tr("Clear title"));
-    checkForUpdate->setText(tr("Check and prepare program"));
+    checkForUpdate->setText(tr("Check for update program"));
     switchLanguage->setText(tr("Switch language"));
+    prepareProgram->setText(tr("Prepare program"));
 
     stopBtn->setText(tr("Stop"));
     stopForNextBtn->setText(tr("Stop for next"));

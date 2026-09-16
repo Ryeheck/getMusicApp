@@ -52,7 +52,8 @@ downloadManager::~downloadManager()
 
 void downloadManager::getMedia(const QString &url, const QString &folder, bool startAfter, bool isSongs, bool lyrics)
 {
-    
+    _isStopped = false;
+
     QProcess *process = new QProcess(this);
     _activeProcesses.insert(url, process);
 
@@ -141,8 +142,9 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 void downloadManager::startDownload(const QString &folder, bool isSongs, bool isLyrics)
 {
     emit messageRequested("Folder: " + folder);
+    _isStopped = false;
 
-    for(int i = 0; i < _Media.size() && !_isStopped; ++i)
+    for(int i = 0; i < _Media.size(); ++i)
     {
         auto media = _Media[i];
 
@@ -284,6 +286,8 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
 void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<void()> onSuccess)
 {
     appDataDir = savePath;
+    _isStopped = false;
+
     QFile *file = new QFile();
     
     auto media = mediaPtr(new mediaInfo());
@@ -292,6 +296,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     media->widget = new QProgressBar();
     QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
     emit updateStatusRequested(media->id, media->status);
+    emit activeTasksCountChanged(1);
 
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
@@ -368,6 +373,8 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     });
 
     connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess, cleanup] () {
+        emit activeTasksCountChanged(0);
+
         if (_isStopped || reply->error() != QNetworkReply::NoError) {
             if (file->isOpen()) {
                 file->close();
@@ -376,9 +383,9 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
             media->status = -_isStopped ? "Canceled" : "Error";
             cleanup();
             emit updateStatusRequested(media->id, media->status);
-
+            
             if (_isStopped)
-                emit colorLogMessageRequested("silver", "Download:", 
+                emit colorLogMessageRequested("silver", "Download: ", 
                                              "IndianRed", "Download canceled");
             else 
                 emit colorLogMessageRequested("silver", "Reply return error: ", 
@@ -399,6 +406,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         }  
         if (onSuccess)  onSuccess();
         cleanup();
+        
         emit colorLogMessageRequested("silver", "Download: ", 
                                       "DarkSeaGreen", QString("%1 installed").arg(media->name));
     });
@@ -470,6 +478,9 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
             emit messageRequested(QString("Cookie not found: %1").arg(_CookiesBrowser));
             emit messageRequested("Please use another cookie in the setting (left bottom button)");
         }
+
+        if (output.contains("Failed to resolve") || output.contains("Failed to establish"))
+            emit messageRequested("Maybe fix: use another VPN");
 
         if (match.hasMatch()) {
             QString search = match.captured(1);
@@ -633,9 +644,7 @@ void downloadManager::setJavaScript(const QString &jsRuntime)
 
 void downloadManager::checkAndPrepareFiles()
 {
-    QProcess *process = new QProcess();
-    QString id = QUuid::createUuid().toString();
-    _activeProcesses.insert(id, process);
+    
 
 #ifdef Q_OS_WIN
     QString yt_dlp       = "yt-dlp.exe";
@@ -680,7 +689,7 @@ void downloadManager::checkAndPrepareFiles()
         } else {
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkOrange", QString("please install %1: pip install syncedlyrics").arg(syncedlyrics));
-            emit messageRequested(QString("Please install %1").arg(syncedlyrics));
+            emit messageRequested(QString("Please install %1 or you can't download lyrics").arg(syncedlyrics));
         }
     } else {
         emit colorLogMessageRequested("silver", "Download: ", 
@@ -706,7 +715,7 @@ void downloadManager::checkAndPrepareFiles()
                         });
 
         } else if (_jsRuntime == "node") {
-            emit messageRequested("Please install node");
+            emit messageRequested("Please install node or replace with another in the setting (left bottom button)");
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkOrange", 
                                           QString("please install %1: https://nodejs.org/en/download/current").arg(_jsRuntime));
@@ -718,6 +727,7 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
                                       "silver", QString("or in system: %1").arg(existsInSystem));
     }
+
     path = QDir(appDataDir).filePath(ffmpeg);
     existsInAppData = QFile::exists(path);
     existsInSystem  = !QStandardPaths::findExecutable(ffmpeg).isEmpty();
@@ -737,11 +747,12 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
                                       "silver", QString("or in system: %1").arg(existsInSystem));
     }
+
     path = QDir(appDataDir).filePath(ffprobe);
     existsInAppData = QFile::exists(path);
     existsInSystem  = !QStandardPaths::findExecutable(ffprobe).isEmpty();
 
-    if (!(existsInAppData || existsInSystem) || true) {
+    if (!(existsInAppData || existsInSystem)) {
         QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
         QUrl url(QString("https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/%1").arg(zipFfmpeg));
         downloadFile(url, appDataDir, 
@@ -756,6 +767,13 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", QString("Path: %1 ").arg(path),
                                       "silver", QString("or in system: %1").arg(existsInSystem));
     }
+}
+
+void downloadManager::updateYtDlp()
+{
+    QProcess *process = new QProcess();
+    QString id = QUuid::createUuid().toString();
+    _activeProcesses.insert(id, process);
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();
@@ -775,14 +793,23 @@ void downloadManager::checkAndPrepareFiles()
         cleanupProcess(id, exitCode);
     });
 
+#ifdef Q_OS_WIN
+    QString exec ="yt-dlp.exe";
+#else
+    QString exec = "yt-dlp_linux";
+#endif
+
     QString program;
-    path = QDir(appDataDir).filePath(yt_dlp);
-    if (QFile::exists(path)) 
+    QString path = QDir(appDataDir).filePath(exec);
+    if (QFile::exists(path)) {
+        // If exec in appData
         program = path;
-    else if (!QStandardPaths::findExecutable(yt_dlp).isEmpty())
-        program = yt_dlp;
-    else {
-        emit messageRequested(QString("%1 not exists").arg(yt_dlp));
+    } else if (!QStandardPaths::findExecutable(exec).isEmpty()) {
+        // If exec in system
+        program = exec;
+    } else {
+        // If not exec
+        emit messageRequested(QString("%1 not exists").arg(exec));
         emit messageRequested("Please prepare program");
         return;
     }
