@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
     */
 
-    retranslateUI();
+    
 
     connect(titleBtn, &QPushButton::clicked, [this] () {
         logs->appendText("Wait...");
@@ -179,6 +179,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         int row = logs->findRowById(id);
         logs->updateStatus(row, status);
     });
+    
+    checkForUpdate->trigger();
+    retranslateUI();
 }
 
 void MainWindow::retranslateUI()
