@@ -59,14 +59,14 @@ public:
 
     void updateSongCheckState(const QString &id, bool isChecked);
     void clearMedia();
-    void stopDownload();
-    void setIsStopped(bool set);
+    
+    
     void setFormats(const QString &formatAudio, const QString &formatVideo, const QString &formatLyrics,
                     const QString &qualityVideo, const QString &qualityAudio);
     void setCookies(const QString &Cookies);
     void setJavaScript(const QString &jsRuntime);
     void checkAndPrepareFiles();
-    void updateYtDlp();
+    
     /**
      * The extractProgram() function only extract program, not any folders/files
      * If you need to extract the program from the .zip archive, use...
@@ -76,6 +76,11 @@ public:
     static QString formatBytes(long long bytes);
     int getMediaCount();
 
+public slots:
+    void setIsStopped(bool set);
+    void stopDownload();
+    void updateYtDlp();
+    
 private:
     void setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics);
     void cleanupProcess(const QString &id, int exitCode);

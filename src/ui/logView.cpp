@@ -8,6 +8,7 @@
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <qobject.h>
 
 
 logView::logView(QWidget *parent)
@@ -140,8 +141,10 @@ void logView::addItem(const mediaInfo *song)
     }
 }
 
-void logView::updateStatus(int row, const QString &newStatus)
+void logView::updateStatusById(const QString &id, const QString &newStatus)
 {
+    int row = findRowById(id);
+
     QTableWidgetItem *item = titleWidget->item(row, 2);
 
     if (item != nullptr)  item->setText(newStatus);
@@ -164,7 +167,7 @@ int logView::findRowById(const QString &id)
     return -1;
 }
 
-void logView::setMediaChecked(const QString &id)  
+void logView::setMediaCheckedById(const QString &id)  
 {
       int row = findRowById(id); 
       titleWidget->item(row, 0)->setCheckState(Qt::Checked);

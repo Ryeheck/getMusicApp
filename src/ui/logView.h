@@ -23,8 +23,7 @@ public:
     explicit logView(QWidget *parent=nullptr);
     // ~logView() override;
 
-    void setSelectAllItem();
-    void setDeselectAllItem();
+    
     void clearAll();
     void clearSelect();
     void clearDeselect();
@@ -34,8 +33,8 @@ public:
     void colorLog(const QString &firstColor, const QString &firstMessage, 
                   const QString &lastColor="", const QString &lastMessage="");
     void log(const QString &message="");
-    void addItem(const mediaInfo *media);
-    void updateStatus(int row, const QString &newStatus);
+    
+    
     void setWidget(int row, QWidget *widget);
     int findRowById(const QString &id);
     QList<QTableWidgetItem *> getItemsFromColumn(int column);
@@ -49,7 +48,11 @@ public:
     int getTableWidgetCount()                            {  return titleWidget->rowCount();  };
     
 public slots:
-        void setMediaChecked(const QString &id);
+    void setMediaCheckedById(const QString &id);
+    void updateStatusById(const QString &id, const QString &newStatus);
+    void setSelectAllItem();
+    void setDeselectAllItem();
+    void addItem(const mediaInfo *media);
 
 private:
     QHBoxLayout *HLayout;
