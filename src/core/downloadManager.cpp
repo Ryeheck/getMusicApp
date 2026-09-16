@@ -11,6 +11,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <memory>
+#include <qobject.h>
 #include <quazip.h>
 #include <quazipfile.h>
 #include <functional>
@@ -265,8 +266,7 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     QString mediaName = media->name;
 
     QStringList args;
-    args // << "--ffmpeg-location" << appDataDir
-         << "--buffer-size" << "64K"
+    args << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
          << "--no-mtime" << "--no-playlist" 
          << "--js-runtimes" << _jsRuntime
@@ -467,6 +467,11 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
         QRegularExpressionMatch match = percentReg.match(output);
 
         if (output.isEmpty())  return;
+        
+        if (output.contains("error: unsupported browser")) {
+            emit messageRequested(QString("Cookie not found: %1").arg(_CookiesBrowser));
+            emit messageRequested("Please use another cookie in the setting (left bottom button)");
+        }
 
         if (match.hasMatch()) {
             QString search = match.captured(1);
