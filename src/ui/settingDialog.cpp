@@ -82,7 +82,8 @@ settingDialog::settingDialog(QWidget *parent)
     layoutCookiesBrowser->addWidget(titleCookiesBrowser);
 
     CookiesBrowser = new QComboBox(this);
-    CookiesBrowser->addItems({"google", "chrome", "yandex", "firefox"});
+    CookiesBrowser->addItems({"chromium", "chrome", "edge", "firefox",
+                                     "opera", "safari", "vivaldi", "whale"});
 
     layoutCookiesBrowser->addWidget(CookiesBrowser);
     mainLayout->addLayout(layoutCookiesBrowser);
