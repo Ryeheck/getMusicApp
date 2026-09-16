@@ -14,6 +14,7 @@
 #include <QTranslator>
 #include <QApplication>
 #include <qaction.h>
+#include <qobject.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -166,6 +167,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         }
     });
 
+    connect(manager, &downloadManager::setMediaCheckedRequested, logs, &logView::setMediaChecked);
+
     connect(manager, &downloadManager::updateStatusRequested, this, 
             [this] (const QString &id, const QString &status) {
         int row = logs->findRowById(id);
@@ -180,7 +183,7 @@ void MainWindow::retranslateUI()
 {
     logs->retranslateUI();
 
-    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
+    inputFolder->setPlaceholderText(tr("Enter folder... (default: Movies/Video/Music): "));
     inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
     
     settingBtn->setText(tr("Setting"));
@@ -230,7 +233,6 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
     QString url    = inputURL->text();
     QString folder = inputFolder->text();
 
-    if (url.isEmpty())                              url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     if (folder.isEmpty() && (isSongs || isLyrics))  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     else if (folder.isEmpty())                      folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
@@ -242,11 +244,13 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 
         manager->updateSongCheckState(id, isChecked);
     }
-
-    if (!logs->getTableWidgetCount())
-        manager->getMedia(url, folder, true, isSongs, isLyrics);
-    else                         
+    if (!logs->getTableWidgetCount()) {
+        if (!url.isEmpty()) {
+            manager->getMedia(url, folder, true, isSongs, isLyrics);
+        }
+    } else {
         manager->startDownload(folder, isSongs, isLyrics);
+    }
 }
 
 void MainWindow::setupBeforeDownload(bool set)

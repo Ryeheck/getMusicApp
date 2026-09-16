@@ -11,6 +11,7 @@
 #include <QPointer>
 #include <memory>
 #include <functional>
+#include <qobject.h>
 
 struct mediaInfo {
     QString id;
@@ -41,6 +42,7 @@ signals:
     void mediaAdded(const mediaInfo *media);
     void pBarRequested(QProgressBar *pBar, const int percent);
     void updateStatusRequested(const QString &id, const QString &status);
+    void setMediaCheckedRequested(const QString &id);
 
 public:
     explicit downloadManager(QObject *parent = nullptr);

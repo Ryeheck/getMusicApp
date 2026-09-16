@@ -93,7 +93,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, &QProcess::readyReadStandardError, [this, process] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
-        if (output.contains("Failed to resolve") || output.contains("Failed to establish"))
+        if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
             emit messageRequested("Maybe fix: use another VPN");
         emit logMessageRequested(output);
     });
@@ -104,6 +104,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
         
         if (exitCode == 0 && startAfter && !_Media.isEmpty()) {
             _Media.last()->isChecked = true;
+            emit setMediaCheckedRequested(_Media.last()->id);
             startDownload(folder, isSongs, lyrics);
         }
     });
@@ -150,7 +151,7 @@ void downloadManager::startDownload(const QString &folder, bool isSongs, bool is
 
         if (media->isChecked == false)  continue;
 
-        media->status = "Updating";
+        media->status = "Download";
         emit updateStatusRequested(media->id, media->status);
         if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
             emit pBarRequested(pBar, 0);
@@ -297,6 +298,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget);
     emit updateStatusRequested(media->id, media->status);
     emit activeTasksCountChanged(1);
+    emit setMediaCheckedRequested(media->id);
 
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy); // For github
@@ -474,12 +476,12 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
 
         if (output.isEmpty())  return;
         
-        if (output.contains("error: unsupported browser")) {
+        if (output.contains("error: unsupported browser") || output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser))) {
             emit messageRequested(QString("Cookie not found: %1").arg(_CookiesBrowser));
             emit messageRequested("Please use another cookie in the setting (left bottom button)");
         }
 
-        if (output.contains("Failed to resolve") || output.contains("Failed to establish"))
+        if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
             emit messageRequested("Maybe fix: use another VPN");
 
         if (match.hasMatch()) {

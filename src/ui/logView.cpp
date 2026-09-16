@@ -163,3 +163,9 @@ int logView::findRowById(const QString &id)
 
     return -1;
 }
+
+void logView::setMediaChecked(const QString &id)  
+{
+      int row = findRowById(id); 
+      titleWidget->item(row, 0)->setCheckState(Qt::Checked);
+}

@@ -9,6 +9,8 @@
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QString>
+#include <qnamespace.h>
+#include <qobject.h>
 
 class logView : public QWidget
 {
@@ -45,6 +47,9 @@ public:
     void removeAlso(int row)                             {  titleWidget->removeRow(row);     };
     int getPBarPercent(QProgressBar *pBar)               {  return pBar->value();            };
     int getTableWidgetCount()                            {  return titleWidget->rowCount();  };
+    
+public slots:
+        void setMediaChecked(const QString &id);
 
 private:
     QHBoxLayout *HLayout;
