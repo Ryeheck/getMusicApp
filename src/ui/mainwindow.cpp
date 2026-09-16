@@ -58,8 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     checkForUpdate    = menuLogsBtns->addAction("");
     switchLanguage    = menuLogsBtns->addAction("");
 
-
-
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
     
@@ -110,11 +108,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(titleBtn, &QPushButton::clicked, [this] () {
         logs->appendText("Wait...");
-        
         manager->getMedia(inputURL->text());
-
-        setupBeforeDownload(false);
-        stopBtn->show();
     }); 
     
     connect(settingBtn, &QPushButton::clicked, [this] () {
@@ -146,17 +140,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });  
     connect(checkForUpdate, &QAction::triggered, [this] () {  
         manager->checkAndPrepareFiles();
-        setupBeforeDownload(false);
-        stopBtn->show();
     });
 
     connect(stopBtn, &QPushButton::clicked, [this] () {
         manager->stopDownload();
-        setupBeforeDownload(false);
     });
     connect(stopForNextBtn, &QPushButton::clicked, [this] () {
         manager->setIsStopped(true);
-        setupBeforeDownload(false);
     });
 
     connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
@@ -234,12 +224,12 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 {
     logs->appendText("Wait...");
 
-    QString url = inputURL->text();
+    QString url    = inputURL->text();
     QString folder = inputFolder->text();
 
-    if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    if (folder.isEmpty() && isSongs)  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    else if (folder.isEmpty())        folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    if (url.isEmpty())                              url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    if (folder.isEmpty() && (isSongs || isLyrics))  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    else if (folder.isEmpty())                      folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
     
     for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 

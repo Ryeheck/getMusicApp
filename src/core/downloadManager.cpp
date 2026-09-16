@@ -56,7 +56,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     QProcess *process = new QProcess(this);
     _activeProcesses.insert(url, process);
 
-    connect(process, &QProcess::readyReadStandardOutput, [this, url, process] () {
+    connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QString output = process->readAllStandardOutput();
 
         QStringList lines = output.split('\n', Qt::SkipEmptyParts);
@@ -99,19 +99,12 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), 
             [this, url, startAfter, folder, isSongs, lyrics] (int exitCode) {
-        QString output = (exitCode == 0 ? "Done!" : "Error");
-        emit messageRequested(output);
-        _isStopped = false;
-
-        if (QProcess *process = _activeProcesses.value(url)) {
-            process->deleteLater();
-            _activeProcesses.remove(url);
-        }
-        if (startAfter && !_Media.isEmpty()) {
-            _Media[0]->isChecked = true;
+        cleanupProcess(url, exitCode);
+        
+        if (exitCode == 0 && startAfter && !_Media.isEmpty()) {
+            _Media.last()->isChecked = true;
             startDownload(folder, isSongs, lyrics);
         }
-        
     });
 
 #ifdef Q_OS_WIN
@@ -141,15 +134,13 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
          << "-O" << "%(filesize,filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
          << url;
 
-    // yt-dlp --flat-playlist --get-id --get-title --get-filename -o "%(artist)s - %(track)s" https://youtube.com
-
+    emit activeTasksCountChanged(_activeProcesses.size());
     process->start(program, args);
 }
 
 void downloadManager::startDownload(const QString &folder, bool isSongs, bool isLyrics)
 {
     emit messageRequested("Folder: " + folder);
-    emit activeTasksCountChanged(1);
 
     for(int i = 0; i < _Media.size() && !_isStopped; ++i)
     {
@@ -172,7 +163,6 @@ void downloadManager::startDownload(const QString &folder, bool isSongs, bool is
 void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
 {
     QProcess *process = new QProcess(this);
-
     _activeProcesses.insert(media->id, process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
@@ -221,6 +211,7 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
          << "-o" << folder + "/" + songName + "." + _formatLyrics
          << "--verbose";
 
+    emit activeTasksCountChanged(_activeProcesses.size());
     process->start(program, args);
 
     // syncedlyrics [args] songName
@@ -229,7 +220,6 @@ void downloadManager::lyricsDownload(mediaPtr media, const QString &folder)
 void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool isSong)
 {
     QProcess *process = new QProcess(this);
-
     _activeProcesses.insert(media->id, process);
     
     if (QProgressBar *pBar = qobject_cast<QProgressBar *>(media->widget))
@@ -287,9 +277,8 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
 
     args << "--" << media->id;
 
+    emit activeTasksCountChanged(_activeProcesses.size());
     process->start(program, args);
-
-    // yt-dlp [args] (id)
 }
 
 void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<void()> onSuccess)
@@ -316,17 +305,17 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
 
     connect(reply, &QNetworkReply::metaDataChanged, this, [this, reply, file, media, cleanup, onSuccess] () {
         if (reply->error() != QNetworkReply::NoError) {
-            media->status = "Error";
-            cleanup();
-            emit updateStatusRequested(media->id, media->status);
-            emit colorLogMessageRequested("silver", "Reply return error: ", 
-                                          "IndianRed", reply->errorString());
+            reply->abort();
+            return;
+        }
+        if (_isStopped) {
+            reply->abort();
             return;
         }
         
         // If doesnt start download
         qint64 size = reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
-        if (size <= 0 || _isStopped) return;
+        if (size <= 0) return;
 
         QString filename = reply->header(QNetworkRequest::ContentDispositionHeader).toString();
         if (filename.contains("filename=")) 
@@ -337,7 +326,6 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         media->id   = QUuid::createUuid().toString();
         media->size = size;
         media->name = filename;
-        _Media.append(media);
 
         QString pathApp = QDir(appDataDir).filePath(media->name);
         file->setFileName(pathApp);
@@ -345,21 +333,19 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
         if (!QStandardPaths::findExecutable(media->name).isEmpty()) {
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkSeaGreen", QString("%1 in path").arg(media->name));
-            if (onSuccess) onSuccess();  // Example: extract files
-            cleanup();
+            reply->abort();
             return;
         } 
         if (file->exists()) {
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "DarkSeaGreen", QString("%1 already exists").arg(media->name));
-            if (onSuccess) onSuccess();  // Example: extract files
-            cleanup();
+            reply->abort();
             return;
         } 
         if (!file->open(QIODevice::WriteOnly)) {
-            cleanup();
             emit colorLogMessageRequested("silver", "Download: ", 
                                           "IndianRed", QString("Couldn't create file (%1) for download").arg(media->name));
+            reply->abort();
             return;
         }
         
@@ -368,6 +354,10 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     });
     
     connect(reply, &QNetworkReply::readyRead, this, [this, file, reply] () {
+        if (_isStopped) {
+            reply->abort();
+            return;
+        }
         if (file->isOpen())  
             file->write(reply->readAll());
     });
@@ -378,14 +368,21 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
     });
 
     connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess, cleanup] () {
-        if (reply->error() != QNetworkReply::NoError) {
-            if (file->isOpen())  file->close();
-
-            media->status = "Error";
+        if (_isStopped || reply->error() != QNetworkReply::NoError) {
+            if (file->isOpen()) {
+                file->close();
+                file->remove();
+            }
+            media->status = -_isStopped ? "Canceled" : "Error";
             cleanup();
             emit updateStatusRequested(media->id, media->status);
-            emit colorLogMessageRequested("silver", "Reply return error: ", 
-                                          "IndianRed", reply->errorString());
+
+            if (_isStopped)
+                emit colorLogMessageRequested("silver", "Download:", 
+                                             "IndianRed", "Download canceled");
+            else 
+                emit colorLogMessageRequested("silver", "Reply return error: ", 
+                                              "IndianRed", reply->errorString());
             return;
         }
         if (file->isOpen()) {
@@ -572,6 +569,8 @@ void downloadManager::stopDownload()
         } else
             emit messageRequested("No active processes");
     _activeProcesses.clear();
+
+    emit activeTasksCountChanged(_activeProcesses.size());
 }
 
 void downloadManager::updateSongCheckState(const QString &id, bool isChecked)
@@ -742,7 +741,7 @@ void downloadManager::checkAndPrepareFiles()
     existsInAppData = QFile::exists(path);
     existsInSystem  = !QStandardPaths::findExecutable(ffprobe).isEmpty();
 
-    if (!(existsInAppData || existsInSystem)) {
+    if (!(existsInAppData || existsInSystem) || true) {
         QString filenameZIP = QDir(appDataDir).filePath(zipFfmpeg);
         QUrl url(QString("https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/%1").arg(zipFfmpeg));
         downloadFile(url, appDataDir, 
@@ -791,5 +790,6 @@ void downloadManager::checkAndPrepareFiles()
     QStringList args;
     args << "-U";
 
+    emit activeTasksCountChanged(_activeProcesses.size());
     process->start(program, args);
 }
