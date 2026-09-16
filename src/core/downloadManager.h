@@ -75,7 +75,6 @@ public:
 
 private:
     void setupProcessLogging(const QString &id, QProgressBar *pBar, bool isLyrics);
-    void setWorking(QProcess *process);
     void cleanupProcess(const QString &id, int exitCode);
 
     QMap<QString, QProcess *> _activeProcesses;
