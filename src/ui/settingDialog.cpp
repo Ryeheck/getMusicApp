@@ -83,7 +83,7 @@ settingDialog::settingDialog(QWidget *parent)
 
     CookiesBrowser = new QComboBox(this);
     CookiesBrowser->addItems({"chromium", "chrome", "edge", "firefox",
-                                     "opera", "safari", "vivaldi", "whale"});
+                                     "opera", "safari", "vivaldi", "whale", ""});
 
     layoutCookiesBrowser->addWidget(CookiesBrowser);
     mainLayout->addLayout(layoutCookiesBrowser);
@@ -96,7 +96,7 @@ settingDialog::settingDialog(QWidget *parent)
     layoutJSRuntime->addWidget(titleJSRuntime);
 
     jsRuntime = new QComboBox(this);
-    jsRuntime->addItems({"deno", "node"});
+    jsRuntime->addItems({"deno", "node", ""});
     
     layoutJSRuntime->addWidget(jsRuntime);
     mainLayout->addLayout(layoutJSRuntime);
@@ -152,9 +152,9 @@ void settingDialog::loadSetting()
     qualityAudio->setCurrentText(setting.value("Quality/AudioQuality", "0").toString());
 
     // Cookies
-    CookiesBrowser->setCurrentText(setting.value("Cookies/CookiesBrowser", "firefox").toString());
+    CookiesBrowser->setCurrentText(setting.value("Cookies/CookiesBrowser", "").toString());
 
     // JavaScript
-    jsRuntime->setCurrentText(setting.value("JavaScript/jsRuntime", "deno").toString());
+    jsRuntime->setCurrentText(setting.value("JavaScript/jsRuntime", "").toString());
 
 }

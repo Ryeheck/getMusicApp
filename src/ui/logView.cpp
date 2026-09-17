@@ -125,7 +125,7 @@ void logView::addItem(const mediaInfo *song)
     int row = titleWidget->rowCount();
     titleWidget->insertRow(row);
 
-    QTableWidgetItem *itemName = new QTableWidgetItem(song->name);
+    QTableWidgetItem *itemName = new QTableWidgetItem(QString(song->name));
     itemName->setFlags(itemName->flags() | Qt::ItemIsUserCheckable);
     itemName->setCheckState(Qt::Unchecked);
     itemName->setForeground(Qt::white);
@@ -133,7 +133,7 @@ void logView::addItem(const mediaInfo *song)
 
     titleWidget->setItem(row, 0, itemName);
     titleWidget->setItem(row, 1, new QTableWidgetItem(downloadManager::formatBytes(song->size)));
-    titleWidget->setItem(row, 2, new QTableWidgetItem(song->status));
+    titleWidget->setItem(row, 2, new QTableWidgetItem(QString(song->status)));
 
     if (song->widget) {
         song->widget->setParent(titleWidget);   
@@ -170,5 +170,9 @@ int logView::findRowById(const QString &id)
 void logView::setMediaCheckedById(const QString &id)  
 {
       int row = findRowById(id); 
+      if (row == -1 || id.isEmpty()) {
+        log("Media not found");
+        return;
+      }
       titleWidget->item(row, 0)->setCheckState(Qt::Checked);
 }

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     "   min-height: 25px; "
     "   padding: 5px; "
     "}"                                                     // All buttons
-    "QPushButton:hover { background-color: darkgray; }"    // При наведении на buttonssss
+    "QPushButton:hover { background-color: darkgray; }"   
     "QProgressBar {"                                       
     "   border: 1px solid #0e0e0e; " 
     "   border-radius: 4px; "         

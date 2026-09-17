@@ -111,226 +111,293 @@
     </message>
 </context>
 <context>
+    <name>QuaGzipFile</name>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quagzipfile.cpp" line="61"/>
+        <source>QIODevice::Append is not supported for GZIP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quagzipfile.cpp" line="67"/>
+        <source>Opening gzip for both reading and writing is not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quagzipfile.cpp" line="76"/>
+        <source>You can open a gzip either for reading or for writing. Which is it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quagzipfile.cpp" line="82"/>
+        <source>Could not gzopen() file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QuaZIODevice</name>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quaziodevice.cpp" line="181"/>
+        <source>QIODevice::Append is not supported for QuaZIODevice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quaziodevice.cpp" line="186"/>
+        <source>QIODevice::ReadWrite is not supported for QuaZIODevice</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QuaZipFile</name>
+    <message>
+        <location filename="../build/_deps/quazip-src/quazip/quazipfile.cpp" line="228"/>
+        <source>ZIP/UNZIP API error %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>downloadManager</name>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="97"/>
-        <location filename="../src/core/downloadManager.cpp" line="485"/>
+        <location filename="../src/core/downloadManager.cpp" line="106"/>
         <source>Maybe fix: use another VPN</source>
         <translation>Возможный фикс: используйте другой ВПН</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="128"/>
-        <location filename="../src/core/downloadManager.cpp" line="204"/>
-        <location filename="../src/core/downloadManager.cpp" line="256"/>
-        <location filename="../src/core/downloadManager.cpp" line="814"/>
+        <location filename="../src/core/downloadManager.cpp" line="108"/>
+        <location filename="../src/core/downloadManager.cpp" line="504"/>
+        <source>Use JS runtime (left bottom button)</source>
+        <translation>Используйте js runtime (левая нижняя кнопка)</translation>
+    </message>
+    <message>
+        <location filename="../src/core/downloadManager.cpp" line="140"/>
+        <location filename="../src/core/downloadManager.cpp" line="217"/>
+        <location filename="../src/core/downloadManager.cpp" line="269"/>
+        <location filename="../src/core/downloadManager.cpp" line="834"/>
         <source>%1 not exists</source>
         <translation>%1 нету</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="129"/>
-        <location filename="../src/core/downloadManager.cpp" line="205"/>
-        <location filename="../src/core/downloadManager.cpp" line="257"/>
-        <location filename="../src/core/downloadManager.cpp" line="815"/>
+        <location filename="../src/core/downloadManager.cpp" line="141"/>
+        <location filename="../src/core/downloadManager.cpp" line="218"/>
+        <location filename="../src/core/downloadManager.cpp" line="270"/>
+        <location filename="../src/core/downloadManager.cpp" line="835"/>
         <source>Please prepare program</source>
         <translation>Пожалуйста, почините программу</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="145"/>
+        <location filename="../src/core/downloadManager.cpp" line="158"/>
         <source>Folder: </source>
         <translation>Папка: </translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="154"/>
-        <location filename="../src/core/downloadManager.cpp" line="296"/>
+        <location filename="../src/core/downloadManager.cpp" line="167"/>
+        <location filename="../src/core/downloadManager.cpp" line="309"/>
         <source>Download</source>
         <translation>Загрузка</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="179"/>
-        <location filename="../src/core/downloadManager.cpp" line="235"/>
-        <location filename="../src/core/downloadManager.cpp" line="385"/>
+        <location filename="../src/core/downloadManager.cpp" line="192"/>
+        <location filename="../src/core/downloadManager.cpp" line="248"/>
+        <location filename="../src/core/downloadManager.cpp" line="399"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="181"/>
+        <location filename="../src/core/downloadManager.cpp" line="194"/>
         <source>Not Lyrics</source>
         <translation>Нет субтитр</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="183"/>
-        <location filename="../src/core/downloadManager.cpp" line="235"/>
+        <location filename="../src/core/downloadManager.cpp" line="196"/>
+        <location filename="../src/core/downloadManager.cpp" line="248"/>
         <source>Done</source>
         <translation>Готово</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="342"/>
+        <location filename="../src/core/downloadManager.cpp" line="355"/>
         <source>%1 in path</source>
         <translation>%1 в системном пути</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="354"/>
+        <location filename="../src/core/downloadManager.cpp" line="367"/>
         <source>Couldn&apos;t create file (%1) for download</source>
         <translation>Не могу создать файл (%1) для загрузки</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="385"/>
+        <location filename="../src/core/downloadManager.cpp" line="399"/>
         <source>Canceled</source>
         <translation>Отменен</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="391"/>
+        <location filename="../src/core/downloadManager.cpp" line="405"/>
         <source>Download canceled</source>
         <translation>Загрузка отменена</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="393"/>
+        <location filename="../src/core/downloadManager.cpp" line="407"/>
         <source>Reply return error: </source>
         <translation>reply возвратил ошибку: </translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="413"/>
+        <location filename="../src/core/downloadManager.cpp" line="426"/>
         <source>%1 installed</source>
         <translation>%1 скачан</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="428"/>
+        <location filename="../src/core/downloadManager.cpp" line="441"/>
         <source>: Error!</source>
         <translation>: Ошибка!</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="428"/>
+        <location filename="../src/core/downloadManager.cpp" line="441"/>
         <source>: Done!</source>
         <translation>: Готово!</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="464"/>
-        <location filename="../src/core/downloadManager.cpp" line="466"/>
+        <location filename="../src/core/downloadManager.cpp" line="477"/>
+        <location filename="../src/core/downloadManager.cpp" line="479"/>
         <source>Download: INFO: </source>
         <translation>Загрузка: ИНФО: </translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="480"/>
+        <location filename="../src/core/downloadManager.cpp" line="99"/>
+        <location filename="../src/core/downloadManager.cpp" line="495"/>
         <source>Cookie not found: %1</source>
         <translation>Кукт не найдены: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="481"/>
+        <location filename="../src/core/downloadManager.cpp" line="100"/>
+        <location filename="../src/core/downloadManager.cpp" line="496"/>
         <source>Please use another cookie in the setting (left bottom button)</source>
         <translation>Пожалуйста, используйте другие куки в настройках (левая нижняя кнопка)</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="519"/>
-        <location filename="../src/core/downloadManager.cpp" line="527"/>
-        <location filename="../src/core/downloadManager.cpp" line="535"/>
-        <location filename="../src/core/downloadManager.cpp" line="553"/>
-        <location filename="../src/core/downloadManager.cpp" line="564"/>
+        <location filename="../src/core/downloadManager.cpp" line="103"/>
+        <location filename="../src/core/downloadManager.cpp" line="499"/>
+        <source>Use cookies (left bottom button)</source>
+        <translation>Используйте куки (левая нижняя кнопка)</translation>
+    </message>
+    <message>
+        <location filename="../src/core/downloadManager.cpp" line="502"/>
+        <source>Maybe fix: use VPN or use another VPN</source>
+        <translation>Возможный фикс: используйте VPN или используйте другой VPN</translation>
+    </message>
+    <message>
+        <location filename="../src/core/downloadManager.cpp" line="538"/>
+        <location filename="../src/core/downloadManager.cpp" line="546"/>
+        <location filename="../src/core/downloadManager.cpp" line="554"/>
+        <location filename="../src/core/downloadManager.cpp" line="572"/>
+        <location filename="../src/core/downloadManager.cpp" line="583"/>
         <source>Extract: </source>
         <translation>Извлечение: </translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="519"/>
+        <location filename="../src/core/downloadManager.cpp" line="538"/>
         <source>not open zip archive</source>
         <translation>не удалось открыть zip-архив</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="528"/>
+        <location filename="../src/core/downloadManager.cpp" line="547"/>
         <source>not open file to read: %1</source>
         <translation>не удалось открыть файл для чтения: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="535"/>
+        <location filename="../src/core/downloadManager.cpp" line="554"/>
         <source>not current file info</source>
         <translation>нет информации о текущем файле</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="554"/>
+        <location filename="../src/core/downloadManager.cpp" line="573"/>
         <source>not open file to write: %1</source>
         <translation>не удалось открыть файл для записи: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="565"/>
+        <location filename="../src/core/downloadManager.cpp" line="584"/>
         <source>%1 successful</source>
         <translation>%1 успешно</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="581"/>
+        <location filename="../src/core/downloadManager.cpp" line="600"/>
         <source>User killed process</source>
         <translation>Пользователь убил процесс</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="583"/>
+        <location filename="../src/core/downloadManager.cpp" line="602"/>
         <source>No active processes</source>
         <translation>Нет активных процессов</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="716"/>
-        <location filename="../src/core/downloadManager.cpp" line="744"/>
+        <location filename="../src/core/downloadManager.cpp" line="664"/>
+        <source>Please check and prepare program (right bottom tools)</source>
+        <translation>Пожалуйста проверьте и восстановите программу (правые нижние инструменты)</translation>
+    </message>
+    <message>
+        <location filename="../src/core/downloadManager.cpp" line="736"/>
         <location filename="../src/core/downloadManager.cpp" line="764"/>
+        <location filename="../src/core/downloadManager.cpp" line="784"/>
         <source>Remove: %1</source>
         <translation>Удалено: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="720"/>
+        <location filename="../src/core/downloadManager.cpp" line="740"/>
         <source>Please install node or replace with another in the setting (left bottom button)</source>
         <translation>Пожалуйста, установите node или замените на другой в настройках (левая нижняя кнопка)</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="723"/>
+        <location filename="../src/core/downloadManager.cpp" line="743"/>
         <source>please install %1: https://nodejs.org/en/download/current</source>
         <translation>пожалуйста скачайте %1: https://nodejs.org/en/download/current</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="341"/>
-        <location filename="../src/core/downloadManager.cpp" line="347"/>
-        <location filename="../src/core/downloadManager.cpp" line="353"/>
-        <location filename="../src/core/downloadManager.cpp" line="390"/>
-        <location filename="../src/core/downloadManager.cpp" line="412"/>
-        <location filename="../src/core/downloadManager.cpp" line="678"/>
-        <location filename="../src/core/downloadManager.cpp" line="692"/>
-        <location filename="../src/core/downloadManager.cpp" line="697"/>
-        <location filename="../src/core/downloadManager.cpp" line="721"/>
-        <location filename="../src/core/downloadManager.cpp" line="727"/>
+        <location filename="../src/core/downloadManager.cpp" line="354"/>
+        <location filename="../src/core/downloadManager.cpp" line="360"/>
+        <location filename="../src/core/downloadManager.cpp" line="366"/>
+        <location filename="../src/core/downloadManager.cpp" line="404"/>
+        <location filename="../src/core/downloadManager.cpp" line="425"/>
+        <location filename="../src/core/downloadManager.cpp" line="698"/>
+        <location filename="../src/core/downloadManager.cpp" line="712"/>
+        <location filename="../src/core/downloadManager.cpp" line="717"/>
+        <location filename="../src/core/downloadManager.cpp" line="741"/>
         <location filename="../src/core/downloadManager.cpp" line="747"/>
         <location filename="../src/core/downloadManager.cpp" line="767"/>
+        <location filename="../src/core/downloadManager.cpp" line="787"/>
         <source>Download: </source>
         <translation>Загрузка: </translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="348"/>
-        <location filename="../src/core/downloadManager.cpp" line="679"/>
-        <location filename="../src/core/downloadManager.cpp" line="698"/>
-        <location filename="../src/core/downloadManager.cpp" line="728"/>
+        <location filename="../src/core/downloadManager.cpp" line="361"/>
+        <location filename="../src/core/downloadManager.cpp" line="699"/>
+        <location filename="../src/core/downloadManager.cpp" line="718"/>
         <location filename="../src/core/downloadManager.cpp" line="748"/>
         <location filename="../src/core/downloadManager.cpp" line="768"/>
+        <location filename="../src/core/downloadManager.cpp" line="788"/>
         <source>%1 already exists</source>
         <translation>%1 на месте</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="680"/>
-        <location filename="../src/core/downloadManager.cpp" line="699"/>
-        <location filename="../src/core/downloadManager.cpp" line="729"/>
+        <location filename="../src/core/downloadManager.cpp" line="700"/>
+        <location filename="../src/core/downloadManager.cpp" line="719"/>
         <location filename="../src/core/downloadManager.cpp" line="749"/>
         <location filename="../src/core/downloadManager.cpp" line="769"/>
+        <location filename="../src/core/downloadManager.cpp" line="789"/>
         <source>Path: %1 </source>
         <translation>Путь: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="681"/>
-        <location filename="../src/core/downloadManager.cpp" line="700"/>
-        <location filename="../src/core/downloadManager.cpp" line="730"/>
+        <location filename="../src/core/downloadManager.cpp" line="701"/>
+        <location filename="../src/core/downloadManager.cpp" line="720"/>
         <location filename="../src/core/downloadManager.cpp" line="750"/>
         <location filename="../src/core/downloadManager.cpp" line="770"/>
+        <location filename="../src/core/downloadManager.cpp" line="790"/>
         <source>or in system: %1</source>
         <translation>или в системе: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="693"/>
+        <location filename="../src/core/downloadManager.cpp" line="713"/>
         <source>please install %1: pip install syncedlyrics</source>
         <translation>пожалуйста, установите %1: pip install syncedlyrics</translation>
     </message>
     <message>
-        <location filename="../src/core/downloadManager.cpp" line="694"/>
+        <location filename="../src/core/downloadManager.cpp" line="714"/>
         <source>Please install %1 or you can&apos;t download lyrics</source>
         <translation>Пожалуйста, установите %1, иначе вы не сможете скачивать тексты песен</translation>
     </message>

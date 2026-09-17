@@ -58,8 +58,9 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     _activeProcesses.insert(url, process);
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
-        QString output = process->readAllStandardOutput();
-
+        QByteArray data = process->readAllStandardOutput();
+    
+        QString output = QString::fromLocal8Bit(data);
         QStringList lines = output.split('\n', Qt::SkipEmptyParts);
         
         for(int i = 0; i + 3 < lines.size() && (i < MAX_SONGS * 4); i += 4) 
@@ -93,8 +94,20 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, &QProcess::readyReadStandardError, [this, process] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
+        if (output.contains("error: unsupported browser") || 
+            output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser)) || 
+            output.contains(QString("Could not copy %1 cookie").arg(_CookiesBrowser))) {
+            emit messageRequested(QString(tr("Cookie not found: %1")).arg(_CookiesBrowser));
+            emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
+        }
+        if (output.contains("Use --cookies-from-browser")) {
+            emit messageRequested(tr("Use cookies (left bottom button)"));
+        }
         if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
             emit messageRequested(tr("Maybe fix: use another VPN"));
+        if (output.contains("supported JavaScript runtime")) {
+            emit messageRequested(tr("Use JS runtime (left bottom button)"));
+        }
         emit logMessageRequested(output);
     });
 
@@ -131,9 +144,10 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     }
 
     QStringList args;
-    args << "--js-runtimes" << _jsRuntime
-         << "--cookies-from-browser" << _CookiesBrowser
-         << "-O" << "%(filesize,filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
+    if(!_jsRuntime.isEmpty())        args << "--js-runtimes" << _jsRuntime;
+    if (!_CookiesBrowser.isEmpty())  args << "--cookies-from-browser" << _CookiesBrowser;
+    
+    args << "-O" << "%(filesize,filesize_approx)s\n%(title)s\n%(id)s\n%(artist)s - %(track)s"
          << url;
 
     emit activeTasksCountChanged(_activeProcesses.size());
@@ -262,10 +276,10 @@ void downloadManager::mediaDownload(mediaPtr media, const QString &folder, bool 
     QStringList args;
     args << "--buffer-size" << "64K"
          << "--concurrent-fragments" << "5"
-         << "--no-mtime" << "--no-playlist" 
-         << "--js-runtimes" << _jsRuntime
-         << "--cookies-from-browser" << _CookiesBrowser
-         << "--newline";
+         << "--no-mtime" << "--no-playlist";
+    if(!_jsRuntime.isEmpty())        args << "--js-runtimes" << _jsRuntime;
+    if (!_CookiesBrowser.isEmpty())  args << "--cookies-from-browser" << _CookiesBrowser;
+    args << "--newline";
 
     if (isSong)
         args << "-x" 
@@ -376,6 +390,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
 
     connect(reply, &QNetworkReply::finished, this, [this, file, reply, media, onSuccess, cleanup] () {
         emit activeTasksCountChanged(0);
+        if (onSuccess)  onSuccess();
 
         if (_isStopped || reply->error() != QNetworkReply::NoError) {
             if (file->isOpen()) {
@@ -406,7 +421,6 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
             media->status = "Done";
             emit updateStatusRequested(media->id, media->status);
         }  
-        if (onSuccess)  onSuccess();
         cleanup();
         
         emit colorLogMessageRequested("silver", tr("Download: "), 
@@ -452,7 +466,7 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
         QRegularExpressionMatch match = percentReg.match(output);
 
         if (output.isEmpty())  return;  
-
+        
         if (match.hasMatch() && pBar) {
             int percent = static_cast<int >(match.captured(1).toFloat());
             if (percent > 100)  percent = 100;
@@ -476,14 +490,20 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
 
         if (output.isEmpty())  return;
         
-        if (output.contains("error: unsupported browser") || output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser))) {
+        if (output.contains("error: unsupported browser") || 
+            output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser)) || 
+            output.contains(QString("Could not copy %1 cookie").arg(_CookiesBrowser))) {
             emit messageRequested(QString(tr("Cookie not found: %1")).arg(_CookiesBrowser));
             emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
         }
-
+        if (output.contains("Use --cookies-from-browser")) {
+            emit messageRequested(tr("Use cookies (left bottom button)"));
+        }
         if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
-            emit messageRequested(tr("Maybe fix: use another VPN"));
-
+            emit messageRequested(tr("Maybe fix: use VPN or use another VPN"));
+        if (output.contains("supported JavaScript runtime")) {
+            emit messageRequested(tr("Use JS runtime (left bottom button)"));
+        }
         if (match.hasMatch()) {
             QString search = match.captured(1);
             int percent = ++(*stepCount) * 25;
@@ -642,6 +662,7 @@ void downloadManager::setCookies(const QString &Cookies)
 void downloadManager::setJavaScript(const QString &jsRuntime)
 {
     _jsRuntime = jsRuntime;
+    emit messageRequested(tr("Please check and prepare program (right bottom tools)"));
 }
 
 void downloadManager::checkAndPrepareFiles()
