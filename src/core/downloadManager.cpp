@@ -90,8 +90,25 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
     connect(process, &QProcess::readyReadStandardError, [this, process] () {
         QByteArray data = process->readAllStandardError();
         QString output = QString::fromUtf8(data);
-        if (output.contains("Failed to resolve") || output.contains("Failed to establish"))
-            emit messageRequested("Maybe fix: use another VPN");
+
+        if (output.contains("error: unsupported browser") || 
+            output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser)) || 
+            output.contains(QString("Could not copy %1 cookie").arg(_CookiesBrowser))) {
+            emit messageRequested(QString(tr("Cookie not found: %1")).arg(_CookiesBrowser));
+            emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
+        }
+        if (output.contains("Use --cookies-from-browser")) {
+            emit messageRequested(tr("Use cookies in the setting(left bottom button)"));
+        }
+        if (output.contains("[Errno 101]") || output.contains("[Errno -2]")) {
+            emit messageRequested(tr("Maybe fix: use another VPN"));
+        }
+        if (output.contains("supported JavaScript runtime")) {
+            emit messageRequested(tr("Use JS runtime (left bottom button)"));
+        }
+        if (output.contains("The url doesn't specify the protocol, trying with https")) {
+            emit messageRequested("The url doesn't specify the protocol, trying with https");
+        }
         emit logMessageRequested(output);
     });
 
@@ -396,7 +413,7 @@ void downloadManager::downloadFile(QUrl &url, QString savePath, std::function<vo
                                                     QFile::ReadOther | QFile::ExeOther);
 #endif
             file->close();
-            media->status = "Done";
+            media->status = tr("Done");
             emit updateStatusRequested(media->id, media->status);
         }  
         if (onSuccess)  onSuccess();
@@ -467,7 +484,25 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
         QRegularExpressionMatch match = percentReg.match(output);
 
         if (output.isEmpty())  return;
-
+        
+        if (output.contains("error: unsupported browser") || 
+            output.contains(QString("could not find %1 cookies").arg(_CookiesBrowser)) || 
+            output.contains(QString("Could not copy %1 cookie").arg(_CookiesBrowser))) {
+            emit messageRequested(QString(tr("Cookie not found: %1")).arg(_CookiesBrowser));
+            emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
+        }
+        if (output.contains("Use --cookies-from-browser")) {
+            emit messageRequested(tr("Use cookies (left bottom button)"));
+        }
+        if (output.contains("[Errno 101]") || output.contains("[Errno -2]")) {
+            emit messageRequested(tr("Maybe fix: use VPN or use another VPN"));
+        }
+        if (output.contains("supported JavaScript runtime")) {
+            emit messageRequested(tr("Use JS runtime (left bottom button)"));
+        }
+        if (output.contains("The url doesn't specify the protocol, trying with https")) {
+            emit messageRequested("The url doesn't specify the protocol, trying with https");
+        }
         if (match.hasMatch()) {
             QString search = match.captured(1);
             int percent = ++(*stepCount) * 25;

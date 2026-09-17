@@ -246,11 +246,14 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 
         manager->updateSongCheckState(id, isChecked);
     }
-
-    if (!logs->getTableWidgetCount())
+    if (!url.isEmpty()) {
         manager->getMedia(url, folder, true, isSongs, isLyrics);
-    else                         
+    } else if (!logs->getTableWidgetCount()) {
         manager->startDownload(folder, isSongs, isLyrics);
+    } else if (url.isEmpty()) {
+        logs->appendText(tr("Not URL"));
+    }
+    
 }
 
 void MainWindow::setupBeforeDownload(bool set)
