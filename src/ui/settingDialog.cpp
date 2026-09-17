@@ -19,7 +19,7 @@ settingDialog::settingDialog(QWidget *parent)
     // Audio format
     QHBoxLayout *layoutAudio = new QHBoxLayout();
     QLabel *titleAudio = new QLabel(tr("Audio:"), this);
-    titleAudio->setFixedWidth(100);
+    titleAudio->setFixedWidth(140);
     layoutAudio->addWidget(titleAudio);
 
     formatAudio = new QComboBox(this);
@@ -31,7 +31,7 @@ settingDialog::settingDialog(QWidget *parent)
     // Lyrics format
     QHBoxLayout *layoutLyrics = new QHBoxLayout();
     QLabel *titleLyrics = new QLabel(tr("Lyrics:"), this);
-    titleLyrics->setFixedWidth(100);
+    titleLyrics->setFixedWidth(140);
     layoutLyrics->addWidget(titleLyrics);
 
     formatLyrics = new QComboBox(this);
@@ -43,7 +43,7 @@ settingDialog::settingDialog(QWidget *parent)
     // Video format
     QHBoxLayout *layoutVideo = new QHBoxLayout();
     QLabel *titleVideo = new QLabel(tr("Video:"), this);
-    titleVideo->setFixedWidth(100);
+    titleVideo->setFixedWidth(140);
     layoutVideo->addWidget(titleVideo);
 
     formatVideo = new QComboBox(this);
@@ -55,7 +55,7 @@ settingDialog::settingDialog(QWidget *parent)
     // Quality
     QHBoxLayout *layoutVideoQuality = new QHBoxLayout();
     QLabel *titleVideoQuality = new QLabel(tr("Quality:"), this);
-    titleVideoQuality->setFixedWidth(100);
+    titleVideoQuality->setFixedWidth(140);
     layoutVideoQuality->addWidget(titleVideoQuality);
 
     qualityVideo = new QComboBox(this);
@@ -65,8 +65,8 @@ settingDialog::settingDialog(QWidget *parent)
     mainLayout->addLayout(layoutVideoQuality);
 
     QHBoxLayout *layoutAudioQuality = new QHBoxLayout();
-    QLabel *titleAudioQuality = new QLabel(tr("Quality:"), this);
-    titleAudioQuality->setFixedWidth(100);
+    QLabel *titleAudioQuality = new QLabel(tr("Quality audio:"), this);
+    titleAudioQuality->setFixedWidth(140);
     layoutAudioQuality->addWidget(titleAudioQuality);
 
     qualityAudio = new QComboBox(this);
@@ -78,7 +78,7 @@ settingDialog::settingDialog(QWidget *parent)
     // Cookies
     QHBoxLayout *layoutCookiesBrowser = new QHBoxLayout();
     QLabel *titleCookiesBrowser = new QLabel(tr("Cookies from browser:"), this);
-    titleCookiesBrowser->setFixedWidth(100);
+    titleCookiesBrowser->setFixedWidth(140);
     layoutCookiesBrowser->addWidget(titleCookiesBrowser);
 
     CookiesBrowser = new QComboBox(this);
@@ -91,7 +91,7 @@ settingDialog::settingDialog(QWidget *parent)
     QHBoxLayout *layoutJSRuntime = new QHBoxLayout();
     QLabel *titleJSRuntime = new QLabel(tr("JS runtimes:"), this);
     
-    titleJSRuntime->setFixedWidth(100);
+    titleJSRuntime->setFixedWidth(140);
     layoutJSRuntime->addWidget(titleJSRuntime);
 
     jsRuntime = new QComboBox(this);
