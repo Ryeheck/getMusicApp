@@ -163,41 +163,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(clearAll,   &QAction::triggered, [this] () {
         logs->clearAll();
         manager->clearMedia();
+        inputURL->clear();
     });  
-    connect(checkForUpdate, &QAction::triggered, [this] () {  
-        manager->checkAndPrepareFiles();
-        setupBeforeDownload(false);
-        stopBtn->show();
-    });
+    connect(prepareProgram, &QAction::triggered, manager, &downloadManager::checkAndPrepareFiles);
+    connect(checkForUpdate, &QAction::triggered, manager, &downloadManager::updateYtDlp         );
 
-    connect(stopBtn, &QPushButton::clicked, [this] () {
-        manager->stopDownload();
-        setupBeforeDownload(false);
-    });
-    connect(stopForNextBtn, &QPushButton::clicked, [this] () {
-        manager->setIsStopped(true);
-        setupBeforeDownload(false);
-    });
-
-    connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
-    connect(manager, &downloadManager::pBarRequested, logs, &logView::updatePBar);
-    connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
-    connect(manager, &downloadManager::messageRequested, logs, &logView::appendText);
-    connect(manager, &downloadManager::colorLogMessageRequested, logs, &logView::colorLog);
-    connect(manager, &downloadManager::activeTasksCountChanged, this, 
+    connect(stopBtn, &QPushButton::clicked,        manager, &downloadManager::stopDownload);
+    connect(stopForNextBtn, &QPushButton::clicked, manager, &downloadManager::setIsStopped);
+    
+    connect(manager, &downloadManager::setMediaCheckedRequested, logs, &logView::setMediaCheckedById);
+    connect(manager, &downloadManager::updateStatusRequested,    logs, &logView::updateStatusById   );
+    connect(manager, &downloadManager::mediaAdded,               logs, &logView::addItem            );
+    connect(manager, &downloadManager::pBarRequested,            logs, &logView::updatePBar         );
+    connect(manager, &downloadManager::logMessageRequested,      logs, &logView::log                );
+    connect(manager, &downloadManager::messageRequested,         logs, &logView::appendText         );
+    connect(manager, &downloadManager::colorLogMessageRequested, logs, &logView::colorLog           );
+    connect(manager, &downloadManager::activeTasksCountChanged,  this, 
             [this] (const int count) {
         if (count > 0) {
             setupBeforeDownload(true);
         } else if (count == 0) {
             setupBeforeDownload(false);
-            logs->appendText(tr("The task has been completed"));   
+            logs->appendText(tr("All Done!"));   
         }
-    });
-
-    connect(manager, &downloadManager::updateStatusRequested, this, 
-            [this] (const QString &id, const QString &status) {
-        int row = logs->findRowById(id);
-        logs->updateStatus(row, status);
     });
 }
 
