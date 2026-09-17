@@ -101,7 +101,7 @@ void downloadManager::getMedia(const QString &url, const QString &folder, bool s
             emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
         }
         if (output.contains("Use --cookies-from-browser")) {
-            emit messageRequested(tr("Use cookies (left bottom button)"));
+            emit messageRequested(tr("Use cookies in the setting (left bottom button)"));
         }
         if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
             emit messageRequested(tr("Maybe fix: use another VPN"));
@@ -497,7 +497,7 @@ void downloadManager::setupProcessLogging(const QString &id, QProgressBar *pBar,
             emit messageRequested(tr("Please use another cookie in the setting (left bottom button)"));
         }
         if (output.contains("Use --cookies-from-browser")) {
-            emit messageRequested(tr("Use cookies (left bottom button)"));
+            emit messageRequested(tr("Use cookies in the setting (left bottom button)"));
         }
         if (output.contains("[Errno 101]") || output.contains("[Errno -2]"))
             emit messageRequested(tr("Maybe fix: use VPN or use another VPN"));
@@ -662,7 +662,6 @@ void downloadManager::setCookies(const QString &Cookies)
 void downloadManager::setJavaScript(const QString &jsRuntime)
 {
     _jsRuntime = jsRuntime;
-    emit messageRequested(tr("Please check and prepare program (right bottom menu)"));
 }
 
 void downloadManager::checkAndPrepareFiles()
@@ -790,6 +789,7 @@ void downloadManager::checkAndPrepareFiles()
         emit colorLogMessageRequested("silver", QString(tr("Path: %1 ")).arg(path),
                                       "silver", QString(tr("or in system: %1")).arg(existsInSystem));
     }
+    emit messageRequested(tr("All files in place"));
 }
 
 void downloadManager::updateYtDlp()

@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     retranslateUI();
 
     connect(titleBtn, &QPushButton::clicked, [this] () {
-        logs->appendText("Wait...");
+        logs->appendText(tr("Wait..."));
         
         manager->getMedia(inputURL->text());
 
@@ -184,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             setupBeforeDownload(true);
         } else if (count == 0) {
             setupBeforeDownload(false);
-            logs->appendText(tr("All Done!"));   
+            logs->appendText(tr("The task has been completed"));   
         }
     });
 }
@@ -193,7 +193,7 @@ void MainWindow::retranslateUI()
 {
     logs->retranslateUI();
 
-    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
+    inputFolder->setPlaceholderText(tr("Enter folder... (default: Movies/Video/Music): "));
     inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
     
     settingBtn->setText(tr("Setting"));
@@ -240,7 +240,7 @@ void MainWindow::changeEvent(QEvent *event)
 
 void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 {
-    logs->appendText("Wait...");
+    logs->appendText(tr("Wait..."));
 
     QString url = inputURL->text();
     QString folder = inputFolder->text();
