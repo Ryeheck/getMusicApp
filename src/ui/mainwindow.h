@@ -12,6 +12,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QTranslator>
+#include <qaction.h>
 #include <qcoreapplication.h>
 
 class MainWindow : public QMainWindow
@@ -60,7 +61,8 @@ private:
     QAction *clearTitleAction;
     QAction *checkForUpdate;
     QAction *switchLanguage;
-
+    QAction *prepareProgram;
+    
     QPushButton *stopBtn;
     QPushButton *stopForNextBtn;
     QPushButton *lyricsBtn;

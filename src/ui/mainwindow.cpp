@@ -13,6 +13,8 @@
 #include <QMenu>
 #include <QTranslator>
 #include <QApplication>
+#include <qaction.h>
+#include <qobject.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -39,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // Translator
     m_translator = new QTranslator(this);
 
-
     lyricsBtn  = new QPushButton(this);
     musicBtn   = new QPushButton(this);
     titleBtn   = new QPushButton(this);
@@ -57,8 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     clearListAction   = menuLogsBtns->addAction("");
     checkForUpdate    = menuLogsBtns->addAction("");
     switchLanguage    = menuLogsBtns->addAction("");
-
-
+    prepareProgram    = menuLogsBtns->addAction("");
 
     logsAction->setCheckable(true);
     logsToolBtn->setMenu(menuLogsBtns);
@@ -76,12 +76,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     layoutMain->addWidget(logs);
 
-    layoutBtnsHOne->addWidget(videoBtn, 4);
-    layoutBtnsHOne->addWidget(musicBtn, 4);
+    layoutBtnsHOne->addWidget(videoBtn,  4);
+    layoutBtnsHOne->addWidget(musicBtn,  4);
     layoutBtnsHOne->addWidget(lyricsBtn, 4);
 
     layoutBtnsHTwo->addWidget(settingBtn, 4);
-    layoutBtnsHTwo->addWidget(titleBtn, 4);
+    layoutBtnsHTwo->addWidget(titleBtn,   4);
     
     layoutBtnsHOne->addStretch();
     layoutBtnsHOne->addWidget(logsToolBtn);
@@ -106,17 +106,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
     */
 
-    retranslateUI();
-
-    connect(titleBtn, &QPushButton::clicked, [this] () {
-        logs->appendText("Wait...");
-        
-        manager->getMedia(inputURL->text());
-
-        setupBeforeDownload(false);
-        stopBtn->show();
-    }); 
     
+
+    connect(titleBtn, &QPushButton::clicked,   [this] () {
+        logs->appendText(tr("Wait..."));
+        manager->getMedia(inputURL->text());
+    }); 
     connect(settingBtn, &QPushButton::clicked, [this] () {
         settingDialog diag(this);
         if(diag.exec() == QDialog::Accepted) {
@@ -127,15 +122,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         }
     });
 
-    connect(musicBtn,  &QPushButton::clicked, [this] () {  handleDownload(true);  });
-    connect(videoBtn,  &QPushButton::clicked, [this] () {  handleDownload();  });
+    connect(musicBtn,  &QPushButton::clicked, [this] () {  handleDownload(true);                   });
+    connect(videoBtn,  &QPushButton::clicked, [this] () {  handleDownload();                               });
     connect(lyricsBtn, &QPushButton::clicked, [this] () {  handleDownload(false, true);  });
 
-    connect(logsToolBtn,   &QToolButton::clicked, [this] () {  logs->setSelectAllItem();  });
-
-    connect(switchLanguage, &QAction::triggered, this, &MainWindow::switchLanguageClicked);
-    connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
-    connect(deselectAllAction, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
+    connect(logsToolBtn,       &QToolButton::clicked, logs, &logView::setSelectAllItem        );
+    connect(switchLanguage,    &QAction::triggered,   this, &MainWindow::switchLanguageClicked);
+    connect(logsAction,        &QAction::toggled,     this, &MainWindow::onLogsToggled        );
+    connect(deselectAllAction, &QAction::triggered,   logs, &logView::setDeselectAllItem      );
+    
     connect(clearTitleAction,  &QAction::triggered, [this] () {  
         logs->clearTitle();  
         manager->clearMedia();
@@ -144,48 +139,41 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         logs->clearAll();
         manager->clearMedia();
     });  
-    connect(checkForUpdate, &QAction::triggered, [this] () {  
-        manager->checkAndPrepareFiles();
-        setupBeforeDownload(false);
-        stopBtn->show();
-    });
 
-    connect(stopBtn, &QPushButton::clicked, [this] () {
-        manager->stopDownload();
-        setupBeforeDownload(false);
-    });
-    connect(stopForNextBtn, &QPushButton::clicked, [this] () {
-        manager->setIsStopped(true);
-        setupBeforeDownload(false);
-    });
+    connect(prepareProgram, &QAction::triggered, manager, &downloadManager::checkAndPrepareFiles);
+    connect(checkForUpdate, &QAction::triggered, manager, &downloadManager::updateYtDlp         );
 
-    connect(manager, &downloadManager::mediaAdded, this, [this] (const mediaInfo *media) {  logs->addItem(media);  });
-    connect(manager, &downloadManager::pBarRequested, logs, &logView::updatePBar);
-    connect(manager, &downloadManager::logMessageRequested, logs, &logView::log);
-    connect(manager, &downloadManager::messageRequested, logs, &logView::appendText);
-    connect(manager, &downloadManager::colorLogMessageRequested, logs, &logView::colorLog);
-    connect(manager, &downloadManager::activeTasksCountChanged, this, 
+    connect(stopBtn, &QPushButton::clicked,        manager, &downloadManager::stopDownload);
+    connect(stopForNextBtn, &QPushButton::clicked, manager, &downloadManager::setIsStopped);
+    
+    connect(manager, &downloadManager::setMediaCheckedRequested, logs, &logView::setMediaCheckedById);
+    connect(manager, &downloadManager::updateStatusRequested,    logs, &logView::updateStatusById   );
+    connect(manager, &downloadManager::mediaAdded,               logs, &logView::addItem            );
+    connect(manager, &downloadManager::pBarRequested,            logs, &logView::updatePBar         );
+    connect(manager, &downloadManager::logMessageRequested,      logs, &logView::log                );
+    connect(manager, &downloadManager::messageRequested,         logs, &logView::appendText         );
+    connect(manager, &downloadManager::colorLogMessageRequested, logs, &logView::colorLog           );
+    connect(manager, &downloadManager::activeTasksCountChanged,  this, 
             [this] (const int count) {
         if (count > 0) {
             setupBeforeDownload(true);
         } else if (count == 0) {
             setupBeforeDownload(false);
-            logs->appendText("All Done!");   
+            logs->appendText(tr("All Done!"));   
         }
     });
 
-    connect(manager, &downloadManager::updateStatusRequested, this, 
-            [this] (const QString &id, const QString &status) {
-        int row = logs->findRowById(id);
-        logs->updateStatus(row, status);
-    });
+    
+    
+    prepareProgram->trigger();
+    retranslateUI();
 }
 
 void MainWindow::retranslateUI()
 {
     logs->retranslateUI();
 
-    inputFolder->setPlaceholderText(tr("Enter folder... (default: system): "));
+    inputFolder->setPlaceholderText(tr("Enter folder... (default: Movies/Video/Music): "));
     inputURL->setPlaceholderText(tr("Enter url... (only youtube)"));
     
     settingBtn->setText(tr("Setting"));
@@ -197,8 +185,9 @@ void MainWindow::retranslateUI()
     deselectAllAction->setText(tr("Deselect all"));
     logsAction->setText(tr("Show logs"));
     clearTitleAction->setText(tr("Clear title"));
-    checkForUpdate->setText(tr("Check and prepare program"));
+    checkForUpdate->setText(tr("Check for update program"));
     switchLanguage->setText(tr("Switch language"));
+    prepareProgram->setText(tr("Prepare program"));
 
     stopBtn->setText(tr("Stop"));
     stopForNextBtn->setText(tr("Stop for next"));
@@ -229,14 +218,13 @@ void MainWindow::changeEvent(QEvent *event)
 
 void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 {
-    logs->appendText("Wait...");
+    logs->appendText(tr("Wait..."));
 
-    QString url = inputURL->text();
+    QString url    = inputURL->text();
     QString folder = inputFolder->text();
 
-    if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    if (folder.isEmpty() && isSongs)  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    else if (folder.isEmpty())        folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    if (folder.isEmpty() && (isSongs || isLyrics))  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation );
+    else if (folder.isEmpty())                      folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
     
     for(QTableWidgetItem *item : logs->getItemsFromColumn(0)) 
@@ -246,11 +234,13 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 
         manager->updateSongCheckState(id, isChecked);
     }
-
-    if (!logs->getTableWidgetCount())
-        manager->getMedia(url, folder, true, isSongs, isLyrics);
-    else                         
+    if (!logs->getTableWidgetCount()) {
+        if (!url.isEmpty()) {
+            manager->getMedia(url, folder, true, isSongs, isLyrics);
+        }
+    } else {
         manager->startDownload(folder, isSongs, isLyrics);
+    }
 }
 
 void MainWindow::setupBeforeDownload(bool set)
@@ -271,12 +261,11 @@ void MainWindow::setupBeforeDownload(bool set)
 void MainWindow::onLogsToggled(bool checked)
 {
     if (checked) {
-        logsAction->setText("Hide logs");
-        // manager->setupProcessLogging(id, isLyrics);
+        logsAction->setText(tr("Hide logs"));
         logs->showLogText();
     
     } else {
-        logsAction->setText("Show logs");
+        logsAction->setText(tr("Show logs"));
         logs->hideLogText();
 
     }
