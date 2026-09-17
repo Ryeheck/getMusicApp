@@ -4,3 +4,4 @@ config.conf
 .cache/
 zlib/
 cmake/
+config.conf
