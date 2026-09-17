@@ -13,6 +13,8 @@
 #include <QMenu>
 #include <QTranslator>
 #include <qcoreapplication.h>
+#include <qmenu.h>
+#include <qtoolbutton.h>
 
 class MainWindow : public QMainWindow
 {
@@ -51,15 +53,18 @@ private:
     QPushButton *titleBtn;
     QPushButton *musicBtn;
 
-    QToolButton *logsToolBtn;
-    QMenu *menuLogsBtns;
-    QAction *clearListAction;
-    QAction *deselectAllAction;
-    QAction *selectAllAction;
+    QToolButton *toolBtn;
+    QToolButton *mediaToolBtn;
+    QMenu *menuMedia;
+    QMenu *menuTool;
+    QAction *clearAll;
+    QAction *deselectAllMedia;
     QAction *logsAction;
-    QAction *clearTitleAction;
+    QAction *clearMedia;
     QAction *checkForUpdate;
-    QAction *switchLanguage;
+    QAction *changeLanguage;
+    QAction *prepareProgram;
+    QAction *selectAllMedia;
 
     QPushButton *stopBtn;
     QPushButton *stopForNextBtn;

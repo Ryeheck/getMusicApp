@@ -772,10 +772,20 @@ void downloadManager::checkAndPrepareFiles()
                         QFile::remove(filenameZIP);
                         emit logMessageRequested(QString("Remove: %1").arg(filenameZIP));
                     });
-    } else
-        emit colorLogMessageRequested("silver", "Download: ", 
-                                      "DarkSeaGreen", QString("%1 already exists").arg(ffprobe));
-    
+    } else {
+        emit colorLogMessageRequested("silver", tr("Download: "), 
+                                       "DarkSeaGreen", QString(tr("%1 already exists")).arg(ffprobe));
+        emit colorLogMessageRequested("silver", QString(tr("Path: %1 ")).arg(path),
+                                      "silver", QString(tr("or in system: %1")).arg(existsInSystem));
+    }
+    emit messageRequested(tr("All files are in place"));
+}
+
+void downloadManager::updateYtDlp()
+{
+    QProcess *process = new QProcess();
+    QString id = QUuid::createUuid().toString();
+    _activeProcesses.insert(id, process);
 
     connect(process, &QProcess::readyReadStandardOutput, [this, process] () {
         QByteArray data = process->readAllStandardOutput();

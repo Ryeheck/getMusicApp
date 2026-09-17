@@ -13,6 +13,10 @@
 #include <QMenu>
 #include <QTranslator>
 #include <QApplication>
+#include <qaction.h>
+#include <qmenu.h>
+#include <qobject.h>
+#include <qtoolbutton.h>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -46,23 +50,38 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     settingBtn = new QPushButton(this);
     videoBtn   = new QPushButton(this);
 
-    logsToolBtn = new QToolButton(this);
-    logsToolBtn->setPopupMode(QToolButton::MenuButtonPopup);
+    // Menu
+    toolBtn = new QToolButton(this);
+    toolBtn->setPopupMode(QToolButton::InstantPopup);
+    toolBtn->setFixedSize(90, 30);
 
-    menuLogsBtns = new QMenu(this);
+    menuTool = new QMenu(this);
 
-    deselectAllAction = menuLogsBtns->addAction("");
-    logsAction        = menuLogsBtns->addAction("");
-    clearTitleAction  = menuLogsBtns->addAction("");
-    clearListAction   = menuLogsBtns->addAction("");
-    checkForUpdate    = menuLogsBtns->addAction("");
-    switchLanguage    = menuLogsBtns->addAction("");
-
-
-
-    logsAction->setCheckable(true);
-    logsToolBtn->setMenu(menuLogsBtns);
     
+    logsAction       = menuTool->addAction(tr("Show logs"));
+    logsAction->setCheckable(true);
+
+    clearAll       = menuTool->addAction(tr("Clear all"));
+    checkForUpdate = menuTool->addAction(tr("Check for update"));
+    changeLanguage = menuTool->addAction(tr("Change language"));
+    prepareProgram = menuTool->addAction(tr("Prepare program"));
+    
+    toolBtn->setMenu(menuTool);
+
+    // Menu media
+    mediaToolBtn = new QToolButton(this);
+    mediaToolBtn->setPopupMode(QToolButton::InstantPopup);
+    mediaToolBtn->setFixedSize(90, 30);
+
+    menuMedia = new QMenu(this);
+
+    selectAllMedia   = menuMedia->addAction(tr("Select all media"));
+    deselectAllMedia = menuMedia->addAction(tr("Deselect all media"));
+    clearMedia       = menuMedia->addAction(tr("Clear media"));
+
+    mediaToolBtn->setMenu(menuMedia);
+
+    // Stop buttons
     stopBtn        = new QPushButton(this);
     stopForNextBtn = new QPushButton(this);
     
@@ -75,20 +94,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     layoutMain->addWidget(inputURL);
 
     layoutMain->addWidget(logs);
-
-    layoutBtnsHOne->addWidget(videoBtn, 4);
-    layoutBtnsHOne->addWidget(musicBtn, 4);
+    layoutMain->addWidget(mediaToolBtn);
+    layoutBtnsHOne->addWidget(videoBtn,  4);
+    layoutBtnsHOne->addWidget(musicBtn,  4);
     layoutBtnsHOne->addWidget(lyricsBtn, 4);
-
-    layoutBtnsHTwo->addWidget(settingBtn, 4);
-    layoutBtnsHTwo->addWidget(titleBtn, 4);
     
     layoutBtnsHOne->addStretch();
-    layoutBtnsHOne->addWidget(logsToolBtn);
-
+    layoutBtnsHOne->addWidget(mediaToolBtn);
+    
+    layoutBtnsHTwo->addWidget(settingBtn, 4);
+    layoutBtnsHTwo->addWidget(titleBtn,   4);
+ 
     layoutBtnsHTwo->addStretch();
     layoutBtnsHTwo->addWidget(stopBtn);
     layoutBtnsHTwo->addWidget(stopForNextBtn);
+    layoutBtnsHTwo->addWidget(toolBtn);
 
     layoutBtns->addLayout(layoutBtnsHOne);
     layoutBtns->addLayout(layoutBtnsHTwo);
@@ -131,16 +151,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(videoBtn,  &QPushButton::clicked, [this] () {  handleDownload();  });
     connect(lyricsBtn, &QPushButton::clicked, [this] () {  handleDownload(false, true);  });
 
-    connect(logsToolBtn,   &QToolButton::clicked, [this] () {  logs->setSelectAllItem();  });
-
-    connect(switchLanguage, &QAction::triggered, this, &MainWindow::switchLanguageClicked);
-    connect(logsAction, &QAction::toggled, this, &MainWindow::onLogsToggled);
-    connect(deselectAllAction, &QAction::triggered, [this] () {  logs->setDeselectAllItem();  });
-    connect(clearTitleAction,  &QAction::triggered, [this] () {  
+    connect(selectAllMedia,   &QAction::triggered,   logs, &logView::setSelectAllItem        );
+    connect(changeLanguage,   &QAction::triggered,   this, &MainWindow::switchLanguageClicked);
+    connect(logsAction,       &QAction::toggled,     this, &MainWindow::onLogsToggled        );
+    connect(deselectAllMedia, &QAction::triggered,   logs, &logView::setDeselectAllItem      );
+    
+    connect(clearMedia,  &QAction::triggered, [this] () {  
         logs->clearTitle();  
         manager->clearMedia();
     });
-    connect(clearListAction,   &QAction::triggered, [this] () {
+    connect(clearAll,   &QAction::triggered, [this] () {
         logs->clearAll();
         manager->clearMedia();
     });  
@@ -170,7 +190,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             setupBeforeDownload(true);
         } else if (count == 0) {
             setupBeforeDownload(false);
-            logs->appendText("All Done!");   
+            logs->appendText(tr("The task has been completed"));   
         }
     });
 
@@ -191,14 +211,17 @@ void MainWindow::retranslateUI()
     settingBtn->setText(tr("Setting"));
     titleBtn->setText(tr("Playlist"));
     musicBtn->setText(tr("Music download(s)"));
-    logsToolBtn->setText(tr("Select all"));
-    
-    clearListAction->setText(tr("Clear all"));
-    deselectAllAction->setText(tr("Deselect all"));
+    toolBtn->setText(tr("Menu"));
+    mediaToolBtn->setText(tr("Media menu"));
+
+    clearAll->setText(tr("Clear all"));
+    selectAllMedia->setText(tr("Select all media"));
+    deselectAllMedia->setText(tr("Deselect all media"));
     logsAction->setText(tr("Show logs"));
-    clearTitleAction->setText(tr("Clear title"));
-    checkForUpdate->setText(tr("Check and prepare program"));
-    switchLanguage->setText(tr("Switch language"));
+    checkForUpdate->setText(tr("Check for update"));
+    changeLanguage->setText(tr("Change language"));
+    prepareProgram->setText(tr("Prepare program"));
+    clearMedia->setText(tr("Clear media"));
 
     stopBtn->setText(tr("Stop"));
     stopForNextBtn->setText(tr("Stop for next"));
@@ -259,7 +282,7 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 void MainWindow::setupBeforeDownload(bool set)
 {
     if (set) {
-        logsToolBtn->hide();
+        toolBtn->hide();
 
         stopBtn->show();
         stopForNextBtn->show();
@@ -267,7 +290,7 @@ void MainWindow::setupBeforeDownload(bool set)
         stopBtn->hide();
         stopForNextBtn->hide();
 
-        logsToolBtn->show();
+        toolBtn->show();
     }
 }
 
