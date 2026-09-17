@@ -2,3 +2,5 @@
 build/
 config.conf
 .cache/
+zlib/
+cmake/
