@@ -297,12 +297,11 @@ void MainWindow::setupBeforeDownload(bool set)
 void MainWindow::onLogsToggled(bool checked)
 {
     if (checked) {
-        logsAction->setText("Hide logs");
-        // manager->setupProcessLogging(id, isLyrics);
+        logsAction->setText(tr("Hide logs"));
         logs->showLogText();
     
     } else {
-        logsAction->setText("Show logs");
+        logsAction->setText(tr("Show logs"));
         logs->hideLogText();
 
     }
