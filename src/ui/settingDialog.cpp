@@ -65,7 +65,7 @@ settingDialog::settingDialog(QWidget *parent)
     mainLayout->addLayout(layoutVideoQuality);
 
     QHBoxLayout *layoutAudioQuality = new QHBoxLayout();
-    QLabel *titleAudioQuality = new QLabel(tr("Quality:"), this);
+    QLabel *titleAudioQuality = new QLabel(tr("Quality audio:"), this);
     titleAudioQuality->setFixedWidth(100);
     layoutAudioQuality->addWidget(titleAudioQuality);
 
@@ -90,7 +90,7 @@ settingDialog::settingDialog(QWidget *parent)
 
     // JS runtime
     QHBoxLayout *layoutJSRuntime = new QHBoxLayout();
-    QLabel *titleJSRuntime = new QLabel(tr("JS runtimes:"), this);
+    QLabel *titleJSRuntime = new QLabel(tr("Java script:"), this);
     
     titleJSRuntime->setFixedWidth(100);
     layoutJSRuntime->addWidget(titleJSRuntime);

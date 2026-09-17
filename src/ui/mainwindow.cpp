@@ -138,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(clearListAction,   &QAction::triggered, [this] () {
         logs->clearAll();
         manager->clearMedia();
+        inputURL->clear();
     });  
 
     connect(prepareProgram, &QAction::triggered, manager, &downloadManager::checkAndPrepareFiles);
@@ -182,9 +183,9 @@ void MainWindow::retranslateUI()
     logsToolBtn->setText(tr("Select all"));
     
     clearListAction->setText(tr("Clear all"));
-    deselectAllAction->setText(tr("Deselect all"));
+    deselectAllAction->setText(tr("Deselect all with media"));
     logsAction->setText(tr("Show logs"));
-    clearTitleAction->setText(tr("Clear title"));
+    clearTitleAction->setText(tr("Clear media"));
     checkForUpdate->setText(tr("Check for update program"));
     switchLanguage->setText(tr("Switch language"));
     prepareProgram->setText(tr("Prepare program"));
@@ -222,7 +223,8 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
 
     QString url    = inputURL->text();
     QString folder = inputFolder->text();
-
+    
+    inputURL->clear();
     if (folder.isEmpty() && (isSongs || isLyrics))  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation );
     else if (folder.isEmpty())                      folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
@@ -241,6 +243,7 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
     } else {
         manager->startDownload(folder, isSongs, isLyrics);
     }
+    
 }
 
 void MainWindow::setupBeforeDownload(bool set)

@@ -662,7 +662,7 @@ void downloadManager::setCookies(const QString &Cookies)
 void downloadManager::setJavaScript(const QString &jsRuntime)
 {
     _jsRuntime = jsRuntime;
-    emit messageRequested(tr("Please check and prepare program (right bottom tools)"));
+    emit messageRequested(tr("Please check and prepare program (right bottom menu)"));
 }
 
 void downloadManager::checkAndPrepareFiles()
