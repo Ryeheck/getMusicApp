@@ -9,6 +9,8 @@
 #include <QTableWidget>
 #include <QHeaderView>
 #include <qobject.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 
 
 logView::logView(QWidget *parent)
@@ -33,18 +35,23 @@ logView::logView(QWidget *parent)
     titleWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     titleWidget->verticalHeader()->setVisible(false);
 
-    retranslateUI();
     
     QHeaderView *header = titleWidget->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    
+    menuGroupBox = new QGroupBox(this);
+    groupLayout = new QVBoxLayout(menuGroupBox);
+
+    groupLayout->addWidget(titleWidget);
 
     HLayout->addWidget(text);
-    HLayout->addWidget(titleWidget);
+    HLayout->addWidget(menuGroupBox);
     
     VLayout->addLayout(HLayout);
     VLayout->addWidget(logText);
+    retranslateUI();
 }
 
 void logView::setSelectAllItem()
@@ -60,6 +67,8 @@ void logView::retranslateUI()
 {
     QStringList headers = {tr("Name"),tr("Size"), tr("Status"), tr("Action")};
     titleWidget->setHorizontalHeaderLabels(headers);
+
+    menuGroupBox->setTitle(tr("Media"));
 }
 
 void logView::setDeselectAllItem()

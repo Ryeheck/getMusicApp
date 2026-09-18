@@ -11,6 +11,7 @@
 #include <QString>
 #include <qnamespace.h>
 #include <qobject.h>
+#include <QGroupBox>
 
 class logView : public QWidget
 {
@@ -60,6 +61,8 @@ private:
     QPlainTextEdit *logText;
     QPlainTextEdit *text;
     QTableWidget *titleWidget;
+    QGroupBox *menuGroupBox;
+    QVBoxLayout *groupLayout;
 };
 
 #endif // LOGVIEW_H

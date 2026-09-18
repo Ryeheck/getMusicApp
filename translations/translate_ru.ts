@@ -432,24 +432,29 @@
 <context>
     <name>logView</name>
     <message>
-        <location filename="../src/ui/logView.cpp" line="61"/>
+        <location filename="../src/ui/logView.cpp" line="68"/>
         <source>Name</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../src/ui/logView.cpp" line="61"/>
+        <location filename="../src/ui/logView.cpp" line="68"/>
         <source>Size</source>
         <translation>Размер</translation>
     </message>
     <message>
-        <location filename="../src/ui/logView.cpp" line="61"/>
+        <location filename="../src/ui/logView.cpp" line="68"/>
         <source>Status</source>
         <translation>Статус</translation>
     </message>
     <message>
-        <location filename="../src/ui/logView.cpp" line="61"/>
+        <location filename="../src/ui/logView.cpp" line="68"/>
         <source>Action</source>
         <translation>Объект</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/logView.cpp" line="71"/>
+        <source>Media</source>
+        <translation>Медиа</translation>
     </message>
 </context>
 <context>
