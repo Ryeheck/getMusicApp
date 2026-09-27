@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     */
 
     retranslateUI();
-
+    
     connect(titleBtn, &QPushButton::clicked, [this] () {
         logs->appendText(tr("Wait..."));
         
@@ -187,6 +187,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             logs->appendText(tr("The task has been completed"));   
         }
     });
+    prepareProgram->trigger();
 }
 
 void MainWindow::retranslateUI()
