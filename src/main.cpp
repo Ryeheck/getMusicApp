@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     "   min-height: 25px; "
     "   padding: 5px; "
     "}"                                                     // All buttons
-    "QPushButton:hover { background-color: darkgray; }"    // При наведении на buttonssss
+    "QPushButton:hover { background-color: darkgray; }"
     "QProgressBar {"                                       
     "   border: 1px solid #0e0e0e; " 
     "   border-radius: 4px; "         
@@ -32,19 +32,7 @@ int main(int argc, char *argv[])
     "   background-color: #0e0e0e; "  
     "   border-radius: 3px; "         
     "}"
-    "QToolButton { "
-    "   background-color: gray; "
-    "   color: white; "
-    "   border: none; "
-    "   min-width: 100px; "
-    "   max-width: 200px; "
-    "   min-height: 25px; "
-    "   padding: 5px; "
-    "}"
-    "QToolButton:hover { background-color: darkgray; "
-    
-    "}"
-    "QAction:hover { background-color: darkgray; }"
+    "QToolButton:hover { background-color: darkgray; }"
     );
     
     windowMain.show();
