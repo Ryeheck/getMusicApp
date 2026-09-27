@@ -4,12 +4,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="196"/>
+        <location filename="../src/ui/mainwindow.cpp" line="198"/>
         <source>Enter folder... (default: Movies/Video/Music): </source>
         <translation>Введите папку... (по умолчанию: Фильмы/Видео/Музыка): </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="197"/>
+        <location filename="../src/ui/mainwindow.cpp" line="199"/>
         <source>Enter url... (only youtube)</source>
         <translation>Введите URL... (только YouTube)</translation>
     </message>
@@ -19,116 +19,116 @@
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="67"/>
-        <location filename="../src/ui/mainwindow.cpp" line="211"/>
+        <location filename="../src/ui/mainwindow.cpp" line="213"/>
         <source>Prepare program</source>
         <translation>Подготовка программы</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="78"/>
-        <location filename="../src/ui/mainwindow.cpp" line="206"/>
+        <location filename="../src/ui/mainwindow.cpp" line="208"/>
         <source>Select all media</source>
         <translation>Выделить все медиа</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="79"/>
-        <location filename="../src/ui/mainwindow.cpp" line="207"/>
+        <location filename="../src/ui/mainwindow.cpp" line="209"/>
         <source>Deselect all media</source>
         <translation>Снять выделение с всех медиа</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="187"/>
+        <location filename="../src/ui/mainwindow.cpp" line="188"/>
         <source>The task has been completed</source>
         <translation>Задача выполнена</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="202"/>
+        <location filename="../src/ui/mainwindow.cpp" line="204"/>
         <source>Menu</source>
         <translation>Меню</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="203"/>
+        <location filename="../src/ui/mainwindow.cpp" line="205"/>
         <source>Media menu</source>
         <translation>Медиа меню</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="216"/>
+        <location filename="../src/ui/mainwindow.cpp" line="218"/>
         <source>Lyric download(s)</source>
         <translation>Скачивание субтитров</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="265"/>
+        <location filename="../src/ui/mainwindow.cpp" line="267"/>
         <source>Not URL</source>
         <translation>Не URL</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="288"/>
+        <location filename="../src/ui/mainwindow.cpp" line="290"/>
         <source>Hide logs</source>
         <translation>Спрятать логи</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="201"/>
+        <location filename="../src/ui/mainwindow.cpp" line="203"/>
         <source>Music download(s)</source>
         <translation>Скачивание музыки</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="65"/>
-        <location filename="../src/ui/mainwindow.cpp" line="209"/>
+        <location filename="../src/ui/mainwindow.cpp" line="211"/>
         <source>Check for update</source>
         <translation>Проверка обновлений</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="200"/>
+        <location filename="../src/ui/mainwindow.cpp" line="202"/>
         <source>Playlist</source>
         <translation>Плейлист</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="199"/>
+        <location filename="../src/ui/mainwindow.cpp" line="201"/>
         <source>Setting</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="217"/>
+        <location filename="../src/ui/mainwindow.cpp" line="219"/>
         <source>Video download(s)</source>
         <translation>Скачивание видео</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="132"/>
-        <location filename="../src/ui/mainwindow.cpp" line="243"/>
+        <location filename="../src/ui/mainwindow.cpp" line="133"/>
+        <location filename="../src/ui/mainwindow.cpp" line="245"/>
         <source>Wait...</source>
         <translation>Подождите...</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="61"/>
-        <location filename="../src/ui/mainwindow.cpp" line="208"/>
-        <location filename="../src/ui/mainwindow.cpp" line="292"/>
+        <location filename="../src/ui/mainwindow.cpp" line="210"/>
+        <location filename="../src/ui/mainwindow.cpp" line="294"/>
         <source>Show logs</source>
         <translation>Показать логи</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="80"/>
-        <location filename="../src/ui/mainwindow.cpp" line="212"/>
+        <location filename="../src/ui/mainwindow.cpp" line="214"/>
         <source>Clear media</source>
         <translation>Очистить медиа</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="64"/>
-        <location filename="../src/ui/mainwindow.cpp" line="205"/>
+        <location filename="../src/ui/mainwindow.cpp" line="207"/>
         <source>Clear all</source>
         <translation>Очистить все</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="214"/>
+        <location filename="../src/ui/mainwindow.cpp" line="216"/>
         <source>Stop</source>
         <translation>Стоп</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="215"/>
+        <location filename="../src/ui/mainwindow.cpp" line="217"/>
         <source>Stop for next</source>
         <translation>Остановить перед следующим</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="66"/>
-        <location filename="../src/ui/mainwindow.cpp" line="210"/>
+        <location filename="../src/ui/mainwindow.cpp" line="212"/>
         <source>Change language</source>
         <translation>Сменить язык</translation>
     </message>
@@ -284,11 +284,7 @@
     <message>
         <location filename="../src/core/downloadManager.cpp" line="792"/>
         <source>All files in place</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All files are in place</source>
-        <translation type="vanished">Все файлы на месте</translation>
+        <translation>Все файлы на месте</translation>
     </message>
     <message>
         <location filename="../src/core/downloadManager.cpp" line="100"/>
@@ -487,7 +483,7 @@
     <message>
         <location filename="../src/ui/settingDialog.cpp" line="68"/>
         <source>Quality audio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Качество музыки:</translation>
     </message>
     <message>
         <location filename="../src/ui/settingDialog.cpp" line="80"/>
@@ -495,9 +491,9 @@
         <translation>Куки из браузера:</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingDialog.cpp" line="92"/>
-        <source>JS runtimes:</source>
-        <translation>Java script</translation>
+        <location filename="../src/ui/settingDialog.cpp" line="93"/>
+        <source>Java Script:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
