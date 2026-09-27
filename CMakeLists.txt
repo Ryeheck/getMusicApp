@@ -11,7 +11,7 @@ set(QUAZIP_ENABLE_QTEXTCODEC OFF CACHE BOOL "Disable Core5Compat check" FORCE)
 FetchContent_Declare(
     quazip
     GIT_REPOSITORY "https://github.com/stachenov/quazip.git"
-    GIT_TAG        "v1.7.0"
+    GIT_TAG        "master"
 )
 
 FetchContent_MakeAvailable(quazip)
