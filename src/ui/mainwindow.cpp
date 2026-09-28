@@ -129,12 +129,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     retranslateUI();
     
     connect(titleBtn, &QPushButton::clicked, [this] () {
-        logs->appendText(tr("Wait..."));
-        
-        manager->getMedia(inputURL->text());
-
-        setupBeforeDownload(false);
-        stopBtn->show();
+        handleDownload(false, false, true);
     }); 
     
     connect(settingBtn, &QPushButton::clicked, [this] () {
@@ -239,14 +234,13 @@ void MainWindow::changeEvent(QEvent *event)
     QMainWindow::changeEvent(event);
 }
 
-void MainWindow::handleDownload(bool isSongs, bool isLyrics)
+void MainWindow::handleDownload(bool isSongs, bool isLyrics, bool playlist)
 {
     logs->appendText(tr("Wait..."));
 
     QString url = inputURL->text();
     QString folder = inputFolder->text();
 
-    if (url.isEmpty())  url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     if (folder.isEmpty() && isSongs)  folder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     else if (folder.isEmpty())        folder = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     manager->setIsStopped(false);
@@ -259,8 +253,9 @@ void MainWindow::handleDownload(bool isSongs, bool isLyrics)
         manager->updateSongCheckState(id, isChecked);
     }
     if (!url.isEmpty()) {
-        manager->getMedia(url, folder, true, isSongs, isLyrics);
-    } else if (!logs->getTableWidgetCount()) {
+        manager->getMedia(url, folder, !playlist, isSongs, isLyrics);
+        inputURL->clear();
+    } else if (logs->getTableWidgetCount()) {
         manager->startDownload(folder, isSongs, isLyrics);
     } else if (url.isEmpty()) {
         logs->appendText(tr("Not URL"));

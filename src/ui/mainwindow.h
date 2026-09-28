@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent=nullptr);
     void setupBeforeDownload(bool set);
-    void handleDownload(bool isSongs=false, bool isLyrics=false);
+    void handleDownload(bool isSongs=false, bool isLyrics=false, bool playlist=false);
     ~MainWindow() override;
 
     void allTitle();
