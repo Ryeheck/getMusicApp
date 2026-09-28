@@ -1,13 +1,13 @@
 # getMusicApp
-![get Music App](getMusicApp.png)
+![get Music App](assets/images/getMusicApp.png)
 
 A modern, fast, and feature-rich desktop media downloader built with **C++** and the **Qt Framework**. It acts as a powerful graphical frontend for `yt-dlp`, allowing users to fetch, manage, and download multimedia content with ease.
 
-![App Interface](images/MainMenu.png)
+![App Interface](assets/images/Main.png)
 
-![Setting Interface](images/Setting.png)
+![Setting Interface](assets/images/Setting.png)
 
-![Logs](images/MainLogs.png)
+![Logs](assest/images/MainLog.png)
 
 ## Key Features
 
@@ -45,7 +45,6 @@ git clone https://github.com/Ryeheck/getMusicApp.git
 cd getMusicApp
 
 # Configure and Build
-rm -rf build
 cmake -B build -S .
 cmake --build build
 
