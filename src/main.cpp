@@ -33,6 +33,13 @@ int main(int argc, char *argv[])
     "   border-radius: 3px; "         
     "}"
     "QToolButton:hover { background-color: darkgray; }"
+    "QToolButton {"                                       
+    "   border: 1px solid #0e0e0e; " 
+    "   border-radius: 4px; "         
+    "   background-color: #1f1f1f; "  
+    "   text-align: center; "         
+    "   color: white; "               
+    "}"
     );
     
     windowMain.show();
