@@ -7,7 +7,7 @@ A modern, fast, and feature-rich desktop media downloader built with **C++** and
 
 ![Setting Interface](assets/images/Setting.png)
 
-![Logs](assest/images/MainLog.png)
+![Logs](assets/images/MainLog.png)
 
 ## Key Features
 
